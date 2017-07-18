@@ -1,0 +1,42 @@
+# Media Files
+# *.png
+*.jpg
+*.bmp
+*.tif
+*.avi
+*.mp4
+
+# Documnets
+*.docx
+*.doc
+*.xlsx
+*.xls
+*.pptx
+*.ppt
+#*.pdf
+
+## TeX / LaTeX Files
+*.aux
+*.log
+*.synctex*
+*.toc
+*.out
+*.bbl
+*.blg
+*.nav
+*.snm
+*.vrb
+*eps-converted-to.pdf
+
+# MATLAB Files
+*.asv
+*.m~
+
+# Compilation files:
+*.obj
+*.pdb
+*.o
+
+# Binary Files
+*.dll
+
