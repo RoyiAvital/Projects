@@ -23,7 +23,8 @@ Yet in MATLAB it is limited to the case matrix `A` is composed from `y`.
  * Windows 10 Professional 64 Bit.
 
 ## How to Run
-Compile the `LevinsonRecursionToeplitzMatrix.cpp` file into a DLL using MSVC / GCC (See `CompileDllGcc.m` for reference).
+Compile the `LevinsonRecursionToeplitzMatrix.cpp` file into a DLL using MSVC / GCC (See `CompileDllGcc.m` for reference).  
+Run `LevinsonRecursionRunTime.m`.
 
 
 ## ToDo
