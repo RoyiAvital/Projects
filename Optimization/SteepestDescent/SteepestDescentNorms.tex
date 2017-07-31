@@ -1,0 +1,225 @@
+% !TeX document-id = {d3b263d9-4ae8-4edf-a203-72d775f66a9e}
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{dsfont} % /mathds{}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref} % Hyperlinks
+\usepackage{xcolor} % \colorbox{} & \textcolor{}
+
+%% \usepackage{minted} % Syntax Highlighting (Requires Python)
+%% !TeX TXS-program:compile = txs:///pdflatex/[--shell-escape]
+
+% See https://tex.stackexchange.com/a/78393/1661
+\usepackage[framed, numbered, autolinebreaks, useliterate]{mcode} % Syntax Highlighting MATLAB
+
+% Math Symbols
+% http://www.cs.put.poznan.pl/ksiek/latexmath.html
+
+%\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{corollary}{Corollary}[theorem]
+%\newtheorem*{lemma*}[theorem]{Lemma}
+\newtheorem*{lemma}{Lemma}
+\newtheorem*{remark}{Remark}
+
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\prox}{prox}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\Tr}{Tr}
+
+% Math Commands
+\newcommand{\MyParen}[1]{\left( #1 \right)}
+\newcommand{\MyBrack}[1]{\left\lbrack #1 \right\rbrack}
+\newcommand{\MyBrace}[1]{\left\lbrace #1 \right\rbrace}
+\newcommand{\MyNorm}[2]{{\left\| #1 \right\|}_{#2}}
+\newcommand{\MyNormSqr}[2]{{\left\| #1 \right\|}_{#2}^{2}}
+\newcommand{\MyAbs}[1]{\left| #1 \right|}
+\newcommand{\MyNormTwo}[1]{\MyNorm{#1}{2}}
+\newcommand{\MyNormTwoSqr}[1]{\MyNormSqr{#1}{2}}
+\newcommand{\MyCeil}[1]{\lceil #1 \rceil}
+\newcommand{\MyProd}[2]{\langle #1, #2 \rangle}
+\newcommand{\MyUndBrace}[2]{\underset{#2}{\underbrace{#1}}}
+\newcommand{\MyGrad}[2]{{\nabla #1}{\MyParen{#2}}}
+% \newcommand{\RR}[1]{\mathds{R}^{#1}} % Asaf's Style
+\newcommand{\RR}[1]{\mathbb{R}^{#1}}
+\newcommand{\EE}[1]{\mathbb{E} \MyBrack{#1}}
+
+% Text Commands
+\newcommand{\inlinecode}[1]{\colorbox{lightgray}{\texttt{#1}}}
+
+%opening
+\title{Steepest Descent Direction per Norm}
+\author{Royi Avital}
+
+\begin{document}
+	
+	\maketitle
+	
+%	\begin{abstract}
+%		Notes on Math, Engineering, etc...
+%	\end{abstract}
+
+	\tableofcontents
+	
+	\newpage
+	
+	In the following derivations the vector $ f $ will represent the Gradient - $ f = \nabla f \MyParen{x} $.
+	This is based on Computational Methods (046197) - Exercise 003.
+	
+	Known related identity is given by:
+	
+	$$ {d}_{sd} = \MyNorm{f}{\ast} {d}_{nsd} $$
+	
+	Where $ {d}_{nds} $ is the Normalized Steepest Descent Direction with respect to the $ \MyNorm{\cdot}{} $ norm.
+	
+	\section{$ {L}_{1} $ Norm}
+	
+	\subsection{Normalized Steepest Descent}
+	
+	\begin{align*}
+	\arg \min_{ \MyNorm{d}{1} \leq 1 } \MyBrace{ {f}^{T} d }
+	\end{align*}
+	
+	The Lagrangian of the problem can be written as:
+	
+	\begin{align*}
+	L \left( d, \lambda \right) & = {f}^{T} d + \lambda \left( {\left\| d \right\|}_{1} - 1 \right) && \text{} \\
+	\end{align*}
+	
+	The KKT Conditions are given by:
+	
+	\begin{align*}
+	{\nabla}_{d} L \MyParen{ d, \lambda } = f + \lambda \partial \MyNorm{d}{1} & = 0 && \text{(1) Stationary} \\
+	\lambda \MyParen{ \MyNorm{d}{1}  - 1 } 	& = 0 		&& \text{(2) Slackness} \\
+	\MyNorm{d}{1} - 1						& \leq 0 	&& \text{(3) Primal Feasibility} \\
+	\lambda 							& \geq 0 	&& \text{(4) Dual Feasibility} \\
+	\end{align*}
+	
+	Looking at (1) yields:
+	
+	\begin{align*}
+	- \frac{f}{\lambda} \in \partial \MyNorm{d}{1} = \begin{cases} 1 & \text{ if } {d}_{i} > 0 \\ \MyBrack{-1, 1} & \text{ if } {d}_{i} = 0 \\ -1 & \text{ if } {d}_{i} < 0 \end{cases}
+	\end{align*}
+	
+	From above $ \lambda > 0 $ hence $ \MyNorm{d}{1} = 1 $. This is required as the problem is linear programming problem over a Polytope hence the solution must be on the boundaries of the set. Since $ d \neq \boldsymbol{0} $ unless $ f = \boldsymbol{0} $ then $ \lambda = \max_{i} \MyBrace{ \MyAbs{ {f}_{i} } } $.This implies that:
+	
+	\begin{align*}
+	{d}_{i} = \begin{cases} -\sign \MyParen{{f}_{i}} & \text{ if } \MyAbs{ {f}_{i} } = \max_{i} \MyBrace{ \MyAbs{ {f}_{i} } } \\ 0 & \text{ if } \MyAbs{ {f}_{i} } \neq \max_{i} \MyBrace{ \MyAbs{ {f}_{i} } } \end{cases}
+	\end{align*}
+	
+	One could see the above minimizes one coordinate at a time which similar to \href{https://en.wikipedia.org/wiki/Coordinate_descent}{Coordinate Descent}.
+	
+	\subsection{Steepest Descent}
+	
+	\begin{align*}
+	\arg \min_{ d } \MyBrace{ {f}^{T} d + \frac{1}{2} \MyNormSqr{d}{1} }
+	\end{align*}
+	
+	This is a constrains free convex problem hence the solution is given by a stationary point.
+	
+	\begin{align*}
+	0 & \in \partial \MyParen{{f}^{T} d + \frac{1}{2} \MyNormSqr{d}{1}} = f + \MyNorm{d}{1} \partial \MyNorm{d}{1} && \text{} \\
+	& \Rightarrow - \frac{f}{ \MyNorm{d}{1} } \in \begin{cases} 1 & \text{ if } {d}_{i} > 0 \\ \MyBrack{-1, 1} & \text{ if } {d}_{i} = 0 \\ -1 & \text{ if } {d}_{i} < 0 \end{cases}
+	\end{align*}
+	
+	As above it means $ \MyNorm{d}{1} = \max_{i} \MyBrace{ \MyAbs{ {f}_{i} } } $ and:
+	
+	\begin{align*}
+	{d}_{i} = \begin{cases} -{f}_{i} & \text{ if } \MyAbs{ {f}_{i} } = \max_{i} \MyBrace{ \MyAbs{ {f}_{i} } } \\ 0 & \text{ if } \MyAbs{ {f}_{i} } \neq \max_{i} \MyBrace{ \MyAbs{ {f}_{i} } } \end{cases}
+	\end{align*}
+	
+	Indeed $ {d}_{sd} = \MyNorm{f}{\ast} {d}_{sd} = \MyNorm{f}{\infty} {d}_{sd} = \max_{i} \MyBrace{ \MyAbs{ {f}_{i} } } {d}_{sd} $ as required.
+	
+	\section{$ {L}_{2} $ Norm}
+	
+	\subsection{Normalized Steepest Descent}
+	
+	\begin{align*}
+	\arg \min_{ \MyNorm{d}{2} \leq 1 } \MyBrace{ {f}^{T} d }
+	\end{align*}
+	
+	The Lagrangian of the problem can be written as:
+	
+	\begin{align*}
+	L \MyParen{d, \lambda} & = {f}^{T} d + \lambda \MyParen{ \MyNormTwo{d} - 1 }
+	\end{align*}
+	
+	The KKT Conditions are given by:
+	
+	\begin{align*}
+	{\partial}_{d} L \MyParen{ d, \lambda } = f + \lambda \partial \MyNorm{d}{2} & \ni 0 && \text{(1) Stationary} \\
+	\lambda \MyParen{ \MyNorm{d}{2}  - 1 } 	& = 0 		&& \text{(2) Slackness} \\
+	\MyNorm{d}{2} - 1						& \leq 0 	&& \text{(3) Primal Feasibility} \\
+	\lambda 							& \geq 0 	&& \text{(4) Dual Feasibility} \\
+	\end{align*}
+	
+	Looking at (1) yields:
+	
+	\begin{align*}
+	- \frac{f}{\lambda} \in \partial \MyNorm{d}{2} = \begin{cases} \frac{d}{ \MyNormTwo{d} } & \text{ if } d \neq 0 \\ \MyBrace{ g \mid \MyNormTwo{g} \leq 1 } & \text{ if } d = 0 \\ \end{cases}
+	\end{align*}
+	
+	From above $ \lambda > 0 $ hence $ \MyNormTwo{d} = 1 $ (Again, as expected by minimization of a linear function over a convex set). By choosing $ \lambda = \MyNormTwo{f} $ and $ d = -\frac{f}{\lambda} = - \frac{f}{\MyNormTwo{f}} $ all KKT conditions hold hence it is a feasible solution.
+	
+	\subsection{Steepest Descent}
+	
+	\begin{align*}
+	\arg \min_{ d } \MyBrace{ {f}^{T} d + \frac{1}{2} \MyNormSqr{d}{2} }
+	\end{align*}
+	
+	This is a constrains free convex problem hence the solution is given by a stationary point.
+	
+	\begin{align*}
+	0 & = {\nabla}_{d} \MyParen{ {f}^{T} d + \frac{1}{2} \MyNormSqr{d}{2} } = f + d && \text{} \\
+	& \Rightarrow d = -f
+	\end{align*}
+	
+	Namely the solution, as expected, is the reflection (Negation) of the gradient $ d = -f $ and $ {d}_{sd} = \MyNorm{f}{\ast} {d}_{sd} = \MyNorm{f}{2} {d}_{sd} = -\MyNorm{f}{2} \frac{f}{ \MyNormTwo{f} } = -f $ as required.
+	
+	\section{$ {L}_{\infty} $ Norm}
+	
+	\subsection{Normalized Steepest Descent}
+	
+	\begin{align*}
+	\arg \min_{ \MyNorm{d}{\infty} \leq 1 } \MyBrace{ {f}^{T} d } = \arg \min_{d} \MyBrace{ {f}^{T} d } \text{ subject to } d \preceq 1, \, -d \preceq 1
+	\end{align*}
+	
+	The Lagrangian of the problem can be written as:
+	
+	\begin{align*}
+	L \MyParen{d, \lambda} & = {f}^{T} d + {\lambda}_{1}^{T} \MyParen{ d - \boldsymbol{1} } + {\lambda}_{2}^{T} \MyParen{ -d - \boldsymbol{1} }
+	\end{align*}
+	
+	The KKT Conditions are given by:
+	
+	\begin{align*}
+	{\nabla}_{d} L \MyParen{ d, \lambda } = f + {\lambda}_{1} - {\lambda}_{2} & = 0 && \text{(1) Stationary} \\
+	{\lambda}_{1}^{T} \MyParen{ d - \boldsymbol{1} } 	& = 0 		&& \text{(2) Slackness} \\
+	{\lambda}_{2}^{T} \MyParen{ -d - \boldsymbol{1} } 	& = 0 		&& \text{(3) Slackness} \\
+	d - \boldsymbol{1}						& \preceq 0 	&& \text{(4) Primal Feasibility} \\
+	-d - \boldsymbol{1}						& \preceq 0 	&& \text{(5) Primal Feasibility} \\
+	{\lambda}_{1}, {\lambda}_{2} 							& \succeq 0 	&& \text{(6) Dual Feasibility} \\
+	\end{align*}
+	
+	The above can be solved component wise hence from now on the subscript for the component won't be written. Clearly $ {\lambda}_{1} $ and $ {\lambda}_{2} $ can not be both zero. Hence from (2) and (3) the components of $ d $ are either $ 1 $ or $ -1 $, namely $ \MyAbs{{d}_{i}} = 1 $. From (1) and (6) it must be $ {d}_{i} = - \sign \MyParen{ {f}_{i} } $ hence $ d = -\sign \MyParen{f} $.
+	
+	\subsection{Steepest Descent}
+	
+	\begin{align*}
+	\arg \min_{ d } \MyBrace{ {f}^{T} d + \frac{1}{2} \MyNormSqr{d}{\infty} }
+	\end{align*}
+	
+	This is a constrains free convex problem hence the solution is given by a stationary point.
+	
+	\begin{align*}
+	0 & \in \partial \MyParen{{f}^{T} d + \frac{1}{2} \MyNormSqr{d}{\infty}} = f + \MyNorm{d}{\infty} \partial \MyNorm{d}{\infty} && \text{} \\
+	& \Rightarrow - \frac{f}{ \MyNorm{d}{\infty} } \in \partial \MyNorm{d}{\infty} = \MyBrace{ w \mid \MyNorm{w}{1} \leq 1, {w}^{T} d = \MyNorm{d}{\infty} }
+	\end{align*}
+	
+	In order to ensure $ \MyNorm{- \frac{f}{ \MyNorm{d}{\infty} }}{1} \leq 1 \Rightarrow \MyNorm{d}{\infty} \geq \MyNorm{f}{1} $. From $ - \frac{ {f}^{T} }{ \MyNorm{d}{\infty} } d = \MyNorm{d}{\infty} $ one could set $ d = -\alpha \sign \MyParen{f} $ which results in $ \alpha {f}^{T} \sign \MyParen{f} = \alpha \MyNorm{f}{1} = \MyNorm{d}{\infty}^{2} $. Hence by setting $ \alpha = \MyNorm{f}{1} $ one would get $ \MyNorm{f}{1} {f}^{T} \sign \MyParen{f} = \MyNorm{f}{1}^{2} = \MyNorm{d}{\infty}^{2} $ hence $ d = - \MyNorm{f}{1} \sign \MyParen{f} $.
+	
+	
+\end{document}

@@ -1,0 +1,469 @@
+% !TeX document-id = {d3b263d9-4ae8-4edf-a203-72d775f66a9e}
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{dsfont} % /mathds{}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref} % Hyperlinks
+\usepackage{xcolor} % \colorbox{} & \textcolor{}
+
+%% \usepackage{minted} % Syntax Highlighting (Requires Python)
+%% !TeX TXS-program:compile = txs:///pdflatex/[--shell-escape]
+
+% See https://tex.stackexchange.com/a/78393/1661
+\usepackage[framed, numbered, autolinebreaks, useliterate]{mcode} % Syntax Highlighting MATLAB
+
+% Math Symbols
+% http://www.cs.put.poznan.pl/ksiek/latexmath.html
+
+%\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{corollary}{Corollary}[theorem]
+%\newtheorem*{lemma*}[theorem]{Lemma}
+\newtheorem*{lemma}{Lemma}
+\newtheorem*{remark}{Remark}
+
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\prox}{prox}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\Tr}{Tr}
+
+% Math Commands
+\newcommand{\MyParen}[1]{\left( #1 \right)}
+\newcommand{\MyBrack}[1]{\left\lbrack #1 \right\rbrack}
+\newcommand{\MyBrace}[1]{\left\lbrace #1 \right\rbrace}
+\newcommand{\MyNorm}[2]{{\left\| #1 \right\|}_{#2}}
+\newcommand{\MyNormSqr}[2]{{\left\| #1 \right\|}_{#2}^{2}}
+\newcommand{\MyAbs}[1]{\left| #1 \right|}
+\newcommand{\MyNormTwo}[1]{\MyNorm{#1}{2}}
+\newcommand{\MyNormTwoSqr}[1]{\MyNormSqr{#1}{2}}
+\newcommand{\MyCeil}[1]{\lceil #1 \rceil}
+\newcommand{\MyProd}[2]{\langle #1, #2 \rangle}
+\newcommand{\MyUndBrace}[2]{\underset{#2}{\underbrace{#1}}}
+% \newcommand{\RR}[1]{\mathds{R}^{#1}} % Asaf's Style
+\newcommand{\RR}[1]{\mathbb{R}^{#1}}
+\newcommand{\EE}[1]{\mathbb{E} \MyBrack{#1}}
+
+% Text Commands
+\newcommand{\inlinecode}[1]{\colorbox{lightgray}{\texttt{#1}}}
+
+%opening
+\title{Projection onto Balls}
+\author{Royi Avital}
+
+\begin{document}
+	
+	\maketitle
+	
+%	\begin{abstract}
+%		Notes on Math, Engineering, etc...
+%	\end{abstract}
+
+	\tableofcontents
+	
+	\newpage
+	
+	\section{Projection onto the $ {L}_{1} $ Ball}
+	% https://math.stackexchange.com/questions/2327504
+	\begin{align*}
+	\arg \min_{ \MyNorm{x}{1} \leq r } \MyBrace{ \frac{1}{2} \MyNormTwoSqr{ x - y } }
+	\end{align*}
+	
+	The Lagrangian of the problem can be written as:
+	
+	
+	\begin{align*}
+	L \left( x, \lambda \right) & = \frac{1}{2} {\left\| x - y \right\|}^{2} + \lambda \left( {\left\| x \right\|}_{1} - r \right) && \text{} \\
+	& = \sum_{i = 1}^{n} \left( \frac{1}{2} { \left( {x}_{i} - {y}_{i} \right) }^{2} + \lambda \left| {x}_{i} \right| \right) - \lambda r && \text{Component wise form}
+	\end{align*}
+	
+	The Dual Function is given by:
+	
+	\begin{align*}
+	g \left( \lambda \right) = \inf_{x} L \left( x, \lambda \right)
+	\end{align*}
+	
+	The above can be solved component wise for the term $ \left( \frac{1}{2} { \left( {x}_{i} - {y}_{i} \right) }^{2} + \lambda \left| {x}_{i} \right| \right) $ which is solved by the \href{https://en.wikipedia.org/wiki/Proximal_gradient_methods_for_learning#Solving_for_.7F.27.22.60UNIQ--postMath-0000002A-QINU.60.22.27.7F_proximity_operator}{Soft Thresholding Operator}:
+	
+	\begin{align*}
+	{x}_{i}^{\ast} = \sign \left( {y}_{i} \right) { \left( \left| {y}_{i} \right| - \lambda \right) }_{+}
+	\end{align*}
+	
+	Where $ {\left( t \right)}_{+} = \max \left( t, 0 \right) $.
+	
+	Clearly, when $ \lambda = 0 $ it suggests that $ x = y $ and $ \MyNorm{y}{1} \leq r $. For the case $ \lambda > 0 $, which suggests $ \MyNorm{y}{1} > 1 $, all needed is to find the optimal $ \lambda > 0 $ which is given by the root of the objective function (Which is the constrain of the KKT System):
+	
+	\begin{align*}
+	h \left( \lambda \right) & = \sum_{i = 1}^{n} \left| {x}_{i}^{\ast} \left( \lambda \right) \right| - r \\
+	& = \sum_{i = 1}^{n} { \left( \left| {y}_{i} \right| - \lambda \right) }_{+} - r
+	\end{align*}
+	
+	Namely, the solution is given by $ {\lambda}^{\ast} = \lambda : h \MyParen{\lambda} = 0 $. The above is a Piece Wise linear function of $ \lambda $ and its Derivative given by:
+	
+	\begin{align*}
+	\frac{\mathrm{d} }{\mathrm{d} \lambda} h \left( \lambda \right) & = \frac{\mathrm{d} }{\mathrm{d} \lambda} \sum_{i = 1}^{n} { \left( \left| {y}_{i} \right| - \lambda \right) }_{+} \\
+	& = \sum_{i = 1}^{n} -{ \mathbf{1} }_{\left\{ \left| {y}_{i} \right| - \lambda > 0 \right\}}
+	\end{align*}
+	
+	Hence it can be solved using Newton Iteration.
+	
+	\begin{lstlisting}[caption={MATLAB Code - $ {L}_{1} $ Ball Projection}, label={lst:codeL1Projection}]
+	function [ vX ] = ProjectL1Ball( vY, ballRadius, stopThr )
+	% ----------------------------------------------------------------------------------------------- %
+	% [ vX ] = ProjectL1Ball( vY, ballRadius, stopThr )
+	%   Solving the Orthoginal Porjection Problem of the input vector onto the
+	%   L1 Ball using Dual Function and Newtin Iteration.
+	% Input:
+	%   - vY            -   Input Vector.
+	%                       Structure: Vector (Column).
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (-inf, inf).
+	%   - ballRadius    -   Ball Radius.
+	%                       Sets the Radiuf of the L1 Ball. For Unit L1 Ball
+	%                       set to 1.
+	%                       Structure: Scalar.
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (0, inf).
+	%   - stopThr       -   Stopping Threshold.
+	%                       Sets the trheold of the Newton Iteration. The
+	%                       absolute value of the Objective Function will be
+	%                       below the threshold.
+	%                       Structure: Scalar.
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (0, inf).
+	% Output:
+	%   - vX            -   Output Vector.
+	%                       The projection of the Input Vector onto the Simplex
+	%                       Ball.
+	%                       Structure: Vector (Column).
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (-inf, inf).
+	% References
+	%   1.  https://math.stackexchange.com/questions/2327504.
+	%   2.  https://en.wikipedia.org/wiki/Newton%27s_method.
+	% Remarks:
+	%   1.  a
+	% TODO:
+	%   1.  U.
+	% Release Notes:
+	%   -   1.0.001     29/06/2017  Royi Avital
+	%       *   Enforcing Lambda to be non negative (Dealing with the case 'vY'
+	%           is obeying || vY ||_1 <= ballRadius).
+	%   -   1.0.000     27/06/2017  Royi Avital
+	%       *   First release version.
+	% ----------------------------------------------------------------------------------------------- %
+	
+	FALSE   = 0;
+	TRUE    = 1;
+	
+	OFF     = 0;
+	ON      = 1;
+	
+	paramLambda     = 0;
+	% The objective functions which its root (The 'paramLambda' which makes it
+	% vanish) is the solution
+	objVal          = sum(max(abs(vY) - paramLambda, 0)) - ballRadius;
+	
+	while(abs(objVal) > stopThr)
+	objVal          = sum(max(abs(vY) - paramLambda, 0)) - ballRadius;
+	df              = sum(-((abs(vY) - paramLambda) > 0)); %<! Derivative of 'objVal' with respect to Lambda
+	paramLambda     = paramLambda - (objVal / df); %<! Newton Iteration
+	end
+	
+	% Enforcing paramLambda >= 0. Otherwise it suggests || vY ||_1 <= ballRadius.
+	% Hence the Optimal vX is given by vX = vY.
+	paramLambda = max(paramLambda, 0);
+	
+	vX = sign(vY) .* max(abs(vY) - paramLambda, 0);
+	
+	
+	end
+	
+	\end{lstlisting}
+	
+	\section{Projection onto the $ {L}_{2} $ Ball}
+	
+	\begin{align*}
+		\arg \min_{ \MyNormTwo{x} \leq r } \MyBrace{ \frac{1}{2} \MyNormTwoSqr{ x - y } }
+	\end{align*}
+	
+	The Lagrangian is given by:
+	
+	\begin{align*}
+	L \MyParen{x, \lambda} = \frac{1}{2} \MyNormTwoSqr{ x - y } + \lambda \MyParen{ {x}^{T} x - r }
+	\end{align*}
+	
+	The problem above is convex and Slater's condition holds by choosing $ x = \boldsymbol{0} $.
+	
+	The KKT Conditions are given by:
+	
+	\begin{align*}
+	{\nabla}_{x} L \MyParen{ x, \lambda } = x - y + 2 \lambda x & = 0 && \text{(1) Stationary} \\
+	\lambda \MyParen{ {x}^{T} x  - r} 	& = 0 		&& \text{(2) Slackness} \\
+	{x}^{T} x  - r						& \leq 0 	&& \text{(3) Primal Feasibility} \\
+	\lambda 							& \geq 0 	&& \text{(4) Dual Feasibility} \\
+	\end{align*}
+	
+	From (1) one could see that if $ \lambda = 0 $ then $ x = y $ and from (3) it means $ {x}^{T} x = {y}^{T} y \leq r $. If $ \lambda > 0 $ then from (2) it means $ {x}^{T} x = r $.
+	Taking (1) and multiply it by $ {x}^{T} $ yields (Remember $ {x}^{T} x = r $):
+	
+	$$ {x}^{T} x - {x}^{T} y + 2 \lambda {x}^{T} x = 0 \Rightarrow \lambda = \frac{ {x}^{T} y - r }{2 r} $$
+	
+	Plugging the result back into (1) yields $ x = \MyParen{1 + \frac{{x}^{T} y - r}{r}}^{-1} y = \frac{r}{ {x}^{T} y } y $. Since $ {x}^{T} x = r $ and $ x $ is a scaled version of $ y $ (Namely has the same direction as $ y $) which results in:
+	
+	$$ x = \begin{cases}
+	y 							& \text{ if } \MyNormTwo{y} \leq r \\ 
+	r \frac{y}{\MyNormTwo{y}} 	& \text{ if } \MyNormTwo{y} > r 
+	\end{cases} $$
+	
+	\begin{lstlisting}[caption={MATLAB Code - $ {L}_{2} $ Ball Projection}, label={lst:codeL2Projection}]
+	function [ vX ] = ProjectL2Ball( vY, ballRadius )
+	% ----------------------------------------------------------------------------------------------- %
+	% [ vX ] = ProjectL2Ball( vY, ballRadius, stopThr )
+	%   Solving the Orthoginal Porjection Problem of the input vector onto the
+	%   L1 Ball.
+	% Input:
+	%   - vY            -   Input Vector.
+	%                       Structure: Vector (Column).
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (-inf, inf).
+	%   - ballRadius    -   Ball Radius.
+	%                       Sets the Radius of the L2 Ball. For Unit L2 Ball
+	%                       set to 1.
+	%                       Structure: Scalar.
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (0, inf).
+	% Output:
+	%   - vX            -   Output Vector.
+	%                       The projection of the Input Vector onto the L2
+	%                       Ball.
+	%                       Structure: Vector (Column).
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (-inf, inf).
+	% References
+	%   1.  h
+	% Remarks:
+	%   1.  a
+	% TODO:
+	%   1.  U.
+	% Release Notes:
+	%   -   1.0.000     29/06/2017  Royi Avital
+	%       *   First release version.
+	% ----------------------------------------------------------------------------------------------- %
+	
+	FALSE   = 0;
+	TRUE    = 1;
+	
+	OFF     = 0;
+	ON      = 1;
+	
+	vX = min((ballRadius / norm(vY, 2)), 1) * vY;
+	
+	
+	end
+	
+	\end{lstlisting}
+	
+	\section{Projection onto the $ {L}_{\infty} $ Ball}
+	
+	\begin{align*}
+	\arg \min_{ \MyNorm{x}{\infty} \leq r } \MyBrace{ \frac{1}{2} \MyNormTwoSqr{ x - y } }
+	\end{align*}
+	
+	Since $ \MyNorm{x}{\infty} = \max_{i} \MyAbs{ {x}_{i} }, \; i = 1, 2, \ldots, n $ the above can be written as:
+	
+	\begin{alignat*}{3}
+	\arg \min_{x} 		& \quad && \frac{1}{2} \MyNormTwoSqr{ x - y } 	& \quad 	& \text{} \\
+	\text{subject to} 	& \quad && {x}_{i} \leq r						& i = 1, 2, \ldots, n 	& \text{} \\
+						& \quad -&& {x}_{i} \leq r						&  i = 1, 2, \ldots, n	& \text{}
+	\end{alignat*}
+	
+	The Lagrangian is given by:
+	
+	\begin{align*}
+	L \MyParen{x, {\lambda}_{1}, {\lambda}_{2}} = \frac{1}{2} \MyNormTwoSqr{ x - y } + {\lambda}_{1}^{T} \MyParen{ x - r } + {\lambda}_{2}^{T} \MyParen{ -x - r }
+	\end{align*}
+	
+	The problem above is convex and Slater's condition holds by choosing $ x = \boldsymbol{0} $.
+	
+	The KKT Conditions are given by:
+	
+	\begin{align*}
+	{\nabla}_{x} L \MyParen{x, {\lambda}_{1}, {\lambda}_{2}} = x - y + {\lambda}_{1} x - {\lambda}_{2} x & = 0 && \text{(1) Stationary} \\
+	{\lambda}_{1, i} \MyParen{ {x}_{i}  - r} 	& = 0 		&& \text{(2) Slackness} \\
+	{\lambda}_{2, i} \MyParen{ -{x}_{i}  - r} 	& = 0 		&& \text{(3) Slackness} \\
+	{x}_{i}  - r						& \leq 0 	&& \text{(4) Primal Feasibility} \\
+	-{x}_{i}  - r						& \leq 0 	&& \text{(5) Primal Feasibility} \\
+	{\lambda}_{1, i}, {\lambda}_{2, i} 							& \geq 0 	&& \text{(6) Dual Feasibility} \\
+	\end{align*}
+	
+	As can be seen from above, the problem can be solved component wise. Hence the sub script $ i $ for the Lagrange Multiplier will be be neglected. From (2) and (3) it can be shown that either $ {\lambda}_{1} > 0 $ or $ {\lambda}_{2} > 0 $ but not both. Hence if $ {\lambda}_{1} = 0 $ then $ {\lambda}_{2} = 0 $ which means $ {x}_{i} = {y}_{i} $ and $ \MyAbs{ {x}_{i} } \leq 1 $.  Moreover, if $  {\lambda}_{1} > 0 $ then $ {\lambda}_{2} = 0 $ hence $ {x}_{i} = r $ and $ {y}_{i} > 1 $. The same goes the other way around which yields:
+	
+	$$ {x}_{i} = \sign \MyParen{ {y}_{i} } \min \MyBrace{ r, \MyAbs{ {y}_{i} } }, \; i = 1, 2, \ldots, n $$
+	
+	\begin{lstlisting}[caption={MATLAB Code - $ {L}_{\infty} $ Ball Projection}, label={lst:codeLInfProjection}]
+	function [ vX ] = ProjectLInfBall( vY, ballRadius )
+	% ----------------------------------------------------------------------------------------------- %
+	% [ vX ] = ProjectL2Ball( vY, ballRadius, stopThr )
+	%   Solving the Orthoginal Porjection Problem of the input vector onto the
+	%   L Inf Ball.
+	% Input:
+	%   - vY            -   Input Vector.
+	%                       Structure: Vector (Column).
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (-inf, inf).
+	%   - ballRadius    -   Ball Radius.
+	%                       Sets the Radius of the L Inf Ball. For Unit L Inf 
+	%                       Ball set to 1.
+	%                       Structure: Scalar.
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (0, inf).
+	% Output:
+	%   - vX            -   Output Vector.
+	%                       The projection of the Input Vector onto the L Inf
+	%                       Ball.
+	%                       Structure: Vector (Column).
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (-inf, inf).
+	% References
+	%   1.  h
+	% Remarks:
+	%   1.  a
+	% TODO:
+	%   1.  U.
+	% Release Notes:
+	%   -   1.0.000     29/06/2017  Royi Avital
+	%       *   First release version.
+	% ----------------------------------------------------------------------------------------------- %
+	
+	FALSE   = 0;
+	TRUE    = 1;
+	
+	OFF     = 0;
+	ON      = 1;
+	
+	vX = sign(vY) .* min(abs(vY), ballRadius);
+	
+	
+	end
+	
+	\end{lstlisting}
+	
+	\section{Projection onto the Simplex}
+	
+	\begin{align*}
+	\arg \min_{ x \succeq 0, \boldsymbol{1}^{T} x = r } \MyBrace{ \frac{1}{2} \MyNormTwoSqr{ x - y } }
+	\end{align*}
+	
+	The Lagrangian of the problem can be written as (Leaving the non negativity constrain implicit):
+	
+	
+	\begin{align*}
+	L \left( x, \mu \right) & = \frac{1}{2} {\left\| x - y \right\|}^{2} + \mu \left( \boldsymbol{1}^{T} x - r \right) && \text{} \\
+	\end{align*}
+	
+	The Dual Function is given by (Includes the Non Negativity Constrain):
+	
+	\begin{align*}
+	g \left( \mu \right) & = \inf_{x \succeq 0} L \left( x, \mu \right) && \text{} \\
+	& = \inf_{x \succeq 0} \sum_{i = 1}^{n} \left( \frac{1}{2} { \left( {x}_{i} - {y}_{i} \right) }^{2} + \mu {x}_{i} \right) - \mu r && \text{Component wise form}
+	\end{align*}
+	
+	taking advantage of the Component Wise form the solution is given:
+	
+	\begin{align*}
+	{x}_{i}^{\ast} = { \left( {y}_{i} - \mu \right) }_{+}
+	\end{align*}
+	
+	Where the solution takes into account the non negativity constrain by projecting onto $ {\mathbb{R}}_{+} $
+	
+	The solution is given by finding the $ \mu $ which holds the constrain. In the $ {L}_{1} $ case above the constrain was in inequality form hence $ \lambda $ had to be non negative Yet the above is equality constrain hence $ \mu $ can have any value and it is not limited to non negativity as $ \lambda $ in the $ {L}_{1} $ case.
+	
+	The objective function (From the KKT) is given by:
+	
+	\begin{align*}
+	h \left( \mu \right) = \sum_{i = 1}^{n} {x}_{i}^{\ast} - r & = \sum_{i = 1}^{n} { \left( {y}_{i} - \mu \right) }_{+} - r
+	\end{align*}
+	
+	Namely, the solution is given by $ {\mu}^{\ast} = \mu : h \MyParen{\mu} = 0 $. The above is a Piece Wise linear function of $ \mu $ and its Derivative given by:
+	
+	\begin{align*}
+	\frac{\mathrm{d} }{\mathrm{d} \mu} h \left( \mu \right) & = \frac{\mathrm{d} }{\mathrm{d} \mu} \sum_{i = 1}^{n} { \left( {y}_{i} - \mu \right) }_{+} \\
+	& = \sum_{i = 1}^{n} -{ \mathbf{1} }_{\left\{ {y}_{i} - \mu > 0 \right\}}
+	\end{align*}
+	
+	Hence it can be solved using Newton Iteration.
+	
+	\begin{lstlisting}[caption={MATLAB Code - Simplex Projection}, label={lst:codeSimplexProjection}]
+	function [ vX ] = ProjectSimplex( vY, ballRadius, stopThr )
+	% ----------------------------------------------------------------------------------------------- %
+	% [ vX ] = ProjectSimplex( vY, ballRadius, stopThr )
+	%   Solving the Orthoginal Porjection Problem of the input vector onto the
+	%   Simplex Ball using Dual Function and Newton Iteration.
+	% Input:
+	%   - vY            -   Input Vector.
+	%                       Structure: Vector (Column).
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (-inf, inf).
+	%   - ballRadius    -   Ball Radius.
+	%                       Sets the Radius of the Simplex Ball. For Unit
+	%                       Simplex set to 1.
+	%                       Structure: Scalar.
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (0, inf).
+	%   - stopThr       -   Stopping Threshold.
+	%                       Sets the trheolds of the Newton Iteration. The
+	%                       absolute value of the Objective Function will be
+	%                       below the threshold.
+	%                       Structure: Scalar.
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (0, inf).
+	% Output:
+	%   - vX            -   Output Vector.
+	%                       The projection of the Input Vector onto the Simplex
+	%                       Ball.
+	%                       Structure: Vector (Column).
+	%                       Type: 'Single' / 'Double'.
+	%                       Range: (-inf, inf).
+	% References
+	%   1.  https://math.stackexchange.com/questions/2327504.
+	%   2.  https://en.wikipedia.org/wiki/Newton%27s_method.
+	% Remarks:
+	%   1.  a
+	% TODO:
+	%   1.  U.
+	% Release Notes:
+	%   -   1.0.001     09/05/2017  Royi Avital
+	%       *   Renaming 'paramLambda' -> 'paramMu' to match derivation.
+	%   -   1.0.000     09/05/2017  Royi Avital
+	%       *   First release version.
+	% ----------------------------------------------------------------------------------------------- %
+	
+	FALSE   = 0;
+	TRUE    = 1;
+	
+	OFF     = 0;
+	ON      = 1;
+	
+	paramMu = min(vY) - ballRadius;
+	% The objective functions which its root (The 'paramLambda' which makes it
+	% vanish) is the solution
+	objFun      = sum( max(vY - paramMu, 0) ) - ballRadius;
+	
+	while(abs(objFun) > stopThr)
+	objFun      = sum( max(vY - paramMu, 0) ) - ballRadius;
+	df          = sum(-((vY - paramMu) > 0)); %<! Derivative of 'objVal' with respect to Mu
+	paramMu = paramMu - (objFun / df); %<! Newton Iteration
+	end
+	
+	vX = max(vY - paramMu, 0);
+	
+	
+	end
+	
+	\end{lstlisting}
+	
+	
+\end{document}
