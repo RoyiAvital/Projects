@@ -1,4 +1,4 @@
-% Interrior Point Example
+% Least Squares Interrior Point Example
 % Remarks:
 %   1.  Using Log Barrier Method for Interrior Point Solver
 % TODO:
@@ -15,28 +15,26 @@ run('InitScript.m');
 
 %% Question 003
 
-hObjFun     = @(vX) (2 * (vX .^ 2)) + (3 * vX);
-hObjGrad    = @(vX) (4 * vX) + 3;
-hObjHessian = @(vX) 4;
+numRows = 4;
+numCols = 2;
 
-hCondFun        = @(vX) -sqrt(abs(vX)) + ((vX < 0) * 1e20);
-hCondGrad       = @(vX) -0.5 * (vX .^ -0.5);
-hCondHessian    = @(vX) 0.25 * (vX .^ -1.5);
+numConstraints = 4;
 
-% hCondFun        = @(vX) ((vX <= 0) * vX) + ((vX > 0) * 1e20);
-% hCondGrad       = @(vX) 1;
-% hCondHessian    = @(vX) 0;
+mA = randn([numRows, numCols]);
+vB = randn([numRows, 1]);
+
+mC = abs(randn([numConstraints, numCols])); %<! For easy initialization
+
 
 
 %% Solution by CVX - Exact
 
 cvx_begin('quiet')
     cvx_precision('best');
-    variable vX(1)
-    minimize( (2 * sum_square_abs(vX)) + (3 * vX) )
+    variable vX(numCols)
+    minimize( sum_square_abs(mA * vX - vB) )
     subject to
-        -sqrt(vX) <= 0;
-        % vX <= 0;
+        mC * vX <= 0
 cvx_end
 
 disp([' ']);
@@ -49,12 +47,12 @@ disp([' ']);
 
 %% Solution by CVX - Approximate
 
-vXInit          = 5;
-tFctr           = 80000000;
+vXInit          = -5 * ones([numCols, 1]);
+tFctr           = 8;
 muFctr          = 5;
-numIterations   = 55;
+numIterations   = 35;
 
-vX = InterriorPointSolver(vXInit, hObjFun, hObjGrad, hObjHessian, hCondFun, hCondGrad, hCondHessian, tFctr, muFctr, numIterations);
+vX = LeastSquaresInterriorPointSolver(vXInit, mA, vB, mC, tFctr, muFctr, numIterations);
 
 vX
 

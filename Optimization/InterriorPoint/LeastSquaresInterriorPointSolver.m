@@ -1,4 +1,4 @@
-function [ vX ] = InterriorPointSolver( vX, hObjFun, hObjGrad, hObjHessian, hCondFun, hCondGrad, hCondHessian, tFctr, muFctr, numIterations )
+function [ vX ] = LeastSquaresInterriorPointSolver( vX, mA, vB, mC, tFctr, muFctr, numIterations )
 % ----------------------------------------------------------------------------------------------- %
 % [ vX ] = ExamAQ3Solver( vA, paramB )
 %  Solving the Bill Payment Problem as in Exam A Question 003.
@@ -38,7 +38,7 @@ TRUE    = 1;
 OFF     = 0;
 ON      = 1;
 
-hObjFun = @(vX) (tFctr * hObjFun(vX)) - ((hCondFun(vX) < 0) * log(-hCondFun(vX))) + ((hCondFun(vX) >= 0) * 1e20);
+hObjFun = @(vX) (tFctr * sum(((mA * vX) - vB) .^ 2)) - ((all((mC * vX) < 0)) * log(-mC * vX)) + ((any((mC * vX) >= 0)) * 1e20);
 
 paramAlpha = 0.75;
 
@@ -48,18 +48,23 @@ for ii = 1:numIterations
     
     while(convFlag == FALSE)
         
-        mCondHessian    = ((hCondGrad(vX) * hCondGrad(vX).') / (hCondFun(vX) .^ 2)) - (hCondHessian(vX) / hCondFun(vX));
-        mObjHessian     = tFctr * hObjHessian(vX);
+        vCondVal = mC * vX;
         
-        vCondGrad   = hCondGrad(vX) / hCondFun(vX);
-        vObjGrad    = tFctr * hObjGrad(vX);
+        mCondHessian = (1 / (vCondVal(1) * vCondVal(1))) * (mC(1, :).' * mC(1, :));
+        for jj = 2:size(mC, 1)
+            mCondHessian = mCondHessian + (1 / (vCondVal(jj) * vCondVal(jj))) * (mC(jj, :).' * mC(jj, :));
+        end
+        mObjHessian     = 2 * tFctr * (mA.' * mA);
+        
+        vCondGrad   = -mC.' * (1 ./ vCondVal);
+        vObjGrad    = 2 * tFctr * mA.' * ((mA * vX) - vB);
         
         vD       = -((mCondHessian + mObjHessian) \ (vCondGrad + vObjGrad));
         stepSize = LineSearchBackTracking(hObjFun, vX, vD, paramAlpha);
         
         vX = vX + (stepSize * vD);
         
-        if(norm(stepSize * vD) < 1e-9)
+        if(norm(stepSize * vD) < 1e-12)
             convFlag = TRUE;
         end
         

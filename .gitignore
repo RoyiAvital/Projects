@@ -32,10 +32,23 @@
 *.asv
 *.m~
 
-# Compilation files:
+## Compilation Files:
 *.obj
 *.pdb
+*.ilk
+*.tlog
+*.idb
+*.suo
+*.manifest
+*.iobj
+*.ipdb
+*.log
+*.exe
+*.VC.db
+*.exp
 *.o
+*ImageConvolution/ImageConvolution/x64
+*ImageConvolution/x64
 
 # Binary Files
 *.dll
