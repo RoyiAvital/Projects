@@ -14,7 +14,7 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 {
 	int ii, jj, kk, ll, rowShift, colShift;
 	int kernelRadius, sseKernelRadius;
-	int rowIdx1, rowIdx2, rowIdx3, rowIdx4, colIdx1, colIdx2, colIdx3, colIdx4;
+	int rowIdx, colIdx1, colIdx2, colIdx3, colIdx4;
 
 	__m128 currSum;
 	__m128 currPx;
@@ -39,32 +39,8 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 		for (jj = 0; jj < sseKernelRadius; jj += SSE_STRIDE) {
 			currSum = _mm_setzero_ps();
 			for (kk = 0; kk < kernelNumRows; kk++) {
-				rowShift = kk - kernelRadius;
-
-				if ((ii + rowShift) < -2) {
-					rowIdx1 = 0;
-					rowIdx2 = 0;
-					rowIdx3 = 0;
-					rowIdx4 = 0;
-				}
-				else if ((ii + rowShift) < -1) {
-					rowIdx1 = 0;
-					rowIdx2 = 0;
-					rowIdx3 = 0;
-					rowIdx4 = 1;
-				}
-				else if ((ii + rowShift) < 0) {
-					rowIdx1 = 0;
-					rowIdx2 = 0;
-					rowIdx3 = 1;
-					rowIdx4 = 2;
-				}
-				else {
-					rowIdx1 = 0;
-					rowIdx2 = 1;
-					rowIdx3 = 2;
-					rowIdx4 = 3;
-				}
+				rowShift	= kk - kernelRadius;
+				rowIdx		= ((ii + rowShift) < 0 ? 0 : ii + rowShift);
 
 				for (ll = 0; ll < kernelNumCols; ll++) {
 					colShift = ll - kernelRadius;
@@ -89,13 +65,13 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 						colIdx4 = 2;
 					}
 					else {
-						colIdx1 = 0;
-						colIdx2 = 1;
-						colIdx3 = 2;
-						colIdx4 = 3;
+						colIdx1 = jj + colShift;
+						colIdx2 = jj + colShift + 1;
+						colIdx3 = jj + colShift + 2;
+						colIdx4 = jj + colShift + 3;
 					}
 
-					currPx	= _mm_set_ps(mI[(rowIdx4 * numCols) + colIdx4], mI[(rowIdx3 * numCols) + colIdx3], mI[(rowIdx2 * numCols) + colIdx2], mI[(rowIdx1 * numCols) + colIdx1]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
+					currPx	= _mm_set_ps(mI[(rowIdx * numCols) + colIdx4], mI[(rowIdx * numCols) + colIdx3], mI[(rowIdx * numCols) + colIdx2], mI[(rowIdx * numCols) + colIdx1]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
 					currSum = _mm_add_ps(currSum, _mm_mul_ps(kernelWeight, currPx));
 				}
 
@@ -106,38 +82,14 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 		for (jj = sseKernelRadius; jj < (numCols - sseKernelRadius); jj += SSE_STRIDE) {
 			currSum = _mm_setzero_ps();
 			for (kk = 0; kk < kernelNumRows; kk++) {
-				rowShift = kk - kernelRadius;
-
-				if ((ii + rowShift) < -2) {
-					rowIdx1 = 0;
-					rowIdx2 = 0;
-					rowIdx3 = 0;
-					rowIdx4 = 0;
-				}
-				else if ((ii + rowShift) < -1) {
-					rowIdx1 = 0;
-					rowIdx2 = 0;
-					rowIdx3 = 0;
-					rowIdx4 = 1;
-				}
-				else if ((ii + rowShift) < 0) {
-					rowIdx1 = 0;
-					rowIdx2 = 0;
-					rowIdx3 = 1;
-					rowIdx4 = 2;
-				}
-				else {
-					rowIdx1 = 0;
-					rowIdx2 = 1;
-					rowIdx3 = 2;
-					rowIdx4 = 3;
-				}
+				rowShift	= kk - kernelRadius;
+				rowIdx		= ((ii + rowShift) < 0 ? 0 : ii + rowShift);
 
 				for (ll = 0; ll < kernelNumCols; ll++) {
 					colShift		= ll - kernelRadius;
 					kernelWeight	= _mm_set1_ps(mConvKernel[(kk * kernelNumCols) + ll]);
 
-					currPx	= _mm_set_ps(mI[(rowIdx4 * numCols) + jj + colShift], mI[(rowIdx3 * numCols) + jj + colShift], mI[(rowIdx2 * numCols) + jj + colShift], mI[(rowIdx1 * numCols) + jj + colShift]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
+					currPx	= _mm_loadu_ps(&mI[(rowIdx * numCols) + jj + colShift]);
 					currSum = _mm_add_ps(currSum, _mm_mul_ps(kernelWeight, currPx));
 				}
 
@@ -148,32 +100,8 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 		for (jj = (numCols - sseKernelRadius); jj < numCols; jj += SSE_STRIDE) {
 			currSum = _mm_setzero_ps();
 			for (kk = 0; kk < kernelNumRows; kk++) {
-				rowShift = kk - kernelRadius;
-
-				if ((ii + rowShift) < -2) {
-					rowIdx1 = 0;
-					rowIdx2 = 0;
-					rowIdx3 = 0;
-					rowIdx4 = 0;
-				}
-				else if ((ii + rowShift) < -1) {
-					rowIdx1 = 0;
-					rowIdx2 = 0;
-					rowIdx3 = 0;
-					rowIdx4 = 1;
-				}
-				else if ((ii + rowShift) < 0) {
-					rowIdx1 = 0;
-					rowIdx2 = 0;
-					rowIdx3 = 1;
-					rowIdx4 = 2;
-				}
-				else {
-					rowIdx1 = 0;
-					rowIdx2 = 1;
-					rowIdx3 = 2;
-					rowIdx4 = 3;
-				}
+				rowShift	= kk - kernelRadius;
+				rowIdx		= ((ii + rowShift) < 0 ? 0 : ii + rowShift);
 
 				for (ll = 0; ll < kernelNumCols; ll++) {
 					colShift = ll - kernelRadius;
@@ -198,13 +126,13 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 						colIdx4 = numCols - 1;
 					}
 					else {
-						colIdx1 = numCols - 4;
-						colIdx2 = numCols - 3;
-						colIdx3 = numCols - 2;
-						colIdx4 = numCols - 1;
+						colIdx1 = jj + colShift;
+						colIdx2 = jj + colShift + 1;
+						colIdx3 = jj + colShift + 2;
+						colIdx4 = jj + colShift + 3;
 					}
 
-					currPx = _mm_set_ps(mI[(rowIdx4 * numCols) + colIdx4], mI[(rowIdx3 * numCols) + colIdx3], mI[(rowIdx2 * numCols) + colIdx2], mI[(rowIdx1 * numCols) + colIdx1]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
+					currPx = _mm_set_ps(mI[(rowIdx * numCols) + colIdx4], mI[(rowIdx * numCols) + colIdx3], mI[(rowIdx * numCols) + colIdx2], mI[(rowIdx * numCols) + colIdx1]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
 					currSum = _mm_add_ps(currSum, _mm_mul_ps(kernelWeight, currPx));
 				}
 
@@ -214,7 +142,7 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 	}
 
 	/*--- Middle Rows --- */
-#pragma omp parallel for private(jj, currSum, kk, pxShift, kernelWeight, tmpVal)
+#pragma omp parallel for private(jj, currSum, kk, ll, pxShift, kernelWeight, tmpVal)
 	for (ii = sseKernelRadius; ii < (numRows - sseKernelRadius); ii++) {
 		/* --- Left Columns --- */
 		for (jj = 0; jj < sseKernelRadius; jj += SSE_STRIDE) {
@@ -245,10 +173,10 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 						colIdx4 = 2;
 					}
 					else {
-						colIdx1 = 0;
-						colIdx2 = 1;
-						colIdx3 = 2;
-						colIdx4 = 3;
+						colIdx1 = jj + colShift;
+						colIdx2 = jj + colShift + 1;
+						colIdx3 = jj + colShift + 2;
+						colIdx4 = jj + colShift + 3;
 					}
 
 					currPx	= _mm_set_ps(mI[((ii + rowShift) * numCols) + colIdx4], mI[((ii + rowShift) * numCols) + colIdx3], mI[((ii + rowShift) * numCols) + colIdx2], mI[((ii + rowShift) * numCols) + colIdx1]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
@@ -304,10 +232,10 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 						colIdx4 = numCols - 1;
 					}
 					else {
-						colIdx1 = numCols - 4;
-						colIdx2 = numCols - 3;
-						colIdx3 = numCols - 2;
-						colIdx4 = numCols - 1;
+						colIdx1 = jj + colShift;
+						colIdx2 = jj + colShift + 1;
+						colIdx3 = jj + colShift + 2;
+						colIdx4 = jj + colShift + 3;
 					}
 
 					currPx	= _mm_set_ps(mI[((ii + rowShift) * numCols) + colIdx4], mI[((ii + rowShift) * numCols) + colIdx3], mI[((ii + rowShift) * numCols) + colIdx2], mI[((ii + rowShift) * numCols) + colIdx1]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
@@ -326,32 +254,8 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 		for (jj = 0; jj < sseKernelRadius; jj += SSE_STRIDE) {
 			currSum = _mm_setzero_ps();
 			for (kk = 0; kk < kernelNumRows; kk++) {
-				rowShift = kk - kernelRadius;
-
-				if ((ii + rowShift) > (numRows - 2)) {
-					rowIdx1 = numRows - 1;
-					rowIdx2 = numRows - 1;
-					rowIdx3 = numRows - 1;
-					rowIdx4 = numRows - 1;
-				}
-				else if ((ii + rowShift) > (numRows - 3)) {
-					rowIdx1 = numRows - 2;
-					rowIdx2 = numRows - 1;
-					rowIdx3 = numRows - 1;
-					rowIdx4 = numRows - 1;
-				}
-				else if ((ii + rowShift) > (numRows - 4)) {
-					rowIdx1 = numRows - 3;
-					rowIdx2 = numRows - 2;
-					rowIdx3 = numRows - 1;
-					rowIdx4 = numRows - 1;
-				}
-				else {
-					rowIdx1 = numRows - 4;
-					rowIdx2 = numRows - 3;
-					rowIdx3 = numRows - 2;
-					rowIdx4 = numRows - 1;
-				}
+				rowShift	= kk - kernelRadius;
+				rowIdx		= ((ii + rowShift) > (numRows - 1) ? (numRows - 1) : ii + rowShift);
 
 				for (ll = 0; ll < kernelNumCols; ll++) {
 					colShift = ll - kernelRadius;
@@ -376,13 +280,13 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 						colIdx4 = 2;
 					}
 					else {
-						colIdx1 = 0;
-						colIdx2 = 1;
-						colIdx3 = 2;
-						colIdx4 = 3;
+						colIdx1 = jj + colShift;
+						colIdx2 = jj + colShift + 1;
+						colIdx3 = jj + colShift + 2;
+						colIdx4 = jj + colShift + 3;
 					}
 
-					currPx = _mm_set_ps(mI[(rowIdx4 * numCols) + colIdx4], mI[(rowIdx3 * numCols) + colIdx3], mI[(rowIdx2 * numCols) + colIdx2], mI[(rowIdx1 * numCols) + colIdx1]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
+					currPx	= _mm_set_ps(mI[(rowIdx * numCols) + colIdx4], mI[(rowIdx * numCols) + colIdx3], mI[(rowIdx * numCols) + colIdx2], mI[(rowIdx * numCols) + colIdx1]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
 					currSum = _mm_add_ps(currSum, _mm_mul_ps(kernelWeight, currPx));
 				}
 
@@ -393,38 +297,14 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 		for (jj = sseKernelRadius; jj < (numCols - sseKernelRadius); jj += SSE_STRIDE) {
 			currSum = _mm_setzero_ps();
 			for (kk = 0; kk < kernelNumRows; kk++) {
-				rowShift = kk - kernelRadius;
-
-				if ((ii + rowShift) >(numRows - 2)) {
-					rowIdx1 = numRows - 1;
-					rowIdx2 = numRows - 1;
-					rowIdx3 = numRows - 1;
-					rowIdx4 = numRows - 1;
-				}
-				else if ((ii + rowShift) > (numRows - 3)) {
-					rowIdx1 = numRows - 2;
-					rowIdx2 = numRows - 1;
-					rowIdx3 = numRows - 1;
-					rowIdx4 = numRows - 1;
-				}
-				else if ((ii + rowShift) > (numRows - 4)) {
-					rowIdx1 = numRows - 3;
-					rowIdx2 = numRows - 2;
-					rowIdx3 = numRows - 1;
-					rowIdx4 = numRows - 1;
-				}
-				else {
-					rowIdx1 = numRows - 4;
-					rowIdx2 = numRows - 3;
-					rowIdx3 = numRows - 2;
-					rowIdx4 = numRows - 1;
-				}
+				rowShift	= kk - kernelRadius;
+				rowIdx		= ((ii + rowShift) >(numRows - 1) ? (numRows - 1) : ii + rowShift);
 
 				for (ll = 0; ll < kernelNumCols; ll++) {
 					colShift = ll - kernelRadius;
 					kernelWeight = _mm_set1_ps(mConvKernel[(kk * kernelNumCols) + ll]);
 
-					currPx = _mm_set_ps(mI[(rowIdx4 * numCols) + jj + colShift], mI[(rowIdx3 * numCols) + jj + colShift], mI[(rowIdx2 * numCols) + jj + colShift], mI[(rowIdx1 * numCols) + jj + colShift]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
+					currPx = _mm_loadu_ps(&mI[(rowIdx * numCols) + jj + colShift]);
 					currSum = _mm_add_ps(currSum, _mm_mul_ps(kernelWeight, currPx));
 				}
 
@@ -436,31 +316,7 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 			currSum = _mm_setzero_ps();
 			for (kk = 0; kk < kernelNumRows; kk++) {
 				rowShift = kk - kernelRadius;
-
-				if ((ii + rowShift) >(numRows - 2)) {
-					rowIdx1 = numRows - 1;
-					rowIdx2 = numRows - 1;
-					rowIdx3 = numRows - 1;
-					rowIdx4 = numRows - 1;
-				}
-				else if ((ii + rowShift) > (numRows - 3)) {
-					rowIdx1 = numRows - 2;
-					rowIdx2 = numRows - 1;
-					rowIdx3 = numRows - 1;
-					rowIdx4 = numRows - 1;
-				}
-				else if ((ii + rowShift) > (numRows - 4)) {
-					rowIdx1 = numRows - 3;
-					rowIdx2 = numRows - 2;
-					rowIdx3 = numRows - 1;
-					rowIdx4 = numRows - 1;
-				}
-				else {
-					rowIdx1 = numRows - 4;
-					rowIdx2 = numRows - 3;
-					rowIdx3 = numRows - 2;
-					rowIdx4 = numRows - 1;
-				}
+				rowIdx = (ii + rowShift >(numRows - 1) ? (numRows - 1) : ii + rowShift);
 
 				for (ll = 0; ll < kernelNumCols; ll++) {
 					colShift = ll - kernelRadius;
@@ -485,13 +341,13 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 						colIdx4 = numCols - 1;
 					}
 					else {
-						colIdx1 = numCols - 4;
-						colIdx2 = numCols - 3;
-						colIdx3 = numCols - 2;
-						colIdx4 = numCols - 1;
+						colIdx1 = jj + colShift;
+						colIdx2 = jj + colShift + 1;
+						colIdx3 = jj + colShift + 2;
+						colIdx4 = jj + colShift + 3;
 					}
 
-					currPx = _mm_set_ps(mI[(rowIdx4 * numCols) + colIdx4], mI[(rowIdx3 * numCols) + colIdx3], mI[(rowIdx2 * numCols) + colIdx2], mI[(rowIdx1 * numCols) + colIdx1]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
+					currPx = _mm_set_ps(mI[(rowIdx * numCols) + colIdx4], mI[(rowIdx * numCols) + colIdx3], mI[(rowIdx * numCols) + colIdx2], mI[(rowIdx * numCols) + colIdx1]); // Using `_mm_set_ps` data is packed in reverse compared to `_mm_loadu_ps`!
 					currSum = _mm_add_ps(currSum, _mm_mul_ps(kernelWeight, currPx));
 				}
 
