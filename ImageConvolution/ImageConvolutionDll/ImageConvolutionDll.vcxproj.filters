@@ -26,9 +26,6 @@
     <ClCompile Include="..\ImageConvolution\ImageConvolutionSeparableKernel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ImageConvolution\ImageConvolutionGaussianKernelOpt.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\ImageConvolution\ImageConvolutionGaussianKernel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

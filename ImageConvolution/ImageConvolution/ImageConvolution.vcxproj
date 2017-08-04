@@ -88,7 +88,6 @@
   <ItemGroup>
     <ClCompile Include="ImageConvolution.cpp" />
     <ClCompile Include="ImageConvolutionGaussianKernel.cpp" />
-    <ClCompile Include="ImageConvolutionGaussianKernelOpt.cpp" />
     <ClCompile Include="ImageConvolutionMain.cpp" />
     <ClCompile Include="ImageConvolutionSeparableKernel.cpp" />
   </ItemGroup>

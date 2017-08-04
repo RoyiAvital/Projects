@@ -8,7 +8,52 @@
 #endif // !_USRDLL
 
 #include "ImageConvolution.h"
-
+// -------------------------------------- ImageConvolution -------------------------------------- //
+/*
+Applies Convolution on an Image (2D Array) using given 2D Kernel.
+Input:
+- mO			-	Output Image.
+					Structure: Image Array (Single Channel).
+					Type : 'Single'.
+					Range : [0, 1].
+- mI			-	Input Image.
+					Structure: Image Matrix (Single Channel).
+					Type : 'Single'.
+					Range : [0, 1].
+- numRows		-	Number of Rows.
+					Structure: Scalar.
+					Type : 'Int'.
+					Range : {1, 2, ...}.
+- numCols		-	Number of Columns.
+					Assumbed to be a factor of 4 (SSE Stride).
+					Structure: Scalar.
+					Type : 'Int'.
+					Range : {1, 2, ...}.
+- mConvKernel	-	Convolution Kernel.
+					Structure: 2D Array.
+					Type : 'Single'.
+					Range : (-inf, inf).
+- kernelNumRows	-	Kernel Number of Rows.
+					Structure: Scalar.
+					Type : 'Int'.
+					Range : {1, 2, ...}.
+- kernelNumCols -	Kernel Number of Columns.
+					Assumbed to be a factor of 4 (SSE Stride).
+					Structure: Scalar.
+					Type : 'Int'.
+					Range : {1, 2, ...}.
+Reference:
+1.	[].
+Remarks:
+1.	Actually applies Correlation and not Convolution.
+2.	Using 'Replicate' / 'Nearest Neighbor' Boundary Conditions.
+2.	It seems VS 2015 generates faster code than GCC/
+TODO :
+1.	Why the OpenMP DLL Generated in VS 2015 crashes MATLAB (GCC's DLL Works in MATLAB).
+Release Notes:
+-	1.0.000	04/08/2017	Royi Avital
+*   First release version
+*/
 // -------------------------------------- ImageConvolution -------------------------------------- //
 void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mConvKernel, int kernelNumRows, int kernelNumCols)
 {
@@ -41,7 +86,7 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 
 	/*--- Top Rows --- */
 
-#pragma omp parallel for private(jj, currSum, currPx, kk, ll, rowShift, colShift, kernelWeight, rowIdx, colIdx1, colIdx2, colIdx3, colIdx4)
+#pragma omp parallel for private(jj, currSum, kk, rowShift, rowIdx, ll, colShift, kernelWeight, colIdx1, colIdx2, colIdx3, colIdx4, currPx)
 	for (ii = 0; ii < sseKernelRowRadius; ii++) {
 		/*--- Left Columns --- */
 		for (jj = 0; jj < sseKernelColRadius; jj += SSE_STRIDE) {
@@ -150,7 +195,8 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 	}
 
 	/*--- Middle Rows --- */
-#pragma omp parallel for private(jj, currSum, currPx, kk, ll, rowShift, colShift, kernelWeight, rowIdx, colIdx1, colIdx2, colIdx3, colIdx4)
+
+#pragma omp parallel for private(jj, currSum, kk, rowShift, rowIdx, ll, colShift, kernelWeight, colIdx1, colIdx2, colIdx3, colIdx4, currPx)
 	for (ii = sseKernelRowRadius; ii < (numRows - sseKernelRowRadius); ii++) {
 		/* --- Left Columns --- */
 		for (jj = 0; jj < sseKernelColRadius; jj += SSE_STRIDE) {
@@ -256,7 +302,8 @@ void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mCo
 	}
 
 	/*--- Bottom Rows --- */
-#pragma omp parallel for private(jj, currSum, currPx, kk, ll, rowShift, colShift, kernelWeight, rowIdx, colIdx1, colIdx2, colIdx3, colIdx4)
+
+#pragma omp parallel for private(jj, currSum, kk, rowShift, rowIdx, ll, colShift, kernelWeight, colIdx1, colIdx2, colIdx3, colIdx4, currPx)
 	for (ii = (numRows - sseKernelRowRadius); ii < numRows; ii++) {
 		/*--- Left Columns --- */
 		for (jj = 0; jj < sseKernelColRadius; jj += SSE_STRIDE) {

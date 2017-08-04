@@ -87,7 +87,6 @@
   <ItemGroup>
     <ClCompile Include="..\ImageConvolution\ImageConvolution.cpp" />
     <ClCompile Include="..\ImageConvolution\ImageConvolutionGaussianKernel.cpp" />
-    <ClCompile Include="..\ImageConvolution\ImageConvolutionGaussianKernelOpt.cpp" />
     <ClCompile Include="..\ImageConvolution\ImageConvolutionSeparableKernel.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

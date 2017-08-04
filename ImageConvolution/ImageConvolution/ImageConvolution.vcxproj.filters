@@ -32,9 +32,6 @@
     <ClCompile Include="ImageConvolutionGaussianKernel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImageConvolutionGaussianKernelOpt.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ImageConvolutionSeparableKernel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

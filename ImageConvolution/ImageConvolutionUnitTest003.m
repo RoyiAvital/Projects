@@ -1,5 +1,5 @@
 % ----------------------------------------------------------------------------------------------- %
-% Image Convolution Unit Test 001
+% Image Convolution Unit Test 003
 % Reference:
 %   1. fd
 % Remarks:
@@ -17,20 +17,24 @@ run('InitScript.m');
 
 COMPILING_MODE_DEBUG    = 1;
 COMPILING_MODE_RELEASE  = 2;
-COMPILING_MODE_GCC      = 3;
 
 LIB_NAME            = 'ImageConvolutionDll';
 H_FILE_NAME         = 'ImageConvolutionDll';
 LIB_PATH_DEBUG      = 'x64\Debug\';
 LIB_PATH_RELEASE    = 'x64\Release\';
-LIB_PATH_GCC        = 'GCC\';
 H_FILE_PATH         = 'ImageConvolutionDll\';
 
 
 %% Settings
 
-funName         = 'ImageConvolution';
-compilingMode   = COMPILING_MODE_GCC;
+funName         = 'ImageConvolutionGaussianKernel';
+compilingMode   = COMPILING_MODE_DEBUG;
+
+numRows     = 800; %<! Must be a factor of 4
+numCols     = 800;
+
+gaussianStd         = 5;
+stdToRadiusFactor   = 5;
 
 
 %% Loading Library
@@ -41,8 +45,6 @@ switch(compilingMode)
         libFullPath = [LIB_PATH_DEBUG, LIB_NAME, '.dll'];
     case(COMPILING_MODE_RELEASE)
         libFullPath = [LIB_PATH_RELEASE, LIB_NAME, '.dll'];
-    case(COMPILING_MODE_GCC)
-        libFullPath = [LIB_PATH_GCC, LIB_NAME, '.dll'];
 end
 
 headerFullPath = [H_FILE_PATH, H_FILE_NAME, '.h'];
@@ -55,31 +57,24 @@ end
 
 %% Analysis
 
-numRows     = 8000; %<! Must be a factor of 4
-numCols     = 8000; 
+kernelRadius = ceil(stdToRadiusFactor * gaussianStd);
+kernelLength = (2 * kernelRadius) + 1;
 
-numRowsKernel = 31; %<! Must Be Odd
-numColsKernel = 31; %<! Must Be Odd
+vGaussianGrid   = [-kernelRadius:kernelRadius];
+vGaussianKernel = exp(-(vGaussianGrid .^ 2) / (2 * gaussianStd * gaussianStd));
+vGaussianKernel = vGaussianKernel / sum(vGaussianKernel);
 
 mI = rand([numRows, numCols], 'single');
 
 mO = zeros([numRows, numCols], 'single');
-
-mConvKernel = randn([numRowsKernel, numColsKernel], 'single');
-mConvKernel = mConvKernel / sum(mConvKernel(:));
-
-tic();
-mORef = single(imfilter(mI, double(mConvKernel), 'replicate', 'same', 'corr'));
-toc();
+mTmp = zeros([numRows, numCols], 'single');
 
 % Remember MATLAB is Column Wise and C is Row Wise
-% void ImageConvolution(float* mO, float* mI, int numRows, int numCols, float* mConvKernel, int kernelNumRows, int kernelNumCols)
-tic();
-mO = calllib(LIB_NAME, funName, mO, mI, numCols, numRows, mConvKernel, numColsKernel, numRowsKernel);
-toc();
+% void ImageConvolutionGaussianKernel(float* mO, float* mI, float* mTmp, int numRows, int numCols, float gaussianStd, int stdToRadiusFactor)
+mORef = single(imfilter(mI, double(vGaussianKernel.' * vGaussianKernel), 'replicate', 'same', 'corr'));
+mO = calllib(LIB_NAME, funName, mO, mI, mTmp, numCols, numRows, gaussianStd, stdToRadiusFactor);
 
 maxErr = max(abs(mO(:) - mORef(:)));
-
 disp(['Max Error - ', num2str(maxErr)]);
 
 

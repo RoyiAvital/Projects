@@ -41,7 +41,7 @@ void ImageConvolutionSeparableKernel(float* mO, float* mI, float* mTmp, int numR
 	// Unpacking data in Transpose as Pre Processing for filtering along Columns
 
 	/*--- Left Edge Pixels --- */
-#pragma omp parallel for private(jj, currSum, currPx, kk, pxShift, kernelWeight, tmpVal)
+#pragma omp parallel for private(jj, currSum, kk, pxShift, kernelWeight, currPx, tmpVal)
 	for (ii = 0; ii < numRows; ii++) {
 		for (jj = 0; jj < rowSseKernelRadius; jj += SSE_STRIDE) {
 			currSum = _mm_setzero_ps();
@@ -97,7 +97,7 @@ void ImageConvolutionSeparableKernel(float* mO, float* mI, float* mTmp, int numR
 	}
 
 	/*--- Right Edge Pixels --- */
-#pragma omp parallel for private(jj, currSum, currPx, kk, pxShift, kernelWeight, tmpVal)
+#pragma omp parallel for private(jj, currSum, kk, pxShift, kernelWeight, currPx, tmpVal)
 	for (ii = 0; ii < numRows; ii++) {
 		for (jj = (numCols - rowSseKernelRadius); jj < numCols; jj += SSE_STRIDE) {
 			currSum = _mm_setzero_ps();
@@ -138,7 +138,7 @@ void ImageConvolutionSeparableKernel(float* mO, float* mI, float* mTmp, int numR
 	// Loading data from Transposed array for contiguous data
 
 	/*--- Left Edge Pixels --- */
-#pragma omp parallel for private(jj, currSum, currPx, kk, pxShift, kernelWeight, tmpVal)
+#pragma omp parallel for private(jj, currSum, kk, pxShift, kernelWeight, currPx, tmpVal)
 	for (ii = 0; ii < numCols; ii++) {
 		for (jj = 0; jj < colSseKernelRadius; jj += SSE_STRIDE) {
 			currSum = _mm_setzero_ps();
@@ -192,7 +192,7 @@ void ImageConvolutionSeparableKernel(float* mO, float* mI, float* mTmp, int numR
 	}
 
 	/*--- Right Edge Pixels --- */
-#pragma omp parallel for private(jj, currSum, currPx, kk, pxShift, kernelWeight, tmpVal)
+#pragma omp parallel for private(jj, currSum, kk, pxShift, kernelWeight, currPx, tmpVal)
 	for (ii = 0; ii < numCols; ii++) {
 		for (jj = (numRows - colSseKernelRadius); jj < numRows; jj += SSE_STRIDE) {
 			currSum = _mm_setzero_ps();
