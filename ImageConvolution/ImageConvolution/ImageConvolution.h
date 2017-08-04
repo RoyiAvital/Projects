@@ -35,7 +35,15 @@
 // Limited to 128 (Though documentation states up to 8192)
 #define CACHE_ALIGN 16
 
-#define DECLARE_ALIGN __declspec(align(CACHE_ALIGN))
+#ifdef __GNUC__
+    #define DECLARE_ALIGN(varType, varName, varSize) varType varName[varSize] __attribute__((aligned (CACHE_ALIGN)));
+    // #define DECLARE_ALIGN __declspec(align(CACHE_ALIGN))
+#endif
+
+#ifdef _WIN32
+    #define DECLARE_ALIGN(varType, varName, varSize) __declspec(align(CACHE_ALIGN)) varType varName[varSize];
+    // #define DECLARE_ALIGN __declspec(align(CACHE_ALIGN))
+#endif
 
 // Macros
 // Reference:

@@ -20,9 +20,9 @@ COMPILING_MODE_RELEASE  = 2;
 
 LIB_NAME            = 'ImageConvolutionDll';
 H_FILE_NAME         = 'ImageConvolutionDll';
-LIB_PATH_DEBUG      = 'x64\Debug\';
-LIB_PATH_RELEASE    = 'x64\Release\';
-H_FILE_PATH         = 'ImageConvolutionDll\';
+LIB_PATH_DEBUG      = 'x64/Debug/';
+LIB_PATH_RELEASE    = 'x64/Release/';
+H_FILE_PATH         = 'ImageConvolutionDll/';
 
 
 %% Settings

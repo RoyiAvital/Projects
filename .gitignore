@@ -43,7 +43,6 @@
 *.iobj
 *.ipdb
 *.log
-*.exe
 *.VC.db
 *.exp
 *.o
@@ -52,4 +51,8 @@
 
 # Binary Files
 *.dll
+*.dylib
+*.so
+*.exe
+
 

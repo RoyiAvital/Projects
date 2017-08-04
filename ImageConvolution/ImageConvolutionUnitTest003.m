@@ -17,18 +17,33 @@ run('InitScript.m');
 
 COMPILING_MODE_DEBUG    = 1;
 COMPILING_MODE_RELEASE  = 2;
+COMPILING_MODE_GCC      = 3;
+
+DYNAMIC_LIB_POSTFIX_WIN     = '.dll';
+DYNAMIC_LIB_POSTFIX_LINUX   = '.so';
+DYNAMIC_LIB_POSTFIX_MACOS   = '.dylib';
 
 LIB_NAME            = 'ImageConvolutionDll';
 H_FILE_NAME         = 'ImageConvolutionDll';
-LIB_PATH_DEBUG      = 'x64\Debug\';
-LIB_PATH_RELEASE    = 'x64\Release\';
-H_FILE_PATH         = 'ImageConvolutionDll\';
+LIB_PATH_DEBUG      = 'x64/Debug/';
+LIB_PATH_RELEASE    = 'x64/Release/';
+H_FILE_PATH         = 'ImageConvolutionDll/';
 
 
 %% Settings
 
 funName         = 'ImageConvolutionGaussianKernel';
 compilingMode   = COMPILING_MODE_DEBUG;
+
+if(ispc)
+    dyLibPostfix = DYNAMIC_LIB_POSTFIX_WIN;
+elseif(isunix)
+    dyLibPostfix = DYNAMIC_LIB_POSTFIX_LINUX;
+elseif(ismac)
+    dyLibPostfix = DYNAMIC_LIB_POSTFIX_MACOS;
+else
+    disp('Platform Is not Supported')
+end
 
 numRows     = 800; %<! Must be a factor of 4
 numCols     = 800;
@@ -42,9 +57,9 @@ stdToRadiusFactor   = 5;
 
 switch(compilingMode)
     case(COMPILING_MODE_DEBUG)
-        libFullPath = [LIB_PATH_DEBUG, LIB_NAME, '.dll'];
+        libFullPath = [LIB_PATH_DEBUG, LIB_NAME, dyLibPostfix];
     case(COMPILING_MODE_RELEASE)
-        libFullPath = [LIB_PATH_RELEASE, LIB_NAME, '.dll'];
+        libFullPath = [LIB_PATH_RELEASE, LIB_NAME, dyLibPostfix];
 end
 
 headerFullPath = [H_FILE_PATH, H_FILE_NAME, '.h'];
