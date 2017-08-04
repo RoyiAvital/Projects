@@ -1,5 +1,19 @@
 # Image Convolution
 
+**Table of Contents**
+
+- [Image Convolution](#)
+	- [Implementation Details](#)
+		- [Remarks](#)
+	- [How To Run](#)
+		- [Visual Studio](#)
+		- [GCC](#)
+		- [MATLAB](#)
+	- [Release Notes](#)
+	- [Known Issues](#)
+	- [To Do List](#)
+	- [License](#)
+
 This projects implements *Image Convolution* on 2D array.  
 The project is composed of 3 functions:
 
