@@ -14,6 +14,8 @@ The project is composed of 3 functions:
 ### Remarks
  * Currently the code implements Correlation and not Convolution. For convolution the user should reflect his kernel (Using `mReflectedConvKernel = rot90(mConvKernel, 2)` in MATLAB). Since most kernels in Image Processing are reflective in most cases it won't cause issues.
  * Currently the code uses *Replicate* / *Nearest Neighbor* Boundary Condition.
+ * Due to use of SSE (SIMD Vectorization) the image number of columns must be a factor of 4.
+ * Kernel dimensions must be odd in each dimension as its middle is the anchor of the convolution.
 
 ## How To Run
 The project provides a full VS 2015 Solution file (Should be compatible with VS 2017).  
