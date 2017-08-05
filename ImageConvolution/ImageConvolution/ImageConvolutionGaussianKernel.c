@@ -12,9 +12,9 @@
 // ------------------------------- ImageConvolutionGaussianKernel ------------------------------- //
 void ImageConvolutionGaussianKernel(float* mO, float* mI, float* mTmp, int numRows, int numCols, float gaussianStd, int stdToRadiusFactor)
 {
-	int ii, jj, kk, pxShift;
+	int ii;
 	float* vKernelArray;
-	int kernelRadius, kernelLength, sseKernelRadius;
+	int kernelRadius, kernelLength;
 	float gaussianVar, kernelSum;
 
 	// Init Parameters

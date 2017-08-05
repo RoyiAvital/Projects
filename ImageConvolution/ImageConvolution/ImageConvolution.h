@@ -40,7 +40,7 @@
     // #define DECLARE_ALIGN __declspec(align(CACHE_ALIGN))
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
     #define DECLARE_ALIGN(varType, varName, varSize) __declspec(align(CACHE_ALIGN)) varType varName[varSize];
     // #define DECLARE_ALIGN __declspec(align(CACHE_ALIGN))
 #endif

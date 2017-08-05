@@ -23,13 +23,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\ImageConvolution\ImageConvolutionSeparableKernel.cpp">
+    <ClCompile Include="..\ImageConvolution\ImageConvolutionGaussianKernel.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ImageConvolution\ImageConvolutionGaussianKernel.cpp">
+    <ClCompile Include="..\ImageConvolution\ImageConvolutionSeparableKernel.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ImageConvolution\ImageConvolution.cpp">
+    <ClCompile Include="..\ImageConvolution\ImageConvolution.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

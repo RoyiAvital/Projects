@@ -55,6 +55,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -73,6 +74,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <OpenMPSupport>true</OpenMPSupport>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -86,10 +88,10 @@
     <ClInclude Include="ImageConvolutionMain.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ImageConvolution.cpp" />
-    <ClCompile Include="ImageConvolutionGaussianKernel.cpp" />
-    <ClCompile Include="ImageConvolutionMain.cpp" />
-    <ClCompile Include="ImageConvolutionSeparableKernel.cpp" />
+    <ClCompile Include="ImageConvolution.c" />
+    <ClCompile Include="ImageConvolutionGaussianKernel.c" />
+    <ClCompile Include="ImageConvolutionMain.c" />
+    <ClCompile Include="ImageConvolutionSeparableKernel.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

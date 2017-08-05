@@ -1,4 +1,4 @@
-% Compile DLL Using GCC
+% Compile Executable Using GCC
 %
 % References:
 %   1.  https://linux.die.net/man/1/gcc.
@@ -39,8 +39,8 @@ setenv('CPLUS_INCLUDE_PATH', [GCC_FOLDER_PATH, 'include\']);
 
 %% Compile
 
-gccCommand01 = 'gcc -O3 -fopenmp ../ImageConvolution/ImageConvolution.c ../ImageConvolution/ImageConvolutionGaussianKernel.c ../ImageConvolution/ImageConvolutionSeparableKernel.c -c -D _USRDLL';
-gccCommand02 = 'gcc -O3 -fopenmp -o ImageConvolutionDll.dll -shared -s ImageConvolution.o ImageConvolutionSeparableKernel.o ImageConvolutionGaussianKernel.o';
+gccCommand01 = 'gcc -O3 -fopenmp ../ImageConvolution/ImageConvolutionMain.c ../ImageConvolution/ImageConvolution.c ../ImageConvolution/ImageConvolutionGaussianKernel.c ../ImageConvolution/ImageConvolutionSeparableKernel.c -c -D _USRDLL';
+gccCommand02 = 'gcc -O3 -fopenmp -o ImageConvolutionDll.exe ImageConvolutionMain.o ImageConvolution.o ImageConvolutionSeparableKernel.o ImageConvolutionGaussianKernel.o';
 
 system('gcc --version');
 system(gccCommand01);
