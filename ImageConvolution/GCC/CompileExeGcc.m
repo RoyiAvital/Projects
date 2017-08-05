@@ -42,6 +42,10 @@ setenv('CPLUS_INCLUDE_PATH', [GCC_FOLDER_PATH, 'include\']);
 gccCommand01 = 'gcc -O3 -fopenmp ../ImageConvolution/ImageConvolutionMain.c ../ImageConvolution/ImageConvolution.c ../ImageConvolution/ImageConvolutionGaussianKernel.c ../ImageConvolution/ImageConvolutionSeparableKernel.c -c -D _USRDLL';
 gccCommand02 = 'gcc -O3 -fopenmp -o ImageConvolutionDll.exe ImageConvolutionMain.o ImageConvolution.o ImageConvolutionSeparableKernel.o ImageConvolutionGaussianKernel.o';
 
+% -Ofast superceds -O3 with -ffast-math
+gccCommand01 = 'gcc -Ofast -fopenmp ../ImageConvolution/ImageConvolutionMain.c ../ImageConvolution/ImageConvolution.c ../ImageConvolution/ImageConvolutionGaussianKernel.c ../ImageConvolution/ImageConvolutionSeparableKernel.c -c -D _USRDLL';
+gccCommand02 = 'gcc -Ofast -fopenmp -o ImageConvolutionDll.exe ImageConvolutionMain.o ImageConvolution.o ImageConvolutionSeparableKernel.o ImageConvolutionGaussianKernel.o';
+
 system('gcc --version');
 system(gccCommand01);
 system(gccCommand02);
