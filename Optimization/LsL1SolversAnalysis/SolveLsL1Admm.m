@@ -33,21 +33,39 @@ function [ vX, mX ] = SolveLsL1Admm( mA, vB, paramLambda, numIterations )
 % Remarks:
 %   1.  Using vanilla ADMM with no optimization of the parameter or
 %       smoothing.
+%   2.  Matrix Factorization caching according to "Matrix Inversion Lemma"
+%       (See S. Boyd, N. Parikh, E. Chu, B. Peleato, and J. Eckstein -
+%       istributed Optimization and Statistical Learning via the
+%       Alternating Direction Method of Multipliers Page 28). Basically:
+%       (mA.' * mA + paramRho * I)^(-1) = (1 / paramRho) + (1 / (paramRho * paramRho)) * mA.' * (I + (1 /
+%       paramRho) * mA * mA.')^(-1) * mA
 % Known Issues:
 %   1.  A
 % TODO:
 %   1.  Pre calculate decomposition of the Linear System.
 % Release Notes:
+%   -   1.1.000     23/08/2017
+%       *   Added optimized factorization.
 %   -   1.0.000     23/08/2017
 %       *   First realease version.
 % ----------------------------------------------------------------------------------------------- %
 
-mAA = mA.' * mA;
+MAT_TYPE_SKINNY = 1;
+MAT_TYPE_FAT    = 2;
+
+if(size(mA, 1) >= size(mA, 2))
+    matType = MAT_TYPE_SKINNY;
+else
+    matType = MAT_TYPE_FAT;
+end
+
 vAb = mA.' * vB;
 vX  = pinv(mA) * vB; %<! Dealing with "Fat Matrix"
 
 paramRho    = 5;
-mI          = eye(size(vX, 1));
+
+% Cahing Factorization
+[mL, mU] = MatrixFactorize(mA, paramRho, matType);
 
 vZ = vX;
 vU = vX;
@@ -57,7 +75,16 @@ mX(:, 1) = vX;
 
 for ii = 2:numIterations
     
-    vX = (mAA + (paramRho * mI)) \ (vAb + (paramRho * vZ) - vU);
+    vQ = (vAb + (paramRho * vZ) - vU);
+    
+    % Matrix Inversion Lemma
+    switch(matType)
+        case(MAT_TYPE_SKINNY)
+            vX = mU \ (mL \ vQ);
+        case(MAT_TYPE_FAT)
+            vX = (vQ / paramRho) - ((mA.' * (mU \ (mL \ (mA * vQ)))) / (paramRho * paramRho));
+    end
+    
     vZ = ProxL1(vX + (vU / paramRho), paramLambda / paramRho);
     vU = vU + (paramRho * (vX - vZ));
     
@@ -73,6 +100,26 @@ function [ vX ] = ProxL1( vX, lambdaFactor )
 
 % Soft Thresholding
 vX = max(vX - lambdaFactor, 0) + min(vX + lambdaFactor, 0);
+
+
+end
+
+
+function [ mL, mU ] = MatrixFactorize( mA, paramRho, matType )
+
+MAT_TYPE_SKINNY = 1;
+MAT_TYPE_FAT    = 2;
+
+switch(matType)
+    case(MAT_TYPE_SKINNY)
+        mI = eye(size(mA, 2));
+        mL = chol((mA.' * mA) + (paramRho * mI), 'lower');
+    case(MAT_TYPE_FAT)
+        mI = eye(size(mA, 1));
+        mL = chol(mI + ((1 / paramRho) * (mA * mA.')), 'lower');
+end
+
+mU = mL.';
 
 
 end

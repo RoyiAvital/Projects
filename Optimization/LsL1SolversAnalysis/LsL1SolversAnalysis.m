@@ -25,10 +25,10 @@ generateFigures = OFF;
 
 %% Simulation Parameters
 
-numRows = 100;
-numCols = 30; %<! Number of Vectors - i (K in the question)
+numRows = 200;
+numCols = 50; %<! Number of Vectors - i (K in the question)
 
-paramLambda = 0.05;
+paramLambda = 0.1;
 
 numIterations   = 500;
 stopThr         = 0;
@@ -189,6 +189,24 @@ disp([' ']);
 
 solverIdx                   = solverIdx + 1;
 cLegendString{solverIdx}    = ['IRLS'];
+
+[mObjFunVal, mSolErrNorm] = UpdateAnalysisData(mObjFunVal, mSolErrNorm, mX, hObjFun, sCvxSol, solverIdx);
+
+
+%% Solution by CD
+
+[vX, mX] = SolveLsL1Cd(mA, vB, paramLambda, numIterations);
+
+objVal = hObjFun(vX);
+
+disp([' ']);
+disp(['CD Solution Summary']);
+disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
+disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
+disp([' ']);
+
+solverIdx                   = solverIdx + 1;
+cLegendString{solverIdx}    = ['CD'];
 
 [mObjFunVal, mSolErrNorm] = UpdateAnalysisData(mObjFunVal, mSolErrNorm, mX, hObjFun, sCvxSol, solverIdx);
 
