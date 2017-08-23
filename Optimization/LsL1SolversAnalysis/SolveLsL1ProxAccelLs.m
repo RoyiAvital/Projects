@@ -1,26 +1,20 @@
-function [ vX, mX ] = SolveLsL1ProxAccel( mA, vB, lambdaFctr, numIterations )
+function [ vX, mX ] = SolveLsL1ProxAccelLs( mA, vB, lambdaFctr, numIterations )
 % ----------------------------------------------------------------------------------------------- %
-%[ vF ] = BayesianDft( vX, numFreqBins, varX, varN, numIterations )
-% High Resolution DFT using Bayesian Estimation of the DFT coefficients.
+%[ vX, mX ] = SolveLsL1ProxAccelLs( mA, vB, paramLambda, numIterations )
+% Solve L1 Regularized Least Squares Using Accelerated Proximal Gradient (PGM) Method with Line Search.
 % Input:
-%   - vX                -   Input Vector.
-%                           Structure: Vector (Column Vector).
+%   - mA                -   Input Matirx.
+%                           The model matrix.
+%                           Structure: Matrix (m X n).
 %                           Type: 'Single' / 'Double'.
 %                           Range: (-inf, inf).
-%   - numFreqBins       -   Number of Frequency Bins.
-%                           The number of Frequency Bins in the Frequency
-%                           Domain.
-%                           Structure: Scalar.
+%   - vB                -   input Vector.
+%                           The model known data.
+%                           Structure: Vector (m X 1).
 %                           Type: 'Single' / 'Double'.
-%                           Range: {1, 2, ...}.
-%   - varX              -   Variance of Signal Model.
-%                           The variance of each peak in the frequency
-%                           domain assuming Normal Distribution.
-%                           Structure: Scalar.
-%                           Type: 'Single' / 'Double'.
-%                           Range: (0, inf).
-%   - varN              -   Variance of Noise.
-%                           The variance of the noise.
+%                           Range: (-inf, inf).
+%   - paramLambda       -   Parameter Lambda.
+%                           The L1 Regularization parameter.
 %                           Structure: Scalar.
 %                           Type: 'Single' / 'Double'.
 %                           Range: (0, inf).
@@ -30,36 +24,42 @@ function [ vX, mX ] = SolveLsL1ProxAccel( mA, vB, lambdaFctr, numIterations )
 %                           Type: 'Single' / 'Double'.
 %                           Range {1, 2, ...}.
 % Output:
-%   - vF                -   High Resolution DFT.
-%                           High Resolution DFT generated according to the
-%                           Bayesian Model.
-%                           Structure: Vector (Column Vector).
+%   - vX                -   Output Vector.
+%                           Structure: Vector (n X 1).
 %                           Type: 'Single' / 'Double'.
 %                           Range: (-inf, inf).
 % References
-%   1.  C
+%   1.  Wikipedia PGM - https://en.wikipedia.org/wiki/Proximal_gradient_method.
+%   2.  Wikipedia Fast Gradient Methods - https://en.wikipedia.org/wiki/Gradient_descent#Fast_gradient_methods.
 % Remarks:
-%   1.  T
+%   1.  Using Smooth / Aggressive FISTA step size (The smooth is the
+%       original step size in the FISTA article).
+%   2.  The line search is looking for the Lipschitz Constant of the
+%       function from the condition it must obey.
+% Known Issues:
+%   1.  A
 % TODO:
-%   1.  Use Levinson's Recursion to solve `vB = ((lambdaFctr * mI) + mF * mQ * mF') \ vX;`.
-%   2.  Add "Stopping Condition".
+%   1.  B
 % Release Notes:
-%   -   1.0.000     07/11/2016
+%   -   1.0.000     23/08/2017
 %       *   First realease version.
 % ----------------------------------------------------------------------------------------------- %
+
+FISTA_STEP__METHOD_SMOOTH       = 1; %<! Monotonic, Slower
+FISTA_STEP__METHOD_AGGRESSIVE   = 2; %<! Non Monotonic, Faster
 
 hObjFun = @(vX) (0.5 * sum(((mA * vX) - vB) .^ 2)) + (lambdaFctr * sum(abs(vX)));
 
 mAA = mA.' * mA;
 vAb = mA.' * vB;
-% vX  = mAA \ vAb;
 vX  = pinv(mA) * vB; %<! Dealing with "Fat Matrix"
 
-paramAlphaBase = 4 / (1.1 * (norm(mA, 2) ^ 2));
-paramAlphaBase = 1 / (2 * (norm(mA, 2) ^ 2));
-paramAlphaBase = 1;
-stepSizeMinVal  = 1 / sum(mA(:) .^ 2);
-stepSize        = 10 * stepSizeMinVal;
+lipConst    = 1; %<! Lipschitz Constant
+% deltaThr - Slackness for the deltaVal (Given the true Lipschitz Constant
+% should be positive) requiring bigger than small positive number.
+deltaThr    = 1e-3;
+paramBeta   = 1.05; %<! Back Tracking parameter
+fistaStepMode = FISTA_STEP__METHOD_AGGRESSIVE;
 
 mX = zeros([size(vX, 1), (numIterations + 1)]);
 mX(:, 1) = vX;
@@ -73,26 +73,32 @@ for ii = 1:numIterations
     
     vYGrad      = (mAA * vY) - vAb;
     vG          = (mAA * vX) - vAb;
-    % paramAlpha  = paramAlphaBase / sqrt(ii);
     
     vXPrev      = vX;
-    vX          = ProxL1(vY - (stepSize * vYGrad), stepSize * lambdaFctr);
-    objInnovation   = objVal + (vG.' * (vX - vXPrev)) + ((1 / (2 * stepSize)) * sum((vX - vXPrev) .^ 2)) - hObjFun(vX);
+    deltaVal    = 1;
     
-    while(((objInnovation < 0) || (hObjFun(vX) > objVal)) && (stepSize > 1e-6))
+    while(deltaVal > deltaThr)
         
-        stepSize        = stepSize * 0.75;
-        vX              = ProxL1(vY - (stepSize * vYGrad), stepSize * lambdaFctr);
-        objInnovation   = objVal + (vG.' * (vX - vXPrev)) + ((1 / (2 * stepSize)) * sum((vX - vXPrev) .^ 2)) - hObjFun(vX);
+        stepSize    = 1 / lipConst;
+        vX          = ProxL1(vY - (stepSize * vYGrad), stepSize * lambdaFctr);
+        % For the true value of Lipschitz Constant deltaVal should be
+        % negative (Assuming no numerical issues).
+        deltaVal    =  hObjFun(vX) - objVal - (vG.' * (vX - vXPrev)) - ((lipConst / 2) * sum((vX - vXPrev) .^ 2));
+        
+        lipConst = lipConst * paramBeta;
         
     end
     
-    % stepSize = stepSize / 0.75;
-    stepSize = max(stepSize, stepSizeMinVal);
+    lipConst = lipConst / paramBeta;
     
-    tKPrev          = tK;
-    tK              = (1 + sqrt(1 + (4 * tKPrev))) / 2;
-    fistaStepSize   = (tKPrev - 1) / tK;
+    switch(fistaStepMode)
+        case(FISTA_STEP__METHOD_SMOOTH)
+            tKPrev          = tK;
+            tK              = (1 + sqrt(1 + (4 * tKPrev))) / 2;
+            fistaStepSize   = (tKPrev - 1) / tK;
+        case(FISTA_STEP__METHOD_AGGRESSIVE)
+            fistaStepSize = (ii - 1) / (ii + 2);
+    end
     
     vY = vX + (fistaStepSize * (vX - vXPrev));
     

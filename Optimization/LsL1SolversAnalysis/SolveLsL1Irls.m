@@ -1,7 +1,7 @@
-function [ vX, mX ] = SolveLsL1Prox( mA, vB, paramLambda, numIterations )
+function [ vX, mX ] = SolveLsL1Irls( mA, vB, paramLambda, numIterations )
 % ----------------------------------------------------------------------------------------------- %
-%[ vX, mX ] = SolveLsL1Prox( mA, vB, lambdaFctr, numIterations )
-% Solve L1 Regularized Least Squares Using Proximal Gradient (PGM) Method.
+%[ vX, mX ] = SolveLsL1Irls( mA, vB, paramLambda, numIterations )
+% Solve L1 Regularized Least Squares Using Iteratively Reweighted Least Squares (IRLS) Method.
 % Input:
 %   - mA                -   Input Matirx.
 %                           The model matrix.
@@ -29,13 +29,14 @@ function [ vX, mX ] = SolveLsL1Prox( mA, vB, paramLambda, numIterations )
 %                           Type: 'Single' / 'Double'.
 %                           Range: (-inf, inf).
 % References
-%   1.  Wikipedia PGM - https://en.wikipedia.org/wiki/Proximal_gradient_method.
+%   2.  IRLS Wikipedia - https://en.wikipedia.org/wiki/Iteratively_reweighted_least_squares.
+%   1.  L1 IRLS (My Derivation) - https://stats.stackexchange.com/a/299381/6244.
 % Remarks:
-%   1.  Using vanilla PGM.
+%   1.  Doesn't work well for large values of paramLambda.
 % Known Issues:
-%   1.  A
+%   1.  Doesn't converge to a "good" solution.
 % TODO:
-%   1.  B
+%   1.  P
 % Release Notes:
 %   -   1.0.000     23/08/2017
 %       *   First realease version.
@@ -45,29 +46,26 @@ mAA = mA.' * mA;
 vAb = mA.' * vB;
 vX  = pinv(mA) * vB; %<! Dealing with "Fat Matrix"
 
-stepSize = 1 / (2 * (norm(mA, 2) ^ 2));
-% stepSize = 1 / sum(mA(:) .^ 2); %<! Faster to calculate, conservative (Hence slower)
+thrBaseVal = 1e-6;
+thrMinVal  = 1e-12;
 
 mX = zeros([size(vX, 1), numIterations]);
 mX(:, 1) = vX;
 
-for ii = 2:numIterations
+thrVal = thrBaseVal;
+mW = eye(size(vX, 1));
+
+for ii = 1:numIterations
     
-    vG = (mAA * vX) - vAb;
-    vX = ProxL1(vX - (stepSize * vG), stepSize * paramLambda);
+    vX = (mAA + (2 * paramLambda * mW)) \ vAb;
+    
+    mW = diag(1 ./ (abs(vX) + thrVal));
     
     mX(:, ii) = vX;
+    thrVal = thrVal / 2;
+    thrVal = max(thrVal, thrMinVal);
     
 end
-
-
-end
-
-
-function [ vX ] = ProxL1( vX, lambdaFactor )
-
-% Soft Thresholding
-vX = max(vX - lambdaFactor, 0) + min(vX + lambdaFactor, 0);
 
 
 end

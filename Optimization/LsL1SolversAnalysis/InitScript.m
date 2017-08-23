@@ -42,7 +42,7 @@ mColorOrder = get(groot, 'DefaultAxesColorOrder');
 randomNumberStream  = RandStream('mlfg6331_64', 'NormalTransform', 'Ziggurat');
 subStreamNumber     = round(sum(clock()));
 % subStreamNumber     = 162;
-subStreamNumber     = 2117;
+% subStreamNumber     = 2111;
 set(randomNumberStream, 'Substream', subStreamNumber);
 RandStream.setGlobalStream(randomNumberStream);
 

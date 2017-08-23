@@ -1,14 +1,15 @@
-% Mathematics Q561696
-% https://math.stackexchange.com/questions/561696
-% Solving Non Negative Least Squares by Analogy with Least Squares (MATLAB)
+% Least Squares Regularized by L1 Norm - Solvers Analysis
+% Solving: \arg \min_{x} 0.5 * || A x - b ||_{2}^{2} + \lambda || x ||_{1}
 % References:
 %   1.  aa
 % Remarks:
-%   1.  sa
+%   1.  
+% Known Issues:
+%   1.  IRLS Solver doesn't work.
 % TODO:
-% 	1.  ds
+% 	1.  Add Coordinate Descent based algorithm.
 % Release Notes
-% - 1.0.000     05/08/2017
+% - 1.0.000     23/08/2017
 %   *   First release.
 
 
@@ -25,11 +26,11 @@ generateFigures = OFF;
 %% Simulation Parameters
 
 numRows = 100;
-numCols = 40; %<! Number of Vectors - i (K in the question)
+numCols = 30; %<! Number of Vectors - i (K in the question)
 
-paramLambda = 0.1;
+paramLambda = 0.05;
 
-numIterations   = 5000;
+numIterations   = 500;
 stopThr         = 0;
 
 solverIdx       = 0;
@@ -62,16 +63,36 @@ disp(['The Optimal Value Is Given By - ', num2str(cvx_optval)]);
 disp(['The Optimal Argument Is Given By - [ ', num2str(vXCvx.'), ' ]']);
 disp([' ']);
 
+sCvxSol.vXCvx     = vXCvx;
+sCvxSol.cvxOptVal = cvx_optval;
 
-%% Solution by Proximal Gradient Method
 
-[vX, mX] = SolveLsL1Prox(mA, vB, paramLambda, numIterations);
-% [vX, mX] = SolveLsL1ProxAccel(mA, vB, paramLambda, numIterations);
+%% Solution by Sub Gradient Method
+
+[vX, mX] = SolveLsL1SubGradient(mA, vB, paramLambda, numIterations);
 
 objVal = hObjFun(vX);
 
 disp([' ']);
-disp(['Projected Proximal Gradient Method Solution Summary']);
+disp(['Sub Gradient Method Solution Summary']);
+disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
+disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
+disp([' ']);
+
+solverIdx                   = solverIdx + 1;
+cLegendString{solverIdx}    = ['Sub Gradient'];
+
+[mObjFunVal, mSolErrNorm] = UpdateAnalysisData(mObjFunVal, mSolErrNorm, mX, hObjFun, sCvxSol, solverIdx);
+
+
+%% Solution by Proximal Gradient Method
+
+[vX, mX] = SolveLsL1Prox(mA, vB, paramLambda, numIterations);
+
+objVal = hObjFun(vX);
+
+disp([' ']);
+disp(['Proximal Gradient Method Solution Summary']);
 disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
 disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
 disp([' ']);
@@ -79,12 +100,7 @@ disp([' ']);
 solverIdx                   = solverIdx + 1;
 cLegendString{solverIdx}    = ['Proximal Gradient'];
 
-for ii = 1:numIterations
-
-    mObjFunVal(ii, solverIdx)   = abs(hObjFun(mX(:, ii)) - cvx_optval);
-    mSolErrNorm(ii, solverIdx)  = norm(mX(:, ii) - vXCvx);
-
-end
+[mObjFunVal, mSolErrNorm] = UpdateAnalysisData(mObjFunVal, mSolErrNorm, mX, hObjFun, sCvxSol, solverIdx);
 
 
 %% Solution by Proximal Gradient Method with Line Search
@@ -94,7 +110,7 @@ end
 objVal = hObjFun(vX);
 
 disp([' ']);
-disp(['Projected Proximal Gradient Method (LS) Solution Summary']);
+disp(['Proximal Gradient Method (LS) Solution Summary']);
 disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
 disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
 disp([' ']);
@@ -102,12 +118,7 @@ disp([' ']);
 solverIdx                   = solverIdx + 1;
 cLegendString{solverIdx}    = ['Proximal Gradient - Line Search'];
 
-for ii = 1:numIterations
-
-    mObjFunVal(ii, solverIdx)   = abs(hObjFun(mX(:, ii)) - cvx_optval);
-    mSolErrNorm(ii, solverIdx)  = norm(mX(:, ii) - vXCvx);
-
-end
+[mObjFunVal, mSolErrNorm] = UpdateAnalysisData(mObjFunVal, mSolErrNorm, mX, hObjFun, sCvxSol, solverIdx);
 
 
 %% Solution by Proximal Gradient Method Accelerated
@@ -117,7 +128,7 @@ end
 objVal = hObjFun(vX);
 
 disp([' ']);
-disp(['Projected Proximal Gradient Method (Accelerated) Solution Summary']);
+disp(['Proximal Gradient Method (Accelerated) Solution Summary']);
 disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
 disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
 disp([' ']);
@@ -125,12 +136,7 @@ disp([' ']);
 solverIdx                   = solverIdx + 1;
 cLegendString{solverIdx}    = ['Proximal Gradient - Accelerated'];
 
-for ii = 1:numIterations
-
-    mObjFunVal(ii, solverIdx)   = abs(hObjFun(mX(:, ii)) - cvx_optval);
-    mSolErrNorm(ii, solverIdx)  = norm(mX(:, ii) - vXCvx);
-
-end
+[mObjFunVal, mSolErrNorm] = UpdateAnalysisData(mObjFunVal, mSolErrNorm, mX, hObjFun, sCvxSol, solverIdx);
 
 
 %% Solution by Proximal Gradient Method Accelerated with Line Search
@@ -140,7 +146,7 @@ end
 objVal = hObjFun(vX);
 
 disp([' ']);
-disp(['Projected Proximal Gradient Method (Accelerated + LS) Solution Summary']);
+disp(['Proximal Gradient Method (Accelerated + LS) Solution Summary']);
 disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
 disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
 disp([' ']);
@@ -148,12 +154,43 @@ disp([' ']);
 solverIdx                   = solverIdx + 1;
 cLegendString{solverIdx}    = ['Proximal Gradient - Accelerated + Line Search'];
 
-for ii = 1:numIterations
+[mObjFunVal, mSolErrNorm] = UpdateAnalysisData(mObjFunVal, mSolErrNorm, mX, hObjFun, sCvxSol, solverIdx);
 
-    mObjFunVal(ii, solverIdx)   = abs(hObjFun(mX(:, ii)) - cvx_optval);
-    mSolErrNorm(ii, solverIdx)  = norm(mX(:, ii) - vXCvx);
 
-end
+%% Solution by ADMM
+
+[vX, mX] = SolveLsL1Admm(mA, vB, paramLambda, numIterations);
+
+objVal = hObjFun(vX);
+
+disp([' ']);
+disp(['ADMM Solution Summary']);
+disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
+disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
+disp([' ']);
+
+solverIdx                   = solverIdx + 1;
+cLegendString{solverIdx}    = ['ADMM'];
+
+[mObjFunVal, mSolErrNorm] = UpdateAnalysisData(mObjFunVal, mSolErrNorm, mX, hObjFun, sCvxSol, solverIdx);
+
+
+%% Solution by IRLS
+
+[vX, mX] = SolveLsL1Irls(mA, vB, paramLambda, numIterations);
+
+objVal = hObjFun(vX);
+
+disp([' ']);
+disp(['IRLS Solution Summary']);
+disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
+disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
+disp([' ']);
+
+solverIdx                   = solverIdx + 1;
+cLegendString{solverIdx}    = ['IRLS'];
+
+[mObjFunVal, mSolErrNorm] = UpdateAnalysisData(mObjFunVal, mSolErrNorm, mX, hObjFun, sCvxSol, solverIdx);
 
 
 %% Display Results

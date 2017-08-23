@@ -1,7 +1,7 @@
-function [ vX, mX ] = SolveLsL1Prox( mA, vB, paramLambda, numIterations )
+function [ vX, mX ] = SolveLsL1Admm( mA, vB, paramLambda, numIterations )
 % ----------------------------------------------------------------------------------------------- %
-%[ vX, mX ] = SolveLsL1Prox( mA, vB, lambdaFctr, numIterations )
-% Solve L1 Regularized Least Squares Using Proximal Gradient (PGM) Method.
+%[ vX, mX ] = SolveLsL1Admm( mA, vB, lambdaFctr, numIterations )
+% Solve L1 Regularized Least Squares Using Alternating Direction Method of Multipliers (ADMM) Method.
 % Input:
 %   - mA                -   Input Matirx.
 %                           The model matrix.
@@ -29,13 +29,14 @@ function [ vX, mX ] = SolveLsL1Prox( mA, vB, paramLambda, numIterations )
 %                           Type: 'Single' / 'Double'.
 %                           Range: (-inf, inf).
 % References
-%   1.  Wikipedia PGM - https://en.wikipedia.org/wiki/Proximal_gradient_method.
+%   1.  Wikipedia ADMM - https://en.wikipedia.org/wiki/Augmented_Lagrangian_method#Alternating_direction_method_of_multipliers.
 % Remarks:
-%   1.  Using vanilla PGM.
+%   1.  Using vanilla ADMM with no optimization of the parameter or
+%       smoothing.
 % Known Issues:
 %   1.  A
 % TODO:
-%   1.  B
+%   1.  Pre calculate decomposition of the Linear System.
 % Release Notes:
 %   -   1.0.000     23/08/2017
 %       *   First realease version.
@@ -45,16 +46,20 @@ mAA = mA.' * mA;
 vAb = mA.' * vB;
 vX  = pinv(mA) * vB; %<! Dealing with "Fat Matrix"
 
-stepSize = 1 / (2 * (norm(mA, 2) ^ 2));
-% stepSize = 1 / sum(mA(:) .^ 2); %<! Faster to calculate, conservative (Hence slower)
+paramRho    = 5;
+mI          = eye(size(vX, 1));
+
+vZ = vX;
+vU = vX;
 
 mX = zeros([size(vX, 1), numIterations]);
 mX(:, 1) = vX;
 
 for ii = 2:numIterations
     
-    vG = (mAA * vX) - vAb;
-    vX = ProxL1(vX - (stepSize * vG), stepSize * paramLambda);
+    vX = (mAA + (paramRho * mI)) \ (vAb + (paramRho * vZ) - vU);
+    vZ = ProxL1(vX + (vU / paramRho), paramLambda / paramRho);
+    vU = vU + (paramRho * (vX - vZ));
     
     mX(:, ii) = vX;
     
