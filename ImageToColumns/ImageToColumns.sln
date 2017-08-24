@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageToColumns", "ImageToColumns\ImageToColumns.vcxproj", "{B7567430-2865-4FA2-8FD8-F8F8D27D178E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageToColumnsDll", "ImageToColumnsDll\ImageToColumnsDll.vcxproj", "{351B6D2C-A13F-4211-A353-1BAF575F270D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.Debug|x64.ActiveCfg = Debug|x64
+		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.Debug|x64.Build.0 = Debug|x64
+		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.Release|x64.ActiveCfg = Release|x64
+		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.Release|x64.Build.0 = Release|x64
+		{351B6D2C-A13F-4211-A353-1BAF575F270D}.Debug|x64.ActiveCfg = Debug|x64
+		{351B6D2C-A13F-4211-A353-1BAF575F270D}.Debug|x64.Build.0 = Debug|x64
+		{351B6D2C-A13F-4211-A353-1BAF575F270D}.Release|x64.ActiveCfg = Release|x64
+		{351B6D2C-A13F-4211-A353-1BAF575F270D}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
