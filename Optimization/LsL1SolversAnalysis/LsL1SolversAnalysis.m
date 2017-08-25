@@ -28,7 +28,7 @@ generateFigures = OFF;
 numRows = 200;
 numCols = 50; %<! Number of Vectors - i (K in the question)
 
-paramLambda = 0.1;
+paramLambda = 1.1;
 
 numIterations   = 500;
 stopThr         = 0;
@@ -81,6 +81,24 @@ disp([' ']);
 
 solverIdx                   = solverIdx + 1;
 cLegendString{solverIdx}    = ['Sub Gradient'];
+
+[mObjFunVal, mSolErrNorm] = UpdateAnalysisData(mObjFunVal, mSolErrNorm, mX, hObjFun, sCvxSol, solverIdx);
+
+
+%% Solution by Smoothing (Huber Loss) Method
+
+[vX, mX] = SolveLsL1Huber(mA, vB, paramLambda, numIterations);
+
+objVal = hObjFun(vX);
+
+disp([' ']);
+disp(['Smoothing (Huber Loss) Method Solution Summary']);
+disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
+disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
+disp([' ']);
+
+solverIdx                   = solverIdx + 1;
+cLegendString{solverIdx}    = ['Smoothing (Huber Loss)'];
 
 [mObjFunVal, mSolErrNorm] = UpdateAnalysisData(mObjFunVal, mSolErrNorm, mX, hObjFun, sCvxSol, solverIdx);
 
