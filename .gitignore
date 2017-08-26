@@ -1,3 +1,7 @@
+# Folders
+SingularValueDecomposition/Code/*
+SingularValueDecomposition/KnowledgeBase/*
+
 # Media Files
 # *.png
 *.jpg
@@ -14,6 +18,11 @@
 *.pptx
 *.ppt
 #*.pdf
+
+# MS Office Temp Files
+~$*.docx
+~$*.pptx
+~$*.xlsx
 
 ## TeX / LaTeX Files
 *.aux
