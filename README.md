@@ -30,4 +30,4 @@ It covers the following:
     * Total Least Squares.
     * [Principal Component Analysis](https://en.wikipedia.org/wiki/Principal_component_analysis) (PCA).
 
-The PDF can be viewed directly - [SVD Presentation PDF]().
+The PDF can be viewed directly - [SVD Presentation PDF](https://docs.google.com/viewer?url=https://github.com/RoyiAvital/Projects/raw/master/SingularValueDecomposition/SVD.pdf).
