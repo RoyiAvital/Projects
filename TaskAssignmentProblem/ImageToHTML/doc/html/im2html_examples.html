@@ -1,0 +1,2526 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>im2html Examples</title><meta name="generator" content="MATLAB 7.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2011-07-20"><meta name="DC.source" content="im2html_examples.m"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head><body><div class="content"><h1>im2html Examples</h1><!--introduction--><!--/introduction--><p>Display a table of values for a gray-scale image.</p><pre class="codeinput">I = imread(<span class="string">'pout.tif'</span>);
+disp(im2html(I(125:134, 104:114)))
+</pre>
+  <head>
+
+    <style>
+      .image-table {
+        border: thin solid black;
+        table-layout: fixed;
+      }
+
+      .light-pixel-cell {
+        font-size: small;
+        font-family: Consolas, 'Courier New', monospace;
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+        padding: 1;
+        height: 4.5em;
+        width: 4.5em;
+        text-align: center;
+        color: black;
+      }
+
+      .dark-pixel-cell {
+        font-size: small;
+        font-family: Consolas, 'Courier New', monospace;
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+        padding: 1;
+        height: 4.5em;
+        width: 4.5em;
+        text-align: center;
+        color: white;
+      }
+
+    </style>
+
+  </head>
+  <body>
+    <table class="image-table">
+      <tr class="image-table-row">
+        <!-- ROW: 1  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#707070; width:3.0em; height:3.0em">
+          112
+        </td>
+
+        <!-- ROW: 1  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#707070; width:3.0em; height:3.0em">
+          112
+        </td>
+
+        <!-- ROW: 1  COL: 3 -->
+        <td class="dark-pixel-cell" style="background-color:#6B6B6B; width:3.0em; height:3.0em">
+          107
+        </td>
+
+        <!-- ROW: 1  COL: 4 -->
+        <td class="dark-pixel-cell" style="background-color:#616161; width:3.0em; height:3.0em">
+          97
+        </td>
+
+        <!-- ROW: 1  COL: 5 -->
+        <td class="dark-pixel-cell" style="background-color:#5B5B5B; width:3.0em; height:3.0em">
+          91
+        </td>
+
+        <!-- ROW: 1  COL: 6 -->
+        <td class="dark-pixel-cell" style="background-color:#575757; width:3.0em; height:3.0em">
+          87
+        </td>
+
+        <!-- ROW: 1  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#565656; width:3.0em; height:3.0em">
+          86
+        </td>
+
+        <!-- ROW: 1  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#545454; width:3.0em; height:3.0em">
+          84
+        </td>
+
+        <!-- ROW: 1  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#535353; width:3.0em; height:3.0em">
+          83
+        </td>
+
+        <!-- ROW: 1  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#545454; width:3.0em; height:3.0em">
+          84
+        </td>
+
+        <!-- ROW: 1  COL: 11 -->
+        <td class="dark-pixel-cell" style="background-color:#545454; width:3.0em; height:3.0em">
+          84
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 2  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#787878; width:3.0em; height:3.0em">
+          120
+        </td>
+
+        <!-- ROW: 2  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#7E7E7E; width:3.0em; height:3.0em">
+          126
+        </td>
+
+        <!-- ROW: 2  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#808080; width:3.0em; height:3.0em">
+          128
+        </td>
+
+        <!-- ROW: 2  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#808080; width:3.0em; height:3.0em">
+          128
+        </td>
+
+        <!-- ROW: 2  COL: 5 -->
+        <td class="dark-pixel-cell" style="background-color:#727272; width:3.0em; height:3.0em">
+          114
+        </td>
+
+        <!-- ROW: 2  COL: 6 -->
+        <td class="dark-pixel-cell" style="background-color:#656565; width:3.0em; height:3.0em">
+          101
+        </td>
+
+        <!-- ROW: 2  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#575757; width:3.0em; height:3.0em">
+          87
+        </td>
+
+        <!-- ROW: 2  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#575757; width:3.0em; height:3.0em">
+          87
+        </td>
+
+        <!-- ROW: 2  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#565656; width:3.0em; height:3.0em">
+          86
+        </td>
+
+        <!-- ROW: 2  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#565656; width:3.0em; height:3.0em">
+          86
+        </td>
+
+        <!-- ROW: 2  COL: 11 -->
+        <td class="dark-pixel-cell" style="background-color:#575757; width:3.0em; height:3.0em">
+          87
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 3  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#747474; width:3.0em; height:3.0em">
+          116
+        </td>
+
+        <!-- ROW: 3  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#848484; width:3.0em; height:3.0em">
+          132
+        </td>
+
+        <!-- ROW: 3  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#8A8A8A; width:3.0em; height:3.0em">
+          138
+        </td>
+
+        <!-- ROW: 3  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#8E8E8E; width:3.0em; height:3.0em">
+          142
+        </td>
+
+        <!-- ROW: 3  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#8E8E8E; width:3.0em; height:3.0em">
+          142
+        </td>
+
+        <!-- ROW: 3  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#848484; width:3.0em; height:3.0em">
+          132
+        </td>
+
+        <!-- ROW: 3  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#626262; width:3.0em; height:3.0em">
+          98
+        </td>
+
+        <!-- ROW: 3  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#5B5B5B; width:3.0em; height:3.0em">
+          91
+        </td>
+
+        <!-- ROW: 3  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#595959; width:3.0em; height:3.0em">
+          89
+        </td>
+
+        <!-- ROW: 3  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#575757; width:3.0em; height:3.0em">
+          87
+        </td>
+
+        <!-- ROW: 3  COL: 11 -->
+        <td class="dark-pixel-cell" style="background-color:#595959; width:3.0em; height:3.0em">
+          89
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 4  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#6E6E6E; width:3.0em; height:3.0em">
+          110
+        </td>
+
+        <!-- ROW: 4  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#858585; width:3.0em; height:3.0em">
+          133
+        </td>
+
+        <!-- ROW: 4  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#919191; width:3.0em; height:3.0em">
+          145
+        </td>
+
+        <!-- ROW: 4  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#969696; width:3.0em; height:3.0em">
+          150
+        </td>
+
+        <!-- ROW: 4  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#959595; width:3.0em; height:3.0em">
+          149
+        </td>
+
+        <!-- ROW: 4  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#939393; width:3.0em; height:3.0em">
+          147
+        </td>
+
+        <!-- ROW: 4  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#797979; width:3.0em; height:3.0em">
+          121
+        </td>
+
+        <!-- ROW: 4  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#656565; width:3.0em; height:3.0em">
+          101
+        </td>
+
+        <!-- ROW: 4  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#5D5D5D; width:3.0em; height:3.0em">
+          93
+        </td>
+
+        <!-- ROW: 4  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#5D5D5D; width:3.0em; height:3.0em">
+          93
+        </td>
+
+        <!-- ROW: 4  COL: 11 -->
+        <td class="dark-pixel-cell" style="background-color:#5B5B5B; width:3.0em; height:3.0em">
+          91
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 5  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#6D6D6D; width:3.0em; height:3.0em">
+          109
+        </td>
+
+        <!-- ROW: 5  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#858585; width:3.0em; height:3.0em">
+          133
+        </td>
+
+        <!-- ROW: 5  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#919191; width:3.0em; height:3.0em">
+          145
+        </td>
+
+        <!-- ROW: 5  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#9C9C9C; width:3.0em; height:3.0em">
+          156
+        </td>
+
+        <!-- ROW: 5  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#9F9F9F; width:3.0em; height:3.0em">
+          159
+        </td>
+
+        <!-- ROW: 5  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#999999; width:3.0em; height:3.0em">
+          153
+        </td>
+
+        <!-- ROW: 5  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#8E8E8E; width:3.0em; height:3.0em">
+          142
+        </td>
+
+        <!-- ROW: 5  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#828282; width:3.0em; height:3.0em">
+          130
+        </td>
+
+        <!-- ROW: 5  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#6D6D6D; width:3.0em; height:3.0em">
+          109
+        </td>
+
+        <!-- ROW: 5  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#666666; width:3.0em; height:3.0em">
+          102
+        </td>
+
+        <!-- ROW: 5  COL: 11 -->
+        <td class="dark-pixel-cell" style="background-color:#636363; width:3.0em; height:3.0em">
+          99
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 6  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#6D6D6D; width:3.0em; height:3.0em">
+          109
+        </td>
+
+        <!-- ROW: 6  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#838383; width:3.0em; height:3.0em">
+          131
+        </td>
+
+        <!-- ROW: 6  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#8F8F8F; width:3.0em; height:3.0em">
+          143
+        </td>
+
+        <!-- ROW: 6  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#9A9A9A; width:3.0em; height:3.0em">
+          154
+        </td>
+
+        <!-- ROW: 6  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#A9A9A9; width:3.0em; height:3.0em">
+          169
+        </td>
+
+        <!-- ROW: 6  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#ABABAB; width:3.0em; height:3.0em">
+          171
+        </td>
+
+        <!-- ROW: 6  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#A9A9A9; width:3.0em; height:3.0em">
+          169
+        </td>
+
+        <!-- ROW: 6  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#A9A9A9; width:3.0em; height:3.0em">
+          169
+        </td>
+
+        <!-- ROW: 6  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#9A9A9A; width:3.0em; height:3.0em">
+          154
+        </td>
+
+        <!-- ROW: 6  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#8B8B8B; width:3.0em; height:3.0em">
+          139
+        </td>
+
+        <!-- ROW: 6  COL: 11 -->
+        <td class="light-pixel-cell" style="background-color:#898989; width:3.0em; height:3.0em">
+          137
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 7  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#6C6C6C; width:3.0em; height:3.0em">
+          108
+        </td>
+
+        <!-- ROW: 7  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#7E7E7E; width:3.0em; height:3.0em">
+          126
+        </td>
+
+        <!-- ROW: 7  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#8E8E8E; width:3.0em; height:3.0em">
+          142
+        </td>
+
+        <!-- ROW: 7  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#979797; width:3.0em; height:3.0em">
+          151
+        </td>
+
+        <!-- ROW: 7  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#A9A9A9; width:3.0em; height:3.0em">
+          169
+        </td>
+
+        <!-- ROW: 7  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#AFAFAF; width:3.0em; height:3.0em">
+          175
+        </td>
+
+        <!-- ROW: 7  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#BABABA; width:3.0em; height:3.0em">
+          186
+        </td>
+
+        <!-- ROW: 7  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#BEBEBE; width:3.0em; height:3.0em">
+          190
+        </td>
+
+        <!-- ROW: 7  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#BDBDBD; width:3.0em; height:3.0em">
+          189
+        </td>
+
+        <!-- ROW: 7  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#B4B4B4; width:3.0em; height:3.0em">
+          180
+        </td>
+
+        <!-- ROW: 7  COL: 11 -->
+        <td class="light-pixel-cell" style="background-color:#B3B3B3; width:3.0em; height:3.0em">
+          179
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 8  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#6E6E6E; width:3.0em; height:3.0em">
+          110
+        </td>
+
+        <!-- ROW: 8  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#797979; width:3.0em; height:3.0em">
+          121
+        </td>
+
+        <!-- ROW: 8  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#898989; width:3.0em; height:3.0em">
+          137
+        </td>
+
+        <!-- ROW: 8  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#949494; width:3.0em; height:3.0em">
+          148
+        </td>
+
+        <!-- ROW: 8  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#9E9E9E; width:3.0em; height:3.0em">
+          158
+        </td>
+
+        <!-- ROW: 8  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#A7A7A7; width:3.0em; height:3.0em">
+          167
+        </td>
+
+        <!-- ROW: 8  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#B1B1B1; width:3.0em; height:3.0em">
+          177
+        </td>
+
+        <!-- ROW: 8  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#BBBBBB; width:3.0em; height:3.0em">
+          187
+        </td>
+
+        <!-- ROW: 8  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#C7C7C7; width:3.0em; height:3.0em">
+          199
+        </td>
+
+        <!-- ROW: 8  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#BDBDBD; width:3.0em; height:3.0em">
+          189
+        </td>
+
+        <!-- ROW: 8  COL: 11 -->
+        <td class="light-pixel-cell" style="background-color:#B9B9B9; width:3.0em; height:3.0em">
+          185
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 9  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#707070; width:3.0em; height:3.0em">
+          112
+        </td>
+
+        <!-- ROW: 9  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#757575; width:3.0em; height:3.0em">
+          117
+        </td>
+
+        <!-- ROW: 9  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#888888; width:3.0em; height:3.0em">
+          136
+        </td>
+
+        <!-- ROW: 9  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#929292; width:3.0em; height:3.0em">
+          146
+        </td>
+
+        <!-- ROW: 9  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#979797; width:3.0em; height:3.0em">
+          151
+        </td>
+
+        <!-- ROW: 9  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#9F9F9F; width:3.0em; height:3.0em">
+          159
+        </td>
+
+        <!-- ROW: 9  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#9F9F9F; width:3.0em; height:3.0em">
+          159
+        </td>
+
+        <!-- ROW: 9  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#A3A3A3; width:3.0em; height:3.0em">
+          163
+        </td>
+
+        <!-- ROW: 9  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#BDBDBD; width:3.0em; height:3.0em">
+          189
+        </td>
+
+        <!-- ROW: 9  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#BDBDBD; width:3.0em; height:3.0em">
+          189
+        </td>
+
+        <!-- ROW: 9  COL: 11 -->
+        <td class="light-pixel-cell" style="background-color:#B4B4B4; width:3.0em; height:3.0em">
+          180
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 10  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#727272; width:3.0em; height:3.0em">
+          114
+        </td>
+
+        <!-- ROW: 10  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#717171; width:3.0em; height:3.0em">
+          113
+        </td>
+
+        <!-- ROW: 10  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#848484; width:3.0em; height:3.0em">
+          132
+        </td>
+
+        <!-- ROW: 10  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#8E8E8E; width:3.0em; height:3.0em">
+          142
+        </td>
+
+        <!-- ROW: 10  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#939393; width:3.0em; height:3.0em">
+          147
+        </td>
+
+        <!-- ROW: 10  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#979797; width:3.0em; height:3.0em">
+          151
+        </td>
+
+        <!-- ROW: 10  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#9C9C9C; width:3.0em; height:3.0em">
+          156
+        </td>
+
+        <!-- ROW: 10  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#9A9A9A; width:3.0em; height:3.0em">
+          154
+        </td>
+
+        <!-- ROW: 10  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#A2A2A2; width:3.0em; height:3.0em">
+          162
+        </td>
+
+        <!-- ROW: 10  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#B8B8B8; width:3.0em; height:3.0em">
+          184
+        </td>
+
+        <!-- ROW: 10  COL: 11 -->
+        <td class="light-pixel-cell" style="background-color:#B3B3B3; width:3.0em; height:3.0em">
+          179
+        </td>
+
+      </tr>
+
+    </table>
+  </body>
+<p>Display a table of values for a gray-scale image using auto-scale syntax.</p><pre class="codeinput">I = magic(10);
+disp(im2html(I,[]))
+</pre>
+  <head>
+
+    <style>
+      .image-table {
+        border: thin solid black;
+        table-layout: fixed;
+      }
+
+      .light-pixel-cell {
+        font-size: small;
+        font-family: Consolas, 'Courier New', monospace;
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+        padding: 1;
+        height: 4.5em;
+        width: 4.5em;
+        text-align: center;
+        color: black;
+      }
+
+      .dark-pixel-cell {
+        font-size: small;
+        font-family: Consolas, 'Courier New', monospace;
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+        padding: 1;
+        height: 4.5em;
+        width: 4.5em;
+        text-align: center;
+        color: white;
+      }
+
+    </style>
+
+  </head>
+  <body>
+    <table class="image-table">
+      <tr class="image-table-row">
+        <!-- ROW: 1  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#EAEAEA; width:3.0em; height:3.0em">
+          92
+        </td>
+
+        <!-- ROW: 1  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#FCFCFC; width:3.0em; height:3.0em">
+          99
+        </td>
+
+        <!-- ROW: 1  COL: 3 -->
+        <td class="dark-pixel-cell" style="background-color:#000000; width:3.0em; height:3.0em">
+          1
+        </td>
+
+        <!-- ROW: 1  COL: 4 -->
+        <td class="dark-pixel-cell" style="background-color:#121212; width:3.0em; height:3.0em">
+          8
+        </td>
+
+        <!-- ROW: 1  COL: 5 -->
+        <td class="dark-pixel-cell" style="background-color:#242424; width:3.0em; height:3.0em">
+          15
+        </td>
+
+        <!-- ROW: 1  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#AAAAAA; width:3.0em; height:3.0em">
+          67
+        </td>
+
+        <!-- ROW: 1  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#BCBCBC; width:3.0em; height:3.0em">
+          74
+        </td>
+
+        <!-- ROW: 1  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#818181; width:3.0em; height:3.0em">
+          51
+        </td>
+
+        <!-- ROW: 1  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#939393; width:3.0em; height:3.0em">
+          58
+        </td>
+
+        <!-- ROW: 1  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#646464; width:3.0em; height:3.0em">
+          40
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 2  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#FAFAFA; width:3.0em; height:3.0em">
+          98
+        </td>
+
+        <!-- ROW: 2  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#CBCBCB; width:3.0em; height:3.0em">
+          80
+        </td>
+
+        <!-- ROW: 2  COL: 3 -->
+        <td class="dark-pixel-cell" style="background-color:#0F0F0F; width:3.0em; height:3.0em">
+          7
+        </td>
+
+        <!-- ROW: 2  COL: 4 -->
+        <td class="dark-pixel-cell" style="background-color:#212121; width:3.0em; height:3.0em">
+          14
+        </td>
+
+        <!-- ROW: 2  COL: 5 -->
+        <td class="dark-pixel-cell" style="background-color:#272727; width:3.0em; height:3.0em">
+          16
+        </td>
+
+        <!-- ROW: 2  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#B9B9B9; width:3.0em; height:3.0em">
+          73
+        </td>
+
+        <!-- ROW: 2  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#8B8B8B; width:3.0em; height:3.0em">
+          55
+        </td>
+
+        <!-- ROW: 2  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#909090; width:3.0em; height:3.0em">
+          57
+        </td>
+
+        <!-- ROW: 2  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#A2A2A2; width:3.0em; height:3.0em">
+          64
+        </td>
+
+        <!-- ROW: 2  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#676767; width:3.0em; height:3.0em">
+          41
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 3  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#080808; width:3.0em; height:3.0em">
+          4
+        </td>
+
+        <!-- ROW: 3  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#CECECE; width:3.0em; height:3.0em">
+          81
+        </td>
+
+        <!-- ROW: 3  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#E0E0E0; width:3.0em; height:3.0em">
+          88
+        </td>
+
+        <!-- ROW: 3  COL: 4 -->
+        <td class="dark-pixel-cell" style="background-color:#313131; width:3.0em; height:3.0em">
+          20
+        </td>
+
+        <!-- ROW: 3  COL: 5 -->
+        <td class="dark-pixel-cell" style="background-color:#363636; width:3.0em; height:3.0em">
+          22
+        </td>
+
+        <!-- ROW: 3  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#898989; width:3.0em; height:3.0em">
+          54
+        </td>
+
+        <!-- ROW: 3  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#8E8E8E; width:3.0em; height:3.0em">
+          56
+        </td>
+
+        <!-- ROW: 3  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#A0A0A0; width:3.0em; height:3.0em">
+          63
+        </td>
+
+        <!-- ROW: 3  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#B2B2B2; width:3.0em; height:3.0em">
+          70
+        </td>
+
+        <!-- ROW: 3  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#767676; width:3.0em; height:3.0em">
+          47
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 4  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#D8D8D8; width:3.0em; height:3.0em">
+          85
+        </td>
+
+        <!-- ROW: 4  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#DEDEDE; width:3.0em; height:3.0em">
+          87
+        </td>
+
+        <!-- ROW: 4  COL: 3 -->
+        <td class="dark-pixel-cell" style="background-color:#2E2E2E; width:3.0em; height:3.0em">
+          19
+        </td>
+
+        <!-- ROW: 4  COL: 4 -->
+        <td class="dark-pixel-cell" style="background-color:#343434; width:3.0em; height:3.0em">
+          21
+        </td>
+
+        <!-- ROW: 4  COL: 5 -->
+        <td class="dark-pixel-cell" style="background-color:#050505; width:3.0em; height:3.0em">
+          3
+        </td>
+
+        <!-- ROW: 4  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#989898; width:3.0em; height:3.0em">
+          60
+        </td>
+
+        <!-- ROW: 4  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#9D9D9D; width:3.0em; height:3.0em">
+          62
+        </td>
+
+        <!-- ROW: 4  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#AFAFAF; width:3.0em; height:3.0em">
+          69
+        </td>
+
+        <!-- ROW: 4  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#B4B4B4; width:3.0em; height:3.0em">
+          71
+        </td>
+
+        <!-- ROW: 4  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#464646; width:3.0em; height:3.0em">
+          28
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 5  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#DBDBDB; width:3.0em; height:3.0em">
+          86
+        </td>
+
+        <!-- ROW: 5  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#EDEDED; width:3.0em; height:3.0em">
+          93
+        </td>
+
+        <!-- ROW: 5  COL: 3 -->
+        <td class="dark-pixel-cell" style="background-color:#3E3E3E; width:3.0em; height:3.0em">
+          25
+        </td>
+
+        <!-- ROW: 5  COL: 4 -->
+        <td class="dark-pixel-cell" style="background-color:#030303; width:3.0em; height:3.0em">
+          2
+        </td>
+
+        <!-- ROW: 5  COL: 5 -->
+        <td class="dark-pixel-cell" style="background-color:#151515; width:3.0em; height:3.0em">
+          9
+        </td>
+
+        <!-- ROW: 5  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#9B9B9B; width:3.0em; height:3.0em">
+          61
+        </td>
+
+        <!-- ROW: 5  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#ADADAD; width:3.0em; height:3.0em">
+          68
+        </td>
+
+        <!-- ROW: 5  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#BFBFBF; width:3.0em; height:3.0em">
+          75
+        </td>
+
+        <!-- ROW: 5  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#838383; width:3.0em; height:3.0em">
+          52
+        </td>
+
+        <!-- ROW: 5  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#555555; width:3.0em; height:3.0em">
+          34
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 6  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#292929; width:3.0em; height:3.0em">
+          17
+        </td>
+
+        <!-- ROW: 6  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#3B3B3B; width:3.0em; height:3.0em">
+          24
+        </td>
+
+        <!-- ROW: 6  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#C1C1C1; width:3.0em; height:3.0em">
+          76
+        </td>
+
+        <!-- ROW: 6  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#D3D3D3; width:3.0em; height:3.0em">
+          83
+        </td>
+
+        <!-- ROW: 6  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#E5E5E5; width:3.0em; height:3.0em">
+          90
+        </td>
+
+        <!-- ROW: 6  COL: 6 -->
+        <td class="dark-pixel-cell" style="background-color:#6A6A6A; width:3.0em; height:3.0em">
+          42
+        </td>
+
+        <!-- ROW: 6  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#7C7C7C; width:3.0em; height:3.0em">
+          49
+        </td>
+
+        <!-- ROW: 6  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#404040; width:3.0em; height:3.0em">
+          26
+        </td>
+
+        <!-- ROW: 6  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#525252; width:3.0em; height:3.0em">
+          33
+        </td>
+
+        <!-- ROW: 6  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#A5A5A5; width:3.0em; height:3.0em">
+          65
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 7  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#393939; width:3.0em; height:3.0em">
+          23
+        </td>
+
+        <!-- ROW: 7  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#0A0A0A; width:3.0em; height:3.0em">
+          5
+        </td>
+
+        <!-- ROW: 7  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#D1D1D1; width:3.0em; height:3.0em">
+          82
+        </td>
+
+        <!-- ROW: 7  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#E3E3E3; width:3.0em; height:3.0em">
+          89
+        </td>
+
+        <!-- ROW: 7  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#E8E8E8; width:3.0em; height:3.0em">
+          91
+        </td>
+
+        <!-- ROW: 7  COL: 6 -->
+        <td class="dark-pixel-cell" style="background-color:#797979; width:3.0em; height:3.0em">
+          48
+        </td>
+
+        <!-- ROW: 7  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#4B4B4B; width:3.0em; height:3.0em">
+          30
+        </td>
+
+        <!-- ROW: 7  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#505050; width:3.0em; height:3.0em">
+          32
+        </td>
+
+        <!-- ROW: 7  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#626262; width:3.0em; height:3.0em">
+          39
+        </td>
+
+        <!-- ROW: 7  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#A7A7A7; width:3.0em; height:3.0em">
+          66
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 8  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#C9C9C9; width:3.0em; height:3.0em">
+          79
+        </td>
+
+        <!-- ROW: 8  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#0D0D0D; width:3.0em; height:3.0em">
+          6
+        </td>
+
+        <!-- ROW: 8  COL: 3 -->
+        <td class="dark-pixel-cell" style="background-color:#1F1F1F; width:3.0em; height:3.0em">
+          13
+        </td>
+
+        <!-- ROW: 8  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#F2F2F2; width:3.0em; height:3.0em">
+          95
+        </td>
+
+        <!-- ROW: 8  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#F7F7F7; width:3.0em; height:3.0em">
+          97
+        </td>
+
+        <!-- ROW: 8  COL: 6 -->
+        <td class="dark-pixel-cell" style="background-color:#484848; width:3.0em; height:3.0em">
+          29
+        </td>
+
+        <!-- ROW: 8  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#4D4D4D; width:3.0em; height:3.0em">
+          31
+        </td>
+
+        <!-- ROW: 8  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#5F5F5F; width:3.0em; height:3.0em">
+          38
+        </td>
+
+        <!-- ROW: 8  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#717171; width:3.0em; height:3.0em">
+          45
+        </td>
+
+        <!-- ROW: 8  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#B7B7B7; width:3.0em; height:3.0em">
+          72
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 9  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#171717; width:3.0em; height:3.0em">
+          10
+        </td>
+
+        <!-- ROW: 9  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#1C1C1C; width:3.0em; height:3.0em">
+          12
+        </td>
+
+        <!-- ROW: 9  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#F0F0F0; width:3.0em; height:3.0em">
+          94
+        </td>
+
+        <!-- ROW: 9  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#F5F5F5; width:3.0em; height:3.0em">
+          96
+        </td>
+
+        <!-- ROW: 9  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#C6C6C6; width:3.0em; height:3.0em">
+          78
+        </td>
+
+        <!-- ROW: 9  COL: 6 -->
+        <td class="dark-pixel-cell" style="background-color:#585858; width:3.0em; height:3.0em">
+          35
+        </td>
+
+        <!-- ROW: 9  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#5D5D5D; width:3.0em; height:3.0em">
+          37
+        </td>
+
+        <!-- ROW: 9  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#6F6F6F; width:3.0em; height:3.0em">
+          44
+        </td>
+
+        <!-- ROW: 9  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#747474; width:3.0em; height:3.0em">
+          46
+        </td>
+
+        <!-- ROW: 9  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#868686; width:3.0em; height:3.0em">
+          53
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 10  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#1A1A1A; width:3.0em; height:3.0em">
+          11
+        </td>
+
+        <!-- ROW: 10  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#2C2C2C; width:3.0em; height:3.0em">
+          18
+        </td>
+
+        <!-- ROW: 10  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#FFFFFF; width:3.0em; height:3.0em">
+          100
+        </td>
+
+        <!-- ROW: 10  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#C4C4C4; width:3.0em; height:3.0em">
+          77
+        </td>
+
+        <!-- ROW: 10  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#D6D6D6; width:3.0em; height:3.0em">
+          84
+        </td>
+
+        <!-- ROW: 10  COL: 6 -->
+        <td class="dark-pixel-cell" style="background-color:#5A5A5A; width:3.0em; height:3.0em">
+          36
+        </td>
+
+        <!-- ROW: 10  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#6C6C6C; width:3.0em; height:3.0em">
+          43
+        </td>
+
+        <!-- ROW: 10  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#7E7E7E; width:3.0em; height:3.0em">
+          50
+        </td>
+
+        <!-- ROW: 10  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#434343; width:3.0em; height:3.0em">
+          27
+        </td>
+
+        <!-- ROW: 10  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#959595; width:3.0em; height:3.0em">
+          59
+        </td>
+
+      </tr>
+
+    </table>
+  </body>
+<p>Display a table of values for an RGB image.</p><pre class="codeinput">rgb = imread(<span class="string">'peppers.png'</span>);
+disp(im2html(rgb(88:97,200:209,:)))
+</pre>
+  <head>
+
+    <style>
+      .image-table {
+        border: thin solid black;
+        table-layout: fixed;
+      }
+
+      .light-pixel-cell {
+        font-size: small;
+        font-family: Consolas, 'Courier New', monospace;
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+        padding: 1;
+        height: 4.5em;
+        width: 4.5em;
+        text-align: center;
+        color: black;
+      }
+
+      .dark-pixel-cell {
+        font-size: small;
+        font-family: Consolas, 'Courier New', monospace;
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+        padding: 1;
+        height: 4.5em;
+        width: 4.5em;
+        text-align: center;
+        color: white;
+      }
+
+    </style>
+
+  </head>
+  <body>
+    <table class="image-table">
+      <tr class="image-table-row">
+        <!-- ROW: 1  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#50324D; width:5.0em; height:5.0em">
+          R:80<br \>G:50<br \>B:77
+        </td>
+
+        <!-- ROW: 1  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#4E2F4A; width:5.0em; height:5.0em">
+          R:78<br \>G:47<br \>B:74
+        </td>
+
+        <!-- ROW: 1  COL: 3 -->
+        <td class="dark-pixel-cell" style="background-color:#4C2F47; width:5.0em; height:5.0em">
+          R:76<br \>G:47<br \>B:71
+        </td>
+
+        <!-- ROW: 1  COL: 4 -->
+        <td class="dark-pixel-cell" style="background-color:#5F4149; width:5.0em; height:5.0em">
+          R:95<br \>G:65<br \>B:73
+        </td>
+
+        <!-- ROW: 1  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#9E8175; width:5.0em; height:5.0em">
+          R:158<br \>G:129<br \>B:117
+        </td>
+
+        <!-- ROW: 1  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#C1A696; width:5.0em; height:5.0em">
+          R:193<br \>G:166<br \>B:150
+        </td>
+
+        <!-- ROW: 1  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#CBB19E; width:5.0em; height:5.0em">
+          R:203<br \>G:177<br \>B:158
+        </td>
+
+        <!-- ROW: 1  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#D5BBA6; width:5.0em; height:5.0em">
+          R:213<br \>G:187<br \>B:166
+        </td>
+
+        <!-- ROW: 1  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#D9BFA9; width:5.0em; height:5.0em">
+          R:217<br \>G:191<br \>B:169
+        </td>
+
+        <!-- ROW: 1  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#DDC3AA; width:5.0em; height:5.0em">
+          R:221<br \>G:195<br \>B:170
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 2  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#4C2F4D; width:5.0em; height:5.0em">
+          R:76<br \>G:47<br \>B:77
+        </td>
+
+        <!-- ROW: 2  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#4B2E47; width:5.0em; height:5.0em">
+          R:75<br \>G:46<br \>B:71
+        </td>
+
+        <!-- ROW: 2  COL: 3 -->
+        <td class="dark-pixel-cell" style="background-color:#5B3F48; width:5.0em; height:5.0em">
+          R:91<br \>G:63<br \>B:72
+        </td>
+
+        <!-- ROW: 2  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#9E8277; width:5.0em; height:5.0em">
+          R:158<br \>G:130<br \>B:119
+        </td>
+
+        <!-- ROW: 2  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#C0A58D; width:5.0em; height:5.0em">
+          R:192<br \>G:165<br \>B:141
+        </td>
+
+        <!-- ROW: 2  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#CCB098; width:5.0em; height:5.0em">
+          R:204<br \>G:176<br \>B:152
+        </td>
+
+        <!-- ROW: 2  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#D7BBA5; width:5.0em; height:5.0em">
+          R:215<br \>G:187<br \>B:165
+        </td>
+
+        <!-- ROW: 2  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#DBC0AA; width:5.0em; height:5.0em">
+          R:219<br \>G:192<br \>B:170
+        </td>
+
+        <!-- ROW: 2  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#E0C3AD; width:5.0em; height:5.0em">
+          R:224<br \>G:195<br \>B:173
+        </td>
+
+        <!-- ROW: 2  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#E4C8AE; width:5.0em; height:5.0em">
+          R:228<br \>G:200<br \>B:174
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 3  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#4D2D46; width:5.0em; height:5.0em">
+          R:77<br \>G:45<br \>B:70
+        </td>
+
+        <!-- ROW: 3  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#52333F; width:5.0em; height:5.0em">
+          R:82<br \>G:51<br \>B:63
+        </td>
+
+        <!-- ROW: 3  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#947872; width:5.0em; height:5.0em">
+          R:148<br \>G:120<br \>B:114
+        </td>
+
+        <!-- ROW: 3  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#C0A692; width:5.0em; height:5.0em">
+          R:192<br \>G:166<br \>B:146
+        </td>
+
+        <!-- ROW: 3  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#CBB099; width:5.0em; height:5.0em">
+          R:203<br \>G:176<br \>B:153
+        </td>
+
+        <!-- ROW: 3  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#D3B69F; width:5.0em; height:5.0em">
+          R:211<br \>G:182<br \>B:159
+        </td>
+
+        <!-- ROW: 3  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#DDBFA8; width:5.0em; height:5.0em">
+          R:221<br \>G:191<br \>B:168
+        </td>
+
+        <!-- ROW: 3  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#E1C5AD; width:5.0em; height:5.0em">
+          R:225<br \>G:197<br \>B:173
+        </td>
+
+        <!-- ROW: 3  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#E1C8B0; width:5.0em; height:5.0em">
+          R:225<br \>G:200<br \>B:176
+        </td>
+
+        <!-- ROW: 3  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#E6CBB1; width:5.0em; height:5.0em">
+          R:230<br \>G:203<br \>B:177
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 4  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#4B2B41; width:5.0em; height:5.0em">
+          R:75<br \>G:43<br \>B:65
+        </td>
+
+        <!-- ROW: 4  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#7E5F61; width:5.0em; height:5.0em">
+          R:126<br \>G:&nbsp;95<br \>B:&nbsp;97
+        </td>
+
+        <!-- ROW: 4  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#BAA091; width:5.0em; height:5.0em">
+          R:186<br \>G:160<br \>B:145
+        </td>
+
+        <!-- ROW: 4  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#C5AD9A; width:5.0em; height:5.0em">
+          R:197<br \>G:173<br \>B:154
+        </td>
+
+        <!-- ROW: 4  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#D0B4A0; width:5.0em; height:5.0em">
+          R:208<br \>G:180<br \>B:160
+        </td>
+
+        <!-- ROW: 4  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#DCC0AB; width:5.0em; height:5.0em">
+          R:220<br \>G:192<br \>B:171
+        </td>
+
+        <!-- ROW: 4  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#DFC2AB; width:5.0em; height:5.0em">
+          R:223<br \>G:194<br \>B:171
+        </td>
+
+        <!-- ROW: 4  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#DEC3A9; width:5.0em; height:5.0em">
+          R:222<br \>G:195<br \>B:169
+        </td>
+
+        <!-- ROW: 4  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#E8CEB3; width:5.0em; height:5.0em">
+          R:232<br \>G:206<br \>B:179
+        </td>
+
+        <!-- ROW: 4  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#F6DCC1; width:5.0em; height:5.0em">
+          R:246<br \>G:220<br \>B:193
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 5  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#644648; width:5.0em; height:5.0em">
+          R:100<br \>G:&nbsp;70<br \>B:&nbsp;72
+        </td>
+
+        <!-- ROW: 5  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#AE9287; width:5.0em; height:5.0em">
+          R:174<br \>G:146<br \>B:135
+        </td>
+
+        <!-- ROW: 5  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#C1A997; width:5.0em; height:5.0em">
+          R:193<br \>G:169<br \>B:151
+        </td>
+
+        <!-- ROW: 5  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#C6AF9E; width:5.0em; height:5.0em">
+          R:198<br \>G:175<br \>B:158
+        </td>
+
+        <!-- ROW: 5  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#D3BDAA; width:5.0em; height:5.0em">
+          R:211<br \>G:189<br \>B:170
+        </td>
+
+        <!-- ROW: 5  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#DAC0A8; width:5.0em; height:5.0em">
+          R:218<br \>G:192<br \>B:168
+        </td>
+
+        <!-- ROW: 5  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#E2C6AC; width:5.0em; height:5.0em">
+          R:226<br \>G:198<br \>B:172
+        </td>
+
+        <!-- ROW: 5  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#EED4B8; width:5.0em; height:5.0em">
+          R:238<br \>G:212<br \>B:184
+        </td>
+
+        <!-- ROW: 5  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#F6DEC3; width:5.0em; height:5.0em">
+          R:246<br \>G:222<br \>B:195
+        </td>
+
+        <!-- ROW: 5  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#F8E0C9; width:5.0em; height:5.0em">
+          R:248<br \>G:224<br \>B:201
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 6  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#987970; width:5.0em; height:5.0em">
+          R:152<br \>G:121<br \>B:112
+        </td>
+
+        <!-- ROW: 6  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#C2A696; width:5.0em; height:5.0em">
+          R:194<br \>G:166<br \>B:150
+        </td>
+
+        <!-- ROW: 6  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#C2A997; width:5.0em; height:5.0em">
+          R:194<br \>G:169<br \>B:151
+        </td>
+
+        <!-- ROW: 6  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#D1BAA3; width:5.0em; height:5.0em">
+          R:209<br \>G:186<br \>B:163
+        </td>
+
+        <!-- ROW: 6  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#D5BCA1; width:5.0em; height:5.0em">
+          R:213<br \>G:188<br \>B:161
+        </td>
+
+        <!-- ROW: 6  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#E1C7AA; width:5.0em; height:5.0em">
+          R:225<br \>G:199<br \>B:170
+        </td>
+
+        <!-- ROW: 6  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#EDD4BA; width:5.0em; height:5.0em">
+          R:237<br \>G:212<br \>B:186
+        </td>
+
+        <!-- ROW: 6  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#F1D8C1; width:5.0em; height:5.0em">
+          R:241<br \>G:216<br \>B:193
+        </td>
+
+        <!-- ROW: 6  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#F2DBC4; width:5.0em; height:5.0em">
+          R:242<br \>G:219<br \>B:196
+        </td>
+
+        <!-- ROW: 6  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#F3DBC2; width:5.0em; height:5.0em">
+          R:243<br \>G:219<br \>B:194
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 7  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#B89E91; width:5.0em; height:5.0em">
+          R:184<br \>G:158<br \>B:145
+        </td>
+
+        <!-- ROW: 7  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#C0A493; width:5.0em; height:5.0em">
+          R:192<br \>G:164<br \>B:147
+        </td>
+
+        <!-- ROW: 7  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#CFB49E; width:5.0em; height:5.0em">
+          R:207<br \>G:180<br \>B:158
+        </td>
+
+        <!-- ROW: 7  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#D8BEA6; width:5.0em; height:5.0em">
+          R:216<br \>G:190<br \>B:166
+        </td>
+
+        <!-- ROW: 7  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#E2C6AF; width:5.0em; height:5.0em">
+          R:226<br \>G:198<br \>B:175
+        </td>
+
+        <!-- ROW: 7  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#E9CFBA; width:5.0em; height:5.0em">
+          R:233<br \>G:207<br \>B:186
+        </td>
+
+        <!-- ROW: 7  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#EBD1BC; width:5.0em; height:5.0em">
+          R:235<br \>G:209<br \>B:188
+        </td>
+
+        <!-- ROW: 7  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#EDD4BD; width:5.0em; height:5.0em">
+          R:237<br \>G:212<br \>B:189
+        </td>
+
+        <!-- ROW: 7  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#F2DAC0; width:5.0em; height:5.0em">
+          R:242<br \>G:218<br \>B:192
+        </td>
+
+        <!-- ROW: 7  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#F9DEC4; width:5.0em; height:5.0em">
+          R:249<br \>G:222<br \>B:196
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 8  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#BBA18C; width:5.0em; height:5.0em">
+          R:187<br \>G:161<br \>B:140
+        </td>
+
+        <!-- ROW: 8  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#C8AA92; width:5.0em; height:5.0em">
+          R:200<br \>G:170<br \>B:146
+        </td>
+
+        <!-- ROW: 8  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#D8BDA2; width:5.0em; height:5.0em">
+          R:216<br \>G:189<br \>B:162
+        </td>
+
+        <!-- ROW: 8  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#DEC6AD; width:5.0em; height:5.0em">
+          R:222<br \>G:198<br \>B:173
+        </td>
+
+        <!-- ROW: 8  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#E2CCB7; width:5.0em; height:5.0em">
+          R:226<br \>G:204<br \>B:183
+        </td>
+
+        <!-- ROW: 8  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#E9D1BB; width:5.0em; height:5.0em">
+          R:233<br \>G:209<br \>B:187
+        </td>
+
+        <!-- ROW: 8  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#EDD2BB; width:5.0em; height:5.0em">
+          R:237<br \>G:210<br \>B:187
+        </td>
+
+        <!-- ROW: 8  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#F2D8C0; width:5.0em; height:5.0em">
+          R:242<br \>G:216<br \>B:192
+        </td>
+
+        <!-- ROW: 8  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#F1DDC4; width:5.0em; height:5.0em">
+          R:241<br \>G:221<br \>B:196
+        </td>
+
+        <!-- ROW: 8  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#F5DEC5; width:5.0em; height:5.0em">
+          R:245<br \>G:222<br \>B:197
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 9  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#BCA288; width:5.0em; height:5.0em">
+          R:188<br \>G:162<br \>B:136
+        </td>
+
+        <!-- ROW: 9  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#D3B699; width:5.0em; height:5.0em">
+          R:211<br \>G:182<br \>B:153
+        </td>
+
+        <!-- ROW: 9  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#D8C1A3; width:5.0em; height:5.0em">
+          R:216<br \>G:193<br \>B:163
+        </td>
+
+        <!-- ROW: 9  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#DAC5A9; width:5.0em; height:5.0em">
+          R:218<br \>G:197<br \>B:169
+        </td>
+
+        <!-- ROW: 9  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#E7CFB6; width:5.0em; height:5.0em">
+          R:231<br \>G:207<br \>B:182
+        </td>
+
+        <!-- ROW: 9  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#E8D1B9; width:5.0em; height:5.0em">
+          R:232<br \>G:209<br \>B:185
+        </td>
+
+        <!-- ROW: 9  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#EDD5BB; width:5.0em; height:5.0em">
+          R:237<br \>G:213<br \>B:187
+        </td>
+
+        <!-- ROW: 9  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#EED5BC; width:5.0em; height:5.0em">
+          R:238<br \>G:213<br \>B:188
+        </td>
+
+        <!-- ROW: 9  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#EDD5BC; width:5.0em; height:5.0em">
+          R:237<br \>G:213<br \>B:188
+        </td>
+
+        <!-- ROW: 9  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#F4DDC2; width:5.0em; height:5.0em">
+          R:244<br \>G:221<br \>B:194
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 10  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#C7AE92; width:5.0em; height:5.0em">
+          R:199<br \>G:174<br \>B:146
+        </td>
+
+        <!-- ROW: 10  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#D4BBA0; width:5.0em; height:5.0em">
+          R:212<br \>G:187<br \>B:160
+        </td>
+
+        <!-- ROW: 10  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#D4BDA4; width:5.0em; height:5.0em">
+          R:212<br \>G:189<br \>B:164
+        </td>
+
+        <!-- ROW: 10  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#DFC7B0; width:5.0em; height:5.0em">
+          R:223<br \>G:199<br \>B:176
+        </td>
+
+        <!-- ROW: 10  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#E7CEB7; width:5.0em; height:5.0em">
+          R:231<br \>G:206<br \>B:183
+        </td>
+
+        <!-- ROW: 10  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#E5D0B6; width:5.0em; height:5.0em">
+          R:229<br \>G:208<br \>B:182
+        </td>
+
+        <!-- ROW: 10  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#E8D1B7; width:5.0em; height:5.0em">
+          R:232<br \>G:209<br \>B:183
+        </td>
+
+        <!-- ROW: 10  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#E9CFB5; width:5.0em; height:5.0em">
+          R:233<br \>G:207<br \>B:181
+        </td>
+
+        <!-- ROW: 10  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#F3D9BE; width:5.0em; height:5.0em">
+          R:243<br \>G:217<br \>B:190
+        </td>
+
+        <!-- ROW: 10  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#FCE3C7; width:5.0em; height:5.0em">
+          R:252<br \>G:227<br \>B:199
+        </td>
+
+      </tr>
+
+    </table>
+  </body>
+<p>Display a table of values for an indexed image.</p><pre class="codeinput">[X,map] = imread(<span class="string">'trees.tif'</span>);
+disp(im2html(X(1:4,1:4),map))
+</pre>
+  <head>
+
+    <style>
+      .image-table {
+        border: thin solid black;
+        table-layout: fixed;
+      }
+
+      .light-pixel-cell {
+        font-size: small;
+        font-family: Consolas, 'Courier New', monospace;
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+        padding: 1;
+        height: 4.5em;
+        width: 4.5em;
+        text-align: center;
+        color: black;
+      }
+
+      .dark-pixel-cell {
+        font-size: small;
+        font-family: Consolas, 'Courier New', monospace;
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+        padding: 1;
+        height: 4.5em;
+        width: 4.5em;
+        text-align: center;
+        color: white;
+      }
+
+    </style>
+
+  </head>
+  <body>
+    <table class="image-table">
+      <tr class="image-table-row">
+        <!-- ROW: 1  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#9CC6BD; width:6.0em; height:6.0em">
+          &lt;108><br \>R:0.61<br \>G:0.78<br \>B:0.74
+        </td>
+
+        <!-- ROW: 1  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#D6D6B5; width:6.0em; height:6.0em">
+          &lt;116><br \>R:0.84<br \>G:0.84<br \>B:0.71
+        </td>
+
+        <!-- ROW: 1  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#94B59C; width:6.0em; height:6.0em">
+          &lt;98><br \>R:0.58<br \>G:0.71<br \>B:0.61
+        </td>
+
+        <!-- ROW: 1  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#9CC6BD; width:6.0em; height:6.0em">
+          &lt;108><br \>R:0.61<br \>G:0.78<br \>B:0.74
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 2  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#A5CEEF; width:6.0em; height:6.0em">
+          &lt;112><br \>R:0.65<br \>G:0.81<br \>B:0.94
+        </td>
+
+        <!-- ROW: 2  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#A5CEEF; width:6.0em; height:6.0em">
+          &lt;112><br \>R:0.65<br \>G:0.81<br \>B:0.94
+        </td>
+
+        <!-- ROW: 2  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#A5CEEF; width:6.0em; height:6.0em">
+          &lt;112><br \>R:0.65<br \>G:0.81<br \>B:0.94
+        </td>
+
+        <!-- ROW: 2  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#8CBDE7; width:6.0em; height:6.0em">
+          &lt;105><br \>R:0.55<br \>G:0.74<br \>B:0.91
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 3  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#A5CEEF; width:6.0em; height:6.0em">
+          &lt;112><br \>R:0.65<br \>G:0.81<br \>B:0.94
+        </td>
+
+        <!-- ROW: 3  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#A5CEEF; width:6.0em; height:6.0em">
+          &lt;112><br \>R:0.65<br \>G:0.81<br \>B:0.94
+        </td>
+
+        <!-- ROW: 3  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#8CBDE7; width:6.0em; height:6.0em">
+          &lt;105><br \>R:0.55<br \>G:0.74<br \>B:0.91
+        </td>
+
+        <!-- ROW: 3  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#A5CEEF; width:6.0em; height:6.0em">
+          &lt;112><br \>R:0.65<br \>G:0.81<br \>B:0.94
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 4  COL: 1 -->
+        <td class="light-pixel-cell" style="background-color:#8CBDE7; width:6.0em; height:6.0em">
+          &lt;105><br \>R:0.55<br \>G:0.74<br \>B:0.91
+        </td>
+
+        <!-- ROW: 4  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#8CBDE7; width:6.0em; height:6.0em">
+          &lt;105><br \>R:0.55<br \>G:0.74<br \>B:0.91
+        </td>
+
+        <!-- ROW: 4  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#8CBDE7; width:6.0em; height:6.0em">
+          &lt;105><br \>R:0.55<br \>G:0.74<br \>B:0.91
+        </td>
+
+        <!-- ROW: 4  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#8CBDE7; width:6.0em; height:6.0em">
+          &lt;105><br \>R:0.55<br \>G:0.74<br \>B:0.91
+        </td>
+
+      </tr>
+
+    </table>
+  </body>
+<p>Suppress the display of pixel values.</p><pre class="codeinput">I = imread(<span class="string">'pout.tif'</span>);
+disp(im2html(I(125:134, 104:114),<span class="string">'ShowPixelValues'</span>,<span class="string">'off'</span>))
+</pre>
+  <head>
+
+    <style>
+      .image-table {
+        border: thin solid black;
+        table-layout: fixed;
+      }
+
+      .light-pixel-cell {
+        font-size: small;
+        font-family: Consolas, 'Courier New', monospace;
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+        padding: 1;
+        height: 4.5em;
+        width: 4.5em;
+        text-align: center;
+        color: black;
+      }
+
+      .dark-pixel-cell {
+        font-size: small;
+        font-family: Consolas, 'Courier New', monospace;
+        border-style: solid;
+        border-width: thin;
+        border-color: black;
+        padding: 1;
+        height: 4.5em;
+        width: 4.5em;
+        text-align: center;
+        color: white;
+      }
+
+    </style>
+
+  </head>
+  <body>
+    <table class="image-table">
+      <tr class="image-table-row">
+        <!-- ROW: 1  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#707070; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 1  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#707070; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 1  COL: 3 -->
+        <td class="dark-pixel-cell" style="background-color:#6B6B6B; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 1  COL: 4 -->
+        <td class="dark-pixel-cell" style="background-color:#616161; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 1  COL: 5 -->
+        <td class="dark-pixel-cell" style="background-color:#5B5B5B; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 1  COL: 6 -->
+        <td class="dark-pixel-cell" style="background-color:#575757; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 1  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#565656; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 1  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#545454; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 1  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#535353; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 1  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#545454; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 1  COL: 11 -->
+        <td class="dark-pixel-cell" style="background-color:#545454; width:3.0em; height:3.0em">
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 2  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#787878; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 2  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#7E7E7E; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 2  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#808080; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 2  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#808080; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 2  COL: 5 -->
+        <td class="dark-pixel-cell" style="background-color:#727272; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 2  COL: 6 -->
+        <td class="dark-pixel-cell" style="background-color:#656565; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 2  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#575757; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 2  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#575757; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 2  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#565656; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 2  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#565656; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 2  COL: 11 -->
+        <td class="dark-pixel-cell" style="background-color:#575757; width:3.0em; height:3.0em">
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 3  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#747474; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 3  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#848484; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 3  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#8A8A8A; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 3  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#8E8E8E; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 3  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#8E8E8E; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 3  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#848484; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 3  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#626262; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 3  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#5B5B5B; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 3  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#595959; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 3  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#575757; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 3  COL: 11 -->
+        <td class="dark-pixel-cell" style="background-color:#595959; width:3.0em; height:3.0em">
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 4  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#6E6E6E; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 4  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#858585; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 4  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#919191; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 4  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#969696; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 4  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#959595; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 4  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#939393; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 4  COL: 7 -->
+        <td class="dark-pixel-cell" style="background-color:#797979; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 4  COL: 8 -->
+        <td class="dark-pixel-cell" style="background-color:#656565; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 4  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#5D5D5D; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 4  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#5D5D5D; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 4  COL: 11 -->
+        <td class="dark-pixel-cell" style="background-color:#5B5B5B; width:3.0em; height:3.0em">
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 5  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#6D6D6D; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 5  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#858585; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 5  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#919191; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 5  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#9C9C9C; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 5  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#9F9F9F; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 5  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#999999; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 5  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#8E8E8E; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 5  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#828282; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 5  COL: 9 -->
+        <td class="dark-pixel-cell" style="background-color:#6D6D6D; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 5  COL: 10 -->
+        <td class="dark-pixel-cell" style="background-color:#666666; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 5  COL: 11 -->
+        <td class="dark-pixel-cell" style="background-color:#636363; width:3.0em; height:3.0em">
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 6  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#6D6D6D; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 6  COL: 2 -->
+        <td class="light-pixel-cell" style="background-color:#838383; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 6  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#8F8F8F; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 6  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#9A9A9A; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 6  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#A9A9A9; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 6  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#ABABAB; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 6  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#A9A9A9; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 6  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#A9A9A9; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 6  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#9A9A9A; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 6  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#8B8B8B; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 6  COL: 11 -->
+        <td class="light-pixel-cell" style="background-color:#898989; width:3.0em; height:3.0em">
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 7  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#6C6C6C; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 7  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#7E7E7E; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 7  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#8E8E8E; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 7  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#979797; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 7  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#A9A9A9; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 7  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#AFAFAF; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 7  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#BABABA; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 7  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#BEBEBE; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 7  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#BDBDBD; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 7  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#B4B4B4; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 7  COL: 11 -->
+        <td class="light-pixel-cell" style="background-color:#B3B3B3; width:3.0em; height:3.0em">
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 8  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#6E6E6E; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 8  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#797979; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 8  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#898989; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 8  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#949494; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 8  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#9E9E9E; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 8  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#A7A7A7; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 8  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#B1B1B1; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 8  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#BBBBBB; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 8  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#C7C7C7; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 8  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#BDBDBD; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 8  COL: 11 -->
+        <td class="light-pixel-cell" style="background-color:#B9B9B9; width:3.0em; height:3.0em">
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 9  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#707070; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 9  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#757575; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 9  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#888888; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 9  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#929292; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 9  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#979797; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 9  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#9F9F9F; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 9  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#9F9F9F; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 9  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#A3A3A3; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 9  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#BDBDBD; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 9  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#BDBDBD; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 9  COL: 11 -->
+        <td class="light-pixel-cell" style="background-color:#B4B4B4; width:3.0em; height:3.0em">
+        </td>
+
+      </tr>
+
+      <tr class="image-table-row">
+        <!-- ROW: 10  COL: 1 -->
+        <td class="dark-pixel-cell" style="background-color:#727272; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 10  COL: 2 -->
+        <td class="dark-pixel-cell" style="background-color:#717171; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 10  COL: 3 -->
+        <td class="light-pixel-cell" style="background-color:#848484; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 10  COL: 4 -->
+        <td class="light-pixel-cell" style="background-color:#8E8E8E; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 10  COL: 5 -->
+        <td class="light-pixel-cell" style="background-color:#939393; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 10  COL: 6 -->
+        <td class="light-pixel-cell" style="background-color:#979797; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 10  COL: 7 -->
+        <td class="light-pixel-cell" style="background-color:#9C9C9C; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 10  COL: 8 -->
+        <td class="light-pixel-cell" style="background-color:#9A9A9A; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 10  COL: 9 -->
+        <td class="light-pixel-cell" style="background-color:#A2A2A2; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 10  COL: 10 -->
+        <td class="light-pixel-cell" style="background-color:#B8B8B8; width:3.0em; height:3.0em">
+        </td>
+
+        <!-- ROW: 10  COL: 11 -->
+        <td class="light-pixel-cell" style="background-color:#B3B3B3; width:3.0em; height:3.0em">
+        </td>
+
+      </tr>
+
+    </table>
+  </body>
+<p>Steve Eddins</p><p class="footer">Copyright 2011 The MathWorks, Inc.<br>
+      Published with MATLAB&reg; 7.12<br></p></div><!--
+##### SOURCE BEGIN #####
+%% im2html Examples
+
+%%
+% Display a table of values for a gray-scale image.
+
+I = imread('pout.tif');
+disp(im2html(I(125:134, 104:114)))
+
+%%
+% Display a table of values for a gray-scale image using auto-scale syntax.
+
+I = magic(10);
+disp(im2html(I,[]))
+
+%%
+% Display a table of values for an RGB image.
+
+rgb = imread('peppers.png');
+disp(im2html(rgb(88:97,200:209,:)))
+
+%%
+% Display a table of values for an indexed image.
+
+[X,map] = imread('trees.tif');
+disp(im2html(X(1:4,1:4),map))
+
+%%
+% Suppress the display of pixel values.
+
+I = imread('pout.tif');
+disp(im2html(I(125:134, 104:114),'ShowPixelValues','off'))
+
+%%
+% Steve Eddins
+% Copyright 2011 The MathWorks, Inc.
+##### SOURCE END #####
+--></body></html>

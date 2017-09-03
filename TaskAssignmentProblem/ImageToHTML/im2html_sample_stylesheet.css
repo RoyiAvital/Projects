@@ -1,0 +1,42 @@
+/*
+ * Sample stylesheet for use with im2html.m
+ *
+ * This sample stylesheet is provided to illustrate how to customize display
+ * styles. It displays image pixels with thick red borders and pixel values
+ * with either yellow text (on dark pixels) or blue text (on light pixels).
+ *
+ * Steve Eddins
+ * Copyright 2011 The MathWorks, Inc.
+ */
+
+.image-table {
+  border: thick solid red;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.light-pixel-cell {
+  font-size: small;
+  font-family: Consolas, ''Courier New'', monospace;
+  border-style: solid;
+  border-width: thick;
+  border-color: red;
+  padding: 0;
+  height: 4.5em;
+  width: 4.5em;
+  text-align: center;
+  color: blue;
+}
+
+.dark-pixel-cell {
+  font-size: small;
+  font-family: Consolas, ''Courier New'', monospace;
+  border-style: solid;
+  border-width: thick;
+  border-color: red;
+  padding: 0;
+  height: 4.5em;
+  width: 4.5em;
+  text-align: center;
+  color: yellow;
+}

@@ -1,0 +1,13 @@
+File Exchange description
+
+SUMMARY
+
+Convert image pixels to HTML table showing pixel colors and values
+
+DESCRIPTION
+
+im2html produces HTML text containing a table that displays the image
+pixel colors and values. When called with no output argument, im2html
+displays the HTML in the MATLAB Web Browser. When called with an output
+argument, im2html returns the HTML text as a string. This form can be
+useful when publishing a MATLAB file.
