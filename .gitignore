@@ -18,6 +18,7 @@ SingularValueDecomposition/KnowledgeBase/*
 *.pptx
 *.ppt
 #*.pdf
+*.md~
 
 # MS Office Temp Files
 ~$*.docx
