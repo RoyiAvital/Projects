@@ -60,6 +60,7 @@ for ii = 1:numIterations
     
     vX(activeIdx) = (mA(:, activeIdx).' * vR) ./ (mA(:, activeIdx).' * mA(:, activeIdx));
     vR = vR - (mA(:, activeIdx) * vX(activeIdx));
+    % vR = vB - (mA(:, vActiveIdx) * vX(vActiveIdx));
     
     mX(:, ii) = vX;
     vCostFun(ii) = (0.5 * sum(((mA * vX) - vB) .^ 2)) + (paramLambda * sum(abs(vX) > tolVal));

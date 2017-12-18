@@ -62,11 +62,11 @@ for ii = 1:numIterations
     
     vResNorm(ii) = norm(vR);
     
-    [~, activeIdx] = max(abs(mAA.' * vR));
+    [~, activeIdx] = max(abs(mA.' * vR));
     vActiveIdx(activeIdx) = true([1, 1]);
     
     vX(vActiveIdx) = mA(:, vActiveIdx) \ vB;
-    vR = vR - (mA(:, vActiveIdx) * vX(vActiveIdx));
+    vR = vB - (mA(:, vActiveIdx) * vX(vActiveIdx));
     
     mX(:, ii) = vX;
     vCostFun(ii) = (0.5 * sum(((mA * vX) - vB) .^ 2)) + (paramLambda * sum(abs(vX) > tolVal));
