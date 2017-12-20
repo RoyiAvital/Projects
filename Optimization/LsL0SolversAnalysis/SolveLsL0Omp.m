@@ -14,7 +14,7 @@ function [ vX, mX ] = SolveLsL0Omp( mA, vB, paramLambda, numIterations, tolVal )
 %                           Type: 'Single' / 'Double'.
 %                           Range: (-inf, inf).
 %   - paramLambda       -   Parameter Lambda.
-%                           The L1 Regularization parameter.
+%                           The L0 Regularization parameter.
 %                           Structure: Scalar.
 %                           Type: 'Single' / 'Double'.
 %                           Range: (0, inf).
