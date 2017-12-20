@@ -28,7 +28,7 @@ generateFigures = OFF;
 numRows = 6;
 numCols = 25; %<! Number of Vectors - i (K in the question)
 
-paramLambda = 0;
+paramLambda = 0.3;
 tolVal      = 1e-6;
 
 numIterations   = 500;

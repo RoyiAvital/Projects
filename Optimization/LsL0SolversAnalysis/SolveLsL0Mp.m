@@ -14,7 +14,7 @@ function [ vX, mX ] = SolveLsL0Mp( mA, vB, paramLambda, numIterations, tolVal )
 %                           Type: 'Single' / 'Double'.
 %                           Range: (-inf, inf).
 %   - paramLambda       -   Parameter Lambda.
-%                           The L1 Regularization parameter.
+%                           The L0 Regularization parameter.
 %                           Structure: Scalar.
 %                           Type: 'Single' / 'Double'.
 %                           Range: (0, inf).
@@ -55,12 +55,22 @@ for ii = 1:numIterations
     
     vResNorm(ii) = norm(vR);
     
+    % Maximum Correlation minimizes the L2 of the Error
     [~, activeIdx] = max(abs(mA.' * vR));
+    % Which index minimizes the L2 Squared Error given best coefficient
+    % [~, activeIdx] = min(sum((mA .* ((vR.' * mA) ./ sum(mA .^ 2)) - vR) .^ 2));
+    
     vActiveIdx(activeIdx) = true([1, 1]);
     
-    vX(activeIdx) = (mA(:, activeIdx).' * vR) ./ (mA(:, activeIdx).' * mA(:, activeIdx));
-    vR = vR - (mA(:, activeIdx) * vX(activeIdx));
-    % vR = vB - (mA(:, vActiveIdx) * vX(vActiveIdx));
+    % Solve the equation with respect to the residual
+    coeffVal = (mA(:, activeIdx).' * vR) ./ (mA(:, activeIdx).' * mA(:, activeIdx));
+    % Update the coefficient according to the current solution
+    vX(activeIdx) = vX(activeIdx) + coeffVal;
+    
+    % Remove the current reduction in error
+    vR = vR - (mA(:, activeIdx) * coeffVal);
+    % Equivalent
+    % vR = vB - (mA * vX);
     
     mX(:, ii) = vX;
     vCostFun(ii) = (0.5 * sum(((mA * vX) - vB) .^ 2)) + (paramLambda * sum(abs(vX) > tolVal));
