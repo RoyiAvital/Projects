@@ -55,9 +55,13 @@ for ii = 1:numIterations
     
     vResNorm(ii) = norm(vR);
     
-    % Maximum Correlation minimizes the L2 of the Error
-    [~, activeIdx] = max(abs(mA.' * vR));
+    % Maximum Correlation minimizes the L2 of the Error given atoms are
+    % normalized
+    % [~, activeIdx] = max(abs(mA.' * vR));
+    
     % Which index minimizes the L2 Squared Error given best coefficient
+    [~, activeIdx] = max(abs(((vR.' * mA) .^ 2) ./ sum(mA .^ 2)));
+    % Equivalent
     % [~, activeIdx] = min(sum((mA .* ((vR.' * mA) ./ sum(mA .^ 2)) - vR) .^ 2));
     
     vActiveIdx(activeIdx) = true([1, 1]);
