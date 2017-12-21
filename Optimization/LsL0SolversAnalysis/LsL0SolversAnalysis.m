@@ -28,7 +28,7 @@ generateFigures = OFF;
 numRows = 6;
 numCols = 25; %<! Number of Vectors - i (K in the question)
 
-paramLambda = 0.3;
+paramLambda = 0.1;
 tolVal      = 1e-6;
 
 numIterations   = 500;
@@ -83,21 +83,21 @@ disp([' ']);
 %% Display Results
 
 
-hAxes       = subplot_tight(2, 1, 2, [0.09, 0.09]);
-hLineSeries = plot(1:numIterations, 10 * log10(mSolErrNorm));
-set(hLineSeries, 'LineWidth', lineWidthNormal);
-set(get(hAxes, 'Title'), 'String', ['Solution Error Norm'], ...
-    'FontSize', fontSizeTitle);
-set(get(hAxes, 'XLabel'), 'String', 'Iteration Number', ...
-    'FontSize', fontSizeAxis);
-set(get(hAxes, 'YLabel'), 'String', 'Objective Function Value', ...
-    'FontSize', fontSizeAxis);
-set(hAxes, 'XLim', [1, numIterations]);
-hLegend = ClickableLegend(cLegendString);
-
-if(generateFigures == ON)
-    saveas(hFigure,['Figure', num2str(figureIdx, figureCounterSpec), '.png']);
-end
+% hAxes       = subplot_tight(2, 1, 2, [0.09, 0.09]);
+% hLineSeries = plot(1:numIterations, 10 * log10(mSolErrNorm));
+% set(hLineSeries, 'LineWidth', lineWidthNormal);
+% set(get(hAxes, 'Title'), 'String', ['Solution Error Norm'], ...
+%     'FontSize', fontSizeTitle);
+% set(get(hAxes, 'XLabel'), 'String', 'Iteration Number', ...
+%     'FontSize', fontSizeAxis);
+% set(get(hAxes, 'YLabel'), 'String', 'Objective Function Value', ...
+%     'FontSize', fontSizeAxis);
+% set(hAxes, 'XLim', [1, numIterations]);
+% hLegend = ClickableLegend(cLegendString);
+% 
+% if(generateFigures == ON)
+%     saveas(hFigure,['Figure', num2str(figureIdx, figureCounterSpec), '.png']);
+% end
 
 
 %% Restore Defaults
