@@ -30,8 +30,10 @@ function [ vX, mX ] = SolveLsL0Omp( mA, vB, paramLambda, numIterations, tolVal )
 %                           Range: (-inf, inf).
 % References
 %   1.  Wikipedia MP - https://en.wikipedia.org/wiki/Matching_pursuit.
+%   2.  Michael Elad - Sparse and Redundant Representations (Pages 36-40)
 % Remarks:
-%   1.  U.
+%   1.  The algorithms implements Michel Elad's method as Wikipedia's
+%       method seems to be oritend towards normalized dictionary.
 % Known Issues:
 %   1.  A
 % TODO:
@@ -56,7 +58,7 @@ vCostFun    = zeros([numIterations, 1]);
 vResNorm    = zeros([numIterations, 1]);
 mX          = zeros([numCols, numIterations]);
 
-mAA = mA ./ sum(mA .* mA);
+vAtomSqrNorm = sum(mA .^ 2); %<! Row Vector
 
 for ii = 1:numIterations
     
@@ -67,7 +69,7 @@ for ii = 1:numIterations
     % [~, activeIdx] = max(abs(mA.' * vR));
     
     % Which index minimizes the L2 Squared Error given best coefficient
-    [~, activeIdx] = max(abs(((vR.' * mA) .^ 2) ./ sum(mA .^ 2)));
+    [~, activeIdx] = max(abs(((vR.' * mA) .^ 2) ./ vAtomSqrNorm;
     % Equivalent
     % [~, activeIdx] = min(sum((mA .* ((vR.' * mA) ./ sum(mA .^ 2)) - vR) .^ 2));
     
