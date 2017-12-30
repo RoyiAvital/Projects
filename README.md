@@ -25,9 +25,9 @@ It covers the following:
 
  * Singular Value Theorem.
  * Applications
-    * Order Reduction.
-    * Solving Linear Equation System (Least Squares).
-    * Total Least Squares.
+    * [Dimensionality Reduction](https://en.wikipedia.org/wiki/Dimensionality_reduction).
+    * [Solving Linear Equation System](https://en.wikipedia.org/wiki/System_of_linear_equations) ([Least Squares](https://en.wikipedia.org/wiki/Linear_least_squares_(mathematics))).
+    * [Total Least Squares](https://en.wikipedia.org/wiki/Total_least_squares).
     * [Principal Component Analysis](https://en.wikipedia.org/wiki/Principal_component_analysis) (PCA).
 
 The PDF can be viewed directly - [SVD Presentation PDF](https://docs.google.com/viewer?url=https://github.com/RoyiAvital/Projects/raw/master/SingularValueDecomposition/SVD.pdf).
