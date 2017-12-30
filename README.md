@@ -20,7 +20,7 @@ Various projects which are Optimization (Numerical Methods) oriented such as:
  * Steepest Descent - Calculation of the Steepest Descent Direction for various norms ($ {L}_{1} $, $ {L}_{2} $, $ {L}_{\infty} $).
 
 ## Singular Value Decomposition
-A Presentation about [Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition) (SVD). 
+A Presentation about [Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition) (SVD).  
 It covers the following:
 
  * Singular Value Theorem.
