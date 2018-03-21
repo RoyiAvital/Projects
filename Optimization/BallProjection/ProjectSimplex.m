@@ -48,15 +48,18 @@ TRUE    = 1;
 OFF     = 0;
 ON      = 1;
 
+% Choosing paramMu = min(vY) - ballRadius yields starting value of paramMu
+% which ensures the objective value to have positive value -> Easier to
+% find its root.
 paramMu = min(vY) - ballRadius;
-% The objective functions which its root (The 'paramLambda' which makes it
+% The objective functions which its root (The 'paramMu' which makes it
 % vanish) is the solution
 objFun      = sum( max(vY - paramMu, 0) ) - ballRadius;
 
 while(abs(objFun) > stopThr)
     objFun      = sum( max(vY - paramMu, 0) ) - ballRadius;
     df          = sum(-((vY - paramMu) > 0)); %<! Derivative of 'objVal' with respect to Mu
-    paramMu = paramMu - (objFun / df); %<! Newton Iteration
+    paramMu     = paramMu - (objFun / df); %<! Newton Iteration
 end
 
 vX = max(vY - paramMu, 0);

@@ -55,7 +55,7 @@ disp([' ']);
 disp([' ']);
 disp(['CVX Solution Sum - ', num2str(sum(vXCvx))]);
 disp(['Dual Function Solution Sum - ', num2str(sum(vX))]);
-disp(['Solutions Difference L1 Norn - ', num2str(norm(vXCvx - vX, 1))]);
+disp(['Solutions Difference L1 Norm - ', num2str(norm(vXCvx - vX, 1))]);
 disp([' ']);
 
 
