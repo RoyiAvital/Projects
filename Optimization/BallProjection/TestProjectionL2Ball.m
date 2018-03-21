@@ -53,7 +53,7 @@ disp([' ']);
 disp([' ']);
 disp(['CVX Solution L2 Norm - ', num2str(norm(vXCvx, 2))]);
 disp(['Dual Function Solution L2 Norm - ', num2str(norm(vX, 2))]);
-disp(['Solutions Difference L2 Norn - ', num2str(norm(vXCvx - vX, 2))]);
+disp(['Solutions Difference L2 Norm - ', num2str(norm(vXCvx - vX, 2))]);
 disp([' ']);
 
 

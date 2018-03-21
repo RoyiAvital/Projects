@@ -368,20 +368,19 @@
 	
 	\begin{align*}
 	g \left( \mu \right) & = \inf_{x \succeq 0} L \left( x, \mu \right) && \text{} \\
-	& = \inf_{x \succeq 0} \sum_{i = 1}^{n} \left( \frac{1}{2} { \left( {x}_{i} - {y}_{i} \right) }^{2} + \mu {x}_{i} \right) - \mu r && \text{Component wise form}
+	& = \inf_{x \succeq 0} \sum_{i = 1}^{n} \left( \frac{1}{2} { \left( {x}_{i} - {y}_{i} \right) }^{2} + \mu {x}_{i} \right) - \mu r && \text{Component wise form} \\
+	& = \inf_{x \succeq 0} \frac{1}{2} \sum_{i = 1}^{n} \left( {x}_{i} - \left( {y}_{i} - \mu \right) \right)^{2} + \mu \left( \boldsymbol{1}^{T} y - r \right) + n {\mu}^{2}
 	\end{align*}
 	
-	taking advantage of the Component Wise form the solution is given:
+	The minimization with respect to $ {x}_{i} $ is basically a projection problem into $ \mathbb{R}_{+} $ of $ {y}_{i} - \mu $ which is given by:
 	
 	\begin{align*}
 	{x}_{i}^{\ast} = { \left( {y}_{i} - \mu \right) }_{+}
 	\end{align*}
 	
-	Where the solution takes into account the non negativity constrain by projecting onto $ {\mathbb{R}}_{+} $
+	The solution is given by finding the $ \mu $ which holds the equality constrain. In the $ {L}_{1} $ case above the constrain was in inequality form hence $ \lambda $ had to be non negative Yet the above is equality constrain hence $ \mu $ can have any value and it is not limited to non negativity as $ \lambda $ in the $ {L}_{1} $ case.
 	
-	The solution is given by finding the $ \mu $ which holds the constrain. In the $ {L}_{1} $ case above the constrain was in inequality form hence $ \lambda $ had to be non negative Yet the above is equality constrain hence $ \mu $ can have any value and it is not limited to non negativity as $ \lambda $ in the $ {L}_{1} $ case.
-	
-	The objective function (From the KKT) is given by:
+	The function, From the KKT, which enforces equality, is given by:
 	
 	\begin{align*}
 	h \left( \mu \right) = \sum_{i = 1}^{n} {x}_{i}^{\ast} - r & = \sum_{i = 1}^{n} { \left( {y}_{i} - \mu \right) }_{+} - r
@@ -447,15 +446,18 @@
 	OFF     = 0;
 	ON      = 1;
 	
+	% Choosing paramMu = min(vY) - ballRadius yields starting value of paramMu
+	% which ensures the objective value to have positive value -> Easier to
+	% find its root.
 	paramMu = min(vY) - ballRadius;
-	% The objective functions which its root (The 'paramLambda' which makes it
+	% The objective functions which its root (The 'paramMu' which makes it
 	% vanish) is the solution
 	objFun      = sum( max(vY - paramMu, 0) ) - ballRadius;
 	
 	while(abs(objFun) > stopThr)
-	objFun      = sum( max(vY - paramMu, 0) ) - ballRadius;
-	df          = sum(-((vY - paramMu) > 0)); %<! Derivative of 'objVal' with respect to Mu
-	paramMu = paramMu - (objFun / df); %<! Newton Iteration
+	    objFun      = sum( max(vY - paramMu, 0) ) - ballRadius;
+	    df          = sum(-((vY - paramMu) > 0)); %<! Derivative of 'objVal' with respect to Mu
+	    paramMu     = paramMu - (objFun / df); %<! Newton Iteration
 	end
 	
 	vX = max(vY - paramMu, 0);

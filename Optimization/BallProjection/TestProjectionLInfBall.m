@@ -53,7 +53,7 @@ disp([' ']);
 disp([' ']);
 disp(['CVX Solution L Inf Norm - ', num2str(norm(vXCvx, 'inf'))]);
 disp(['Closed Form Solution L Inf Norm - ', num2str(norm(vX, 'inf'))]);
-disp(['Solutions Difference L2 Norn - ', num2str(norm(vXCvx - vX, 2))]);
+disp(['Solutions Difference L2 Norm - ', num2str(norm(vXCvx - vX, 2))]);
 disp([' ']);
 
 
