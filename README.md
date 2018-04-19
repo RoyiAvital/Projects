@@ -1,6 +1,14 @@
 # Projects
 Various Small Projects on Various Subjects
 
+## Deep Learning Matched Filter
+Analyze the Matched Filter performance using Deep Learning.  
+Mainly if it could have better pefromance compared to [Matched Filter](https://en.wikipedia.org/wiki/Matched_filter) in low SNR.  
+Project in Progress...
+
+## Dynamic Time Warping
+Introduction and implementation of the [Dynamic Time Warping](https://en.wikipedia.org/wiki/Dynamic_time_warping) concept.
+
 ## Image Convolution
 Implementation of Image Convolution using Multi Threading and SIMD (Vectrorization) for speed.
 The project generates DLL / DYLIB / SO to be used in MATLAB.
@@ -31,3 +39,6 @@ It covers the following:
     * [Principal Component Analysis](https://en.wikipedia.org/wiki/Principal_component_analysis) (PCA).
 
 The PDF can be viewed directly - [SVD Presentation PDF](https://docs.google.com/viewer?url=https://github.com/RoyiAvital/Projects/raw/master/SingularValueDecomposition/SVD.pdf).
+
+## Task Assignment Problem
+Analysis of a variation of the [Knapsack Problem](https://en.wikipedia.org/wiki/Knapsack_problem).
