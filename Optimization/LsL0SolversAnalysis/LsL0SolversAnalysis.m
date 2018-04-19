@@ -47,7 +47,23 @@ mA = randn([numRows, numCols]);
 vB = randn([numRows, 1]);
 
 hL0Norm = @(vX) sum(abs(vX) > tolVal);
+hResNorm = @(vX) norm((mA * vX) - vB, 2);
 hObjFun = @(vX) (0.5 * sum(((mA * vX) - vB) .^ 2)) + (paramLambda * hL0Norm(vX));
+
+
+%% Solution by Threholsong
+
+[vX, mX] = SolveLsL0Threshold(mA, vB, paramLambda, numIterations, tolVal);
+
+objVal = hObjFun(vX);
+
+disp([' ']);
+disp(['Threholsong Solution Summary']);
+disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
+disp(['The Optimal Argument L0 Norm - ', num2str(hL0Norm(vX))]);
+disp(['The Optimal Argument Residual Norm - ', num2str(hResNorm(vX))]);
+disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
+disp([' ']);
 
 
 %% Solution by Matching Pursuit
@@ -60,10 +76,9 @@ disp([' ']);
 disp(['MP Solution Summary']);
 disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
 disp(['The Optimal Argument L0 Norm - ', num2str(hL0Norm(vX))]);
+disp(['The Optimal Argument Residual Norm - ', num2str(hResNorm(vX))]);
 disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
 disp([' ']);
-
-vIdx = find(vX);
 
 
 %% Solution by Orthogonal Matching Pursuit
@@ -76,6 +91,37 @@ disp([' ']);
 disp(['OMP Solution Summary']);
 disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
 disp(['The Optimal Argument L0 Norm - ', num2str(hL0Norm(vX))]);
+disp(['The Optimal Argument Residual Norm - ', num2str(hResNorm(vX))]);
+disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
+disp([' ']);
+
+
+%% Solution by LS Orthogonal Matching Pursuit
+
+[vX, mX] = SolveLsL0OmpLs(mA, vB, paramLambda, numIterations, tolVal);
+
+objVal = hObjFun(vX);
+
+disp([' ']);
+disp(['LS-OMP Solution Summary']);
+disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
+disp(['The Optimal Argument L0 Norm - ', num2str(hL0Norm(vX))]);
+disp(['The Optimal Argument Residual Norm - ', num2str(hResNorm(vX))]);
+disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
+disp([' ']);
+
+
+%% Solution by Proximal Gradient Descent
+
+[vX, mX] = SolveLsL0Prox(mA, vB, paramLambda, numIterations);
+
+objVal = hObjFun(vX);
+
+disp([' ']);
+disp(['Proximal Gradient Descent Solution Summary']);
+disp(['The Optimal Value Is Given By - ', num2str(objVal)]);
+disp(['The Optimal Argument L0 Norm - ', num2str(hL0Norm(vX))]);
+disp(['The Optimal Argument Residual Norm - ', num2str(hResNorm(vX))]);
 disp(['The Optimal Argument Is Given By - [ ', num2str(vX.'), ' ]']);
 disp([' ']);
 
