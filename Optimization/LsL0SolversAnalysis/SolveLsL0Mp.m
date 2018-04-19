@@ -53,7 +53,7 @@ vCostFun    = zeros([numIterations, 1]);
 vResNorm    = zeros([numIterations, 1]);
 mX          = zeros([numCols, numIterations]);
 
-vAtomSqrNorm = sum(mA .^ 2); %<! Row Vector
+vAtomSqrNorm = sum(mA .^ 2, 1); %<! Row Vector
 
 for ii = 1:numIterations
     
@@ -68,7 +68,7 @@ for ii = 1:numIterations
     % Equivalent
     % [~, activeIdx] = min(sum((mA .* ((vR.' * mA) ./ sum(mA .^ 2)) - vR) .^ 2));
     
-    vActiveIdx(activeIdx) = true([1, 1]);
+    vActiveIdx(activeIdx) = true();
     
     % Solve the equation with respect to the residual
     coeffVal = (mA(:, activeIdx).' * vR) ./ (mA(:, activeIdx).' * mA(:, activeIdx));

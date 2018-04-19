@@ -1,7 +1,7 @@
-function [ vX, mX ] = SolveLsL0Omp( mA, vB, paramLambda, numIterations, tolVal )
+function [ vX, mX ] = SolveLsL0OmpLs( mA, vB, paramLambda, numIterations, tolVal )
 % ----------------------------------------------------------------------------------------------- %
 %[ vX, mX ] = SolveLsL0Omp( mA, vB, paramLambda, numIterations, tolVal )
-% Solve L0 Regularized Least Squares Using Orthogonal Matching Pursuit (MP) Method.
+% Solve L0 Regularized Least Squares Using Least Squares Orthogonal Matching Pursuit (MP) Method.
 % Input:
 %   - mA                -   Input Matirx.
 %                           The model matrix.
@@ -32,7 +32,7 @@ function [ vX, mX ] = SolveLsL0Omp( mA, vB, paramLambda, numIterations, tolVal )
 %   1.  Wikipedia MP - https://en.wikipedia.org/wiki/Matching_pursuit.
 %   2.  Michael Elad - Sparse and Redundant Representations (Pages 36-40)
 % Remarks:
-%   1.  The algorithms implements Michael Elad's method as Wikipedia's
+%   1.  The algorithms implements Michel Elad's method as Wikipedia's
 %       method seems to be oritend towards normalized dictionary.
 % Known Issues:
 %   1.  A
@@ -52,31 +52,30 @@ numCols = size(mA, 2);
 numIterations = min(numIterations, numCols);
 
 vActiveIdx  = false([numCols, 1]);
-vR          = vB;
 vX          = zeros([numCols, 1]);
 vCostFun    = zeros([numIterations, 1]);
-vResNorm    = zeros([numIterations, 1]);
 mX          = zeros([numCols, numIterations]);
-
-vAtomSqrNorm = sum(mA .^ 2, 1); %<! Row Vector
 
 for ii = 1:numIterations
     
-    vResNorm(ii) = norm(vR);
+    minRes = inf;
+    bestIdx = [];
+    for jj = 1:numCols
+        if(vActiveIdx(jj) == false())
+            vActiveIdx(jj) = true();
+            vX(vActiveIdx)      = mA(:, vActiveIdx) \ vB;
+            resNorm = norm((mA * vX) - vB, 2);
+            if(resNorm < minRes)
+                minRes = resNorm;
+                bestIdx = jj;
+            end
+            vActiveIdx(jj)  = false();
+            vX(jj)          = 0;
+        end
+    end
     
-    % Maximum Correlation minimizes the L2 of the Error given atoms are
-    % normalized
-    % [~, activeIdx] = max(abs(mA.' * vR));
-    
-    % Which index minimizes the L2 Squared Error given best coefficient
-    [~, activeIdx] = max(abs(((vR.' * mA) .^ 2) ./ vAtomSqrNorm));
-    % Equivalent
-    % [~, activeIdx] = min(sum((mA .* ((vR.' * mA) ./ sum(mA .^ 2)) - vR) .^ 2));
-    
-    vActiveIdx(activeIdx) = true();
-    
-    vX(vActiveIdx) = mA(:, vActiveIdx) \ vB;
-    vR = vB - (mA(:, vActiveIdx) * vX(vActiveIdx));
+    vActiveIdx(bestIdx) = true();
+    vX(vActiveIdx)      = mA(:, vActiveIdx) \ vB;
     
     mX(:, ii) = vX;
     vCostFun(ii) = (0.5 * sum(((mA * vX) - vB) .^ 2)) + (paramLambda * sum(abs(vX) > tolVal));
