@@ -39,8 +39,9 @@ vCompilingMode  = [COMPILING_MODE_GCC; COMPILING_MODE_ICC];
 cCompilerString = {['GCC Compiler'], ['ICC Compiler']};
 cFunName        = {['CalcDistanceMatrixVanilla'], ['CalcDistanceMatrixSse'], ['CalcDistanceMatrixAvx'], ['CalcDistanceMatrixEigen']};
 mDataDim        = [5, 10, 10; 10, 100, 100; 20, 1000, 1000; 40, 2000, 2000; 80, 6000, 4000]; %<! Each Row - vecDim, numColsA, numColsB
+mDataDim        = [20, 1000, 1000; 40, 2000, 2000; 80, 4000, 4000]; %<! Each Row - vecDim, numColsA, numColsB
 
-numIterations = 25;
+numIterations = 50;
 
 
 %% Setting Data
@@ -120,12 +121,14 @@ cRunTime = {mMeanRunTime, mMeaidanRunTime, mMaxRunTime, mMinRunTime};
 numMeasures = length(cMeasureString);
 
 for ii = 1:numCompilingModes
-    hFigure = figure('Position', figPosXLarge);
+    hFigure = figure('Position', figPosX2Large);
     for jj = 1:numMeasures
         hAxes = subplot(2, 2, jj);
         
         for kk = 1:numFunctions
             hLineObj = line(1:numDim, cRunTime{jj}(1, :, kk, ii));
+            set(hLineObj, 'LineWidth', lineWidthNormal);
+            set(hLineObj, 'Color', mColorOrder(kk, :));
         end
         set(get(hAxes, 'Title'), 'String', {[cMeasureString{jj}, ' - ', cCompilerString{ii}]}, ...
             'FontSize', fontSizeTitle);
@@ -133,6 +136,7 @@ for ii = 1:numCompilingModes
             'FontSize', fontSizeAxis);
         set(get(hAxes, 'YLabel'), 'String', {['Run Time [Mili Sec]']}, ...
             'FontSize', fontSizeAxis);
+        set(hAxes, 'YLim', [0, 50]);
         hLegend = ClickableLegend(cFunName);
 
         if(generateFigures == ON)
