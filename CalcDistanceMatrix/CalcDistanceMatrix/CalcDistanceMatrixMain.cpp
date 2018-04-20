@@ -32,6 +32,9 @@ int main(int argc, char *argv[]) {
 	case UNIT_TEST_CALC_DISTANCE_MATRIX_EIGEN:
 		CalcDistanceMatrixEigenUnitTest(vecDim, numRowsA, numRowsB, numInIter);
 		break;
+	case UNIT_TEST_CALC_DISTANCE_MATRIX_EIGEN_M:
+		CalcDistanceMatrixEigenMUnitTest(vecDim, numRowsA, numRowsB, numInIter);
+		break;
 	default:
 		printf("Error: Invalid Test Number");
 		break;
