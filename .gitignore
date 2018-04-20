@@ -43,6 +43,7 @@ SingularValueDecomposition/KnowledgeBase/*
 *.m~
 
 ## Compilation Files:
+**.vs/*
 *.obj
 *.pdb
 *.ilk
@@ -58,6 +59,10 @@ SingularValueDecomposition/KnowledgeBase/*
 *.o
 *ImageConvolution/ImageConvolution/x64
 *ImageConvolution/x64
+*CalcDistanceMatrix/Build/*
+*CalcDistanceMatrix/CalcDistanceMatrix/x64/*
+*CalcDistanceMatrix/CalcDistanceMatrixDll/x64/*
+*CalcDistanceMatrix/x64/*
 
 # Binary Files
 *.dll
