@@ -1,8 +1,8 @@
-function [ mDistMat ] = CalcDistanceMatrix002( mDataSamples001, mDataSamples002 )
+function [ mDistMat ] = CalcDistanceMatrix002( mA, mB )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-mDistMat = sum(mDataSamples001 .^ 2).' - (2 * mDataSamples001.' * mDataSamples002) + sum(mDataSamples002 .^ 2);
+mDistMat = sum(mA .^ 2).' - (2 * mA.' * mB) + sum(mB .^ 2);
 
 
 end
