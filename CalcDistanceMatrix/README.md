@@ -18,6 +18,7 @@ The projects compares 4 different approaches:
  *  In matrix form the first index is the one which is contiguous in memory. This means in MATLAB those are the columns of the array while in C those are the rows of the array.
  *  Vanillat Implementation - Tries to be compiler friendly and let the compiler do the Vectorization.
  *  SSE / AVX Implementation - Implement the distance calculation between 2 vectors using SIMD (`SSE4` / `AVX2`) Intrinsics (See [Intel Intrinsics Guide](https://software.intel.com/sites/landingpage/IntrinsicsGuide/)).
+ *  In all configurations the compiler is allowed to generate `AVX2` code (Namely code might not work on CPU's without `AVX2` support unless the user change the appropriate flag).
 
 ## Results
 
@@ -38,6 +39,7 @@ Run Time Analysis
     *   Intel Compiler 2018 Update 2 (18.2).
 
 ## How to Run
+Download [Eigen Library](http://eigen.tuxfamily.org) and update the header folder path in `CalcDistanceMatrix.h` accordingly.
 Compile the from Visual Studio (Load the `CalcDistanceMatrix.sln` solution). Compile using MSVC / Intel. For GCC compilation use CMake (`CMakeLists.txt`).
 Once all DLL's are in place, use `CalcDistanceMatrixUnitTest001.m` to validate the calculation accuracy and `CalcDistanceMatrixUnitTest002.m` to generate Run Time Analysis.  
 In practice it seems the MATLAB overhead when claling Dynamic Library is order of magnitude larer the the Run Time.  

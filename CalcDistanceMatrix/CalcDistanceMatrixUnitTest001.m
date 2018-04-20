@@ -1,5 +1,5 @@
 % ----------------------------------------------------------------------------------------------- %
-% Calculate Dsitance Matrix Unit Test 009 - 'CalcDistanceMatrix()'
+% Calculate Dsitance Matrix Unit Test 001 - 'CalcDistanceMatrix()'
 % Reference:
 %   1. fd
 % Remarks:
@@ -18,6 +18,7 @@ run('InitScript.m');
 
 COMPILING_MODE_DEBUG    = 1;
 COMPILING_MODE_RELEASE  = 2;
+COMPILING_MODE_MSVC     = COMPILING_MODE_RELEASE;
 COMPILING_MODE_GCC      = 3;
 COMPILING_MODE_ICC      = 4;
 
@@ -32,7 +33,7 @@ H_FILE_PATH         = 'CalcDistanceMatrix\';
 
 %% Settings
 
-compilingMode   = COMPILING_MODE_GCC;
+compilingMode   = COMPILING_MODE_ICC;
 
 
 %% Loading Library
@@ -56,16 +57,16 @@ if(libisloaded(LIB_NAME) == FALSE)
 end
 
 
-%% Analysis 'ConvertFromUint8Fa()'
+%% Analysis
 
 % funName         = 'CalcDistanceMatrixVanilla';
 % funName         = 'CalcDistanceMatrixSse';
-% funName         = 'CalcDistanceMatrixAvx';
-funName         = 'CalcDistanceMatrixEigen';
+funName         = 'CalcDistanceMatrixAvx';
+% funName         = 'CalcDistanceMatrixEigen';
 
 vecDim      = 80;
-numColsA    = 8000;
-numColsB    = 6000;
+numColsA    = 6000;
+numColsB    = 4000;
 
 mA = randn([vecDim, numColsA], 'single');
 mB = randn([vecDim, numColsB], 'single');

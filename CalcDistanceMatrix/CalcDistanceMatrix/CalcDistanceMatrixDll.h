@@ -19,6 +19,7 @@ extern "C" {
 	EXPORTED_FUNCTION void CalcDistanceMatrixSse(float* mD, float* mA, float* mB, int vecDim, int numRowsA, int numRowsB);
 	EXPORTED_FUNCTION void CalcDistanceMatrixAvx(float* mD, float* mA, float* mB, int vecDim, int numRowsA, int numRowsB);
 	EXPORTED_FUNCTION void CalcDistanceMatrixEigen(float* mD, float* mA, float* mB, int vecDim, int numRowsA, int numRowsB);
+	EXPORTED_FUNCTION void CalcDistanceMatrixRefTime(float* mD, float* mA, float* mB, int vecDim, int numRowsA, int numRowsB);
 
 
 #ifdef  __cplusplus

@@ -43,7 +43,7 @@ SingularValueDecomposition/KnowledgeBase/*
 *.m~
 
 ## Compilation Files:
-**.vs/*
+**/.vs/*
 *.obj
 *.pdb
 *.ilk
@@ -55,6 +55,7 @@ SingularValueDecomposition/KnowledgeBase/*
 *.ipdb
 *.log
 *.VC.db
+*.db3
 *.exp
 *.o
 *ImageConvolution/ImageConvolution/x64

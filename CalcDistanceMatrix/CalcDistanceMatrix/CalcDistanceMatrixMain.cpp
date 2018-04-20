@@ -2,8 +2,8 @@
 
 int main(int argc, char *argv[]) {
 	int vecDim			= 80;
-	int numRowsA		= 8000;
-	int numRowsB		= 6000;
+	int numRowsA		= 6000;
+	int numRowsB		= 4000;
 	int numInIter		= 100;
 	int unitTestFlag;
 	
