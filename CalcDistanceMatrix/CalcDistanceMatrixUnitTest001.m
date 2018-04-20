@@ -33,7 +33,7 @@ H_FILE_PATH         = 'CalcDistanceMatrix\';
 
 %% Settings
 
-compilingMode   = COMPILING_MODE_ICC;
+compilingMode   = COMPILING_MODE_GCC;
 
 
 %% Loading Library
@@ -61,8 +61,8 @@ end
 
 % funName         = 'CalcDistanceMatrixVanilla';
 % funName         = 'CalcDistanceMatrixSse';
-funName         = 'CalcDistanceMatrixAvx';
-% funName         = 'CalcDistanceMatrixEigen';
+% funName         = 'CalcDistanceMatrixAvx';
+funName         = 'CalcDistanceMatrixEigen';
 
 vecDim      = 80;
 numColsA    = 6000;
