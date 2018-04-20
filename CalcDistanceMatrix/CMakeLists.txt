@@ -32,7 +32,7 @@ add_library(CalcDistanceMatrixDll SHARED ${SOURCES_LIB})
 target_compile_options(CalcDistanceMatrix PUBLIC -Ofast -fopenmp -mavx2)
 target_compile_definitions(CalcDistanceMatrix PUBLIC -D_DNDEBUG)
 target_compile_options(CalcDistanceMatrixDll PUBLIC -Ofast -fopenmp -mavx2)
-target_compile_definitions(CalcDistanceMatrixDll PUBLIC -D_USRDLL -D_DNDEBUG)
+target_compile_definitions(CalcDistanceMatrixDll PUBLIC -D_DNDEBUG -D_USRDLL)
 
 # For LINK_FLAGS use single "...."
 SET_TARGET_PROPERTIES(CalcDistanceMatrix PROPERTIES LINK_FLAGS -fopenmp) # Set Link Flags

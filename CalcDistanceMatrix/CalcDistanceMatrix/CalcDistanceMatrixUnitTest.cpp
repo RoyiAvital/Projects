@@ -208,6 +208,57 @@ void CalcDistanceMatrixEigenUnitTest(int vecDim, int numRowsA, int numRowsB, int
 }
 
 
+void CalcDistanceMatrixEigenMUnitTest(int vecDim, int numRowsA, int numRowsB, int numIter) {
+	int ii;
+	int inputSizeA, inputSizeB, inputSizeD;
+	float *mA;
+	float *mB;
+	float *mD;
+	clock_t clockStart, clockEnd;
+	double *vRunTime;
+
+	vRunTime = (double*)_mm_malloc(numIter * sizeof(double), SSE_ALIGNMENT);
+
+	inputSizeA = numRowsA * vecDim;
+	inputSizeB = numRowsB * vecDim;
+	inputSizeD = numRowsA * numRowsB;
+
+	mA = (float*)_mm_malloc(inputSizeA * sizeof(float), SSE_ALIGNMENT);
+	mB = (float*)_mm_malloc(inputSizeB * sizeof(float), SSE_ALIGNMENT);
+	mD = (float*)_mm_malloc(inputSizeD * sizeof(float), SSE_ALIGNMENT);
+
+	for (ii = 0; ii < inputSizeA; ii++) {
+		mA[ii] = (float)(rand()) / (float)(RAND_MAX);
+	}
+
+	for (ii = 0; ii < inputSizeB; ii++) {
+		mB[ii] = (float)(rand()) / (float)(RAND_MAX);
+	}
+
+	clockStart = clock();
+
+	for (ii = 0; ii < numIter; ii++)
+	{
+		clockStart = clock();
+
+		CalcDistanceMatrixEigenM(mD, mA, mB, vecDim, numRowsA, numRowsB);
+
+		clockEnd = clock();
+
+		vRunTime[ii] = (double)(clockEnd - clockStart) / CLOCKS_PER_SEC;
+	}
+
+	printf("\n");
+	printf("CalcDistanceMatrixEigenM Unit Test\n");
+	PrintRunTimeData(vRunTime, numIter);
+
+	_mm_free(vRunTime);
+	_mm_free(mA);
+	_mm_free(mB);
+	_mm_free(mD);
+
+}
+
 // Auxiliary Functions
 
 void PrintRunTimeData(double *vRunTime, int numIter) {
