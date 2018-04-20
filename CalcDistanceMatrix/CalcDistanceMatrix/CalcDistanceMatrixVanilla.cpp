@@ -56,8 +56,10 @@ Release Notes:
 	*   First release version.
 */
 // ---------------------------------- CalcDistanceMatrixVanilla --------------------------------- //
-#if defined(__GNUC__) || defined(__INTEL_COMPILER)
+#if defined(__GNUC__)
 void CalcDistanceMatrixVanilla(float* mD, float* __restrict__ mA, float* __restrict__ mB, int vecDim, int numRowsA, int numRowsB)
+#elif defined(__INTEL_COMPILER)
+void CalcDistanceMatrixVanilla(float* mD, float* mA, float* mB, int vecDim, int numRowsA, int numRowsB)
 #else
 void CalcDistanceMatrixVanilla(float* mD, float* mA, float* mB, int vecDim, int numRowsA, int numRowsB)
 #endif
@@ -86,6 +88,16 @@ void CalcDistanceMatrixVanilla(float* mD, float* mA, float* mB, int vecDim, int 
 			ptrMatrixD[jj] = distVal;
 		}
 	}
+
+
+}
+
+
+// Code to measure MATLAB in & Out Time
+void CalcDistanceMatrixRefTime(float* mD, float* mA, float* mB, int vecDim, int numRowsA, int numRowsB)
+{
+
+	mD[1] = mA[1] + mB[1];
 
 
 }

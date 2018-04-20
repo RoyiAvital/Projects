@@ -16,6 +16,7 @@ void CalcDistanceMatrixVanilla(float* mD, float* mA, float* mB, int vecDim, int 
 void CalcDistanceMatrixSse(float* mD, float* mA, float* mB, int vecDim, int numRowsA, int numRowsB);
 void CalcDistanceMatrixAvx(float* mD, float* mA, float* mB, int vecDim, int numRowsA, int numRowsB);
 void CalcDistanceMatrixEigen(float* mD, float* mA, float* mB, int vecDim, int numRowsA, int numRowsB);
+void CalcDistanceMatrixRefTime(float* mD, float* mA, float* mB, int vecDim, int numRowsA, int numRowsB);
 
 // Unit Test Functions 
 void CalcDistanceMatrixVanillaUnitTest(int vecDim, int numRowsA, int numRowsB, int numIter);
