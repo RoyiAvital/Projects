@@ -17,4 +17,4 @@ Various projects in Optimization.
  *  [Orthogonal Matching Pursuit for Sparse Signal Recovery With Noise](http://ieeexplore.ieee.org/document/5895106/).
  *  [A Comparative Study Of Some Greedy Pursuit Algorithms For Sparse Approximation](http://www.irisa.fr/temics/staff/rath/eusipco09.pdf).
  *  [Compressed Sensing and Orthogonal Matching Pursuit](https://www.cs.utah.edu/~jeffp/teaching/cs5140/L17-OMP.pdf).
- *  []().
+ *  [Iterative Thresholding Algorithm based on Non Convex Method for Modified lp Norm Regularization Minimization](https://arxiv.org/abs/1804.09385).
