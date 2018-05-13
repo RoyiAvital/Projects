@@ -32,9 +32,9 @@ function [ vX, mX ] = SolveLsL1Irls( mA, vB, paramLambda, numIterations )
 %   2.  IRLS Wikipedia - https://en.wikipedia.org/wiki/Iteratively_reweighted_least_squares.
 %   1.  L1 IRLS (My Derivation) - https://stats.stackexchange.com/a/299381/6244.
 % Remarks:
-%   1.  Doesn't work well for large values of paramLambda.
+%   1.  D
 % Known Issues:
-%   1.  Doesn't converge to a "good" solution.
+%   1.  D
 % TODO:
 %   1.  P
 % Release Notes:
