@@ -1,4 +1,4 @@
-# Convex Set Projections
+# Convex Set Projection
 The orthogonal projection onto various convex sets.
 
 ## Cicruclant Matrix
