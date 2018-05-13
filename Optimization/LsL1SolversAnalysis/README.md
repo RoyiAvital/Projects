@@ -3,23 +3,29 @@ This project analyze the performance and implementation of solvers which solves 
 
 $$ \arg \min_{x} \frac{1}{2} {\left\| A x - b \right|}_{2}^{2} + \lambda {\left\| x \right\|}_{1} $$
 
-## Sub Gradient Method (SGM)
+## Solvers
+
+### Sub Gradient Method (SGM)
 TBC
 
-## Proximal Gradient Method (PGM)
+### Proximal Gradient Method (PGM)
 TBC
 
-## Smoothing (Huber)
+### Smoothing (Huber)
 TBC
 
-## Alternating Direction Method of Multipliers (ADMM)
+### Alternating Direction Method of Multipliers (ADMM)
 TBC
 
-## Iterative Reweighted Least Squares (IRLS)
+### Iterative Reweighted Least Squares (IRLS)
 TBC
 
-## Coordinate Descent (CD)
+### Coordinate Descent (CD)
 TBC
+
+## Results
+
+![](Figure0001.png)
 
 ## TO DO List
  *  Check the performance of Proximal Gradient Method with Line Search.
