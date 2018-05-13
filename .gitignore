@@ -71,4 +71,8 @@ SingularValueDecomposition/KnowledgeBase/*
 *.so
 *.exe
 
+# Misc
+/Optimization/ConvexSetProjection/*.pdf
+
+
 
