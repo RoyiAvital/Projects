@@ -38,11 +38,15 @@ function [ vX, mX ] = SolveLsL1Irls( mA, vB, paramLambda, numIterations )
 % TODO:
 %   1.  P
 % Release Notes:
+%   -   1.1.000     13/05/2015
+%       *   Fixed the 2 factor bug.
+%       *   Uopdating only the Diagonal of mAD for more efficiency.
 %   -   1.0.000     23/08/2017
 %       *   First realease version.
 % ----------------------------------------------------------------------------------------------- %
 
 mAA = mA.' * mA;
+mAD = mAA;
 vAb = mA.' * vB;
 vX  = pinv(mA) * vB; %<! Dealing with "Fat Matrix"
 
@@ -53,13 +57,17 @@ mX = zeros([size(vX, 1), numIterations]);
 mX(:, 1) = vX;
 
 thrVal = thrBaseVal;
-mW = eye(size(vX, 1));
+vW = ones([size(vX, 1), 1]);
+
+vDiagIdx = linspace(1, size(vX, 1) * size(vX, 1), size(vX, 1));
+vDiagIdx = vDiagIdx(:);
 
 for ii = 1:numIterations
     
-    vX = (mAA + (2 * paramLambda * mW)) \ vAb;
+    mAD(vDiagIdx) = mAA(vDiagIdx) + (paramLambda * vW);
+    vX = mAD \ vAb;
     
-    mW = diag(1 ./ (abs(vX) + thrVal));
+    vW = 1 ./ (abs(vX) + thrVal);
     
     mX(:, ii) = vX;
     thrVal = thrVal / 2;
