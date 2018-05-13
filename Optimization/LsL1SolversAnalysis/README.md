@@ -1,0 +1,25 @@
+# ${L}_{1}$ Regularized Least Squares - Solvers Analysis
+This project analyze the performance and implementation of solvers which solves the ${L}_{1}$ Regularized Least Squares problem:
+
+$$ \arg \min_{x} \frac{1}{2} {\left\| A x - b \right|}_{2}^{2} + \lambda {\left\| x \right\|}_{1} $$
+
+## Sub Gradient Method (SGM)
+TBC
+
+## Proximal Gradient Method (PGM)
+TBC
+
+## Smoothing (Huber)
+TBC
+
+## Alternating Direction Method of Multipliers (ADMM)
+TBC
+
+## Iterative Reweighted Least Squares (IRLS)
+TBC
+
+## Coordinate Descent (CD)
+TBC
+
+## TO DO List
+ *  Check the performance of Proximal Gradient Method with Line Search.
