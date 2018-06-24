@@ -40,7 +40,7 @@ function [ vX, mX ] = SolveLsL1Irls( mA, vB, paramLambda, numIterations )
 % Release Notes:
 %   -   1.1.000     13/05/2015
 %       *   Fixed the 2 factor bug.
-%       *   Uopdating only the Diagonal of mAD for more efficiency.
+%       *   Updating only the Diagonal of mAD for more efficiency.
 %   -   1.0.000     23/08/2017
 %       *   First realease version.
 % ----------------------------------------------------------------------------------------------- %
