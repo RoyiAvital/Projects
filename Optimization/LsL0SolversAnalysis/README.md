@@ -18,3 +18,4 @@ Various projects in Optimization.
  *  [A Comparative Study Of Some Greedy Pursuit Algorithms For Sparse Approximation](http://www.irisa.fr/temics/staff/rath/eusipco09.pdf).
  *  [Compressed Sensing and Orthogonal Matching Pursuit](https://www.cs.utah.edu/~jeffp/teaching/cs5140/L17-OMP.pdf).
  *  [Iterative Thresholding Algorithm based on Non Convex Method for Modified lp Norm Regularization Minimization](https://arxiv.org/abs/1804.09385).
+ *  [The Trimmed Lasso: Sparsity and Robustness](https://arxiv.org/abs/1708.04527) ([GitHub MATLAB & Julia Code Repository](https://github.com/copenhaver/trimmedlasso)).
