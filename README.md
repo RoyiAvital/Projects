@@ -40,5 +40,8 @@ It covers the following:
 
 The PDF can be viewed directly - [SVD Presentation PDF](https://docs.google.com/viewer?url=https://github.com/RoyiAvital/Projects/raw/master/SingularValueDecomposition/SVD.pdf).
 
+## Localization
+Simulation of Localization Methods.
+
 ## Task Assignment Problem
 Analysis of a variation of the [Knapsack Problem](https://en.wikipedia.org/wiki/Knapsack_problem).
