@@ -25,13 +25,19 @@ generateFigures = OFF;
 
 
 gridLength = 6000; %<! [Meter]
-gridHeight = 2000;
 gridNumPts = 500; %<! [Meter]
 
-dtoaNoiseStd    = 10e-9; %<! [Sec]
+dtoaNoiseStd    = 05e-9; %<! [Sec]
 waveSpeed       = 3e8; %<! [Meter / Sec]
 
-mSensorLocation = [1500, 3000, 4500; 0, 5, 0];
+mSensorLocation = [1500, 3000, 4500; 0, 0, 0];
+% mSensorLocation = [1500, 2500, 3500, 4500; 0, 0, 0, 0];
+% 
+% mSensorLocation = [1500, 1939, 3000, 4061, 4500; 0, 1061, 1500, 1061, 0];
+% 
+% mSensorLocation = [1500, 2250, 3000, 3750, 4500; 0, 500, 0, 500, 0];
+
+% mSensorLocation = [1500, 2250, 2250, 3750, 3750, 4500; 1500, 0, 3000, 0, 3000, 1500];
 
 
 %% Load / Generate Data
@@ -48,7 +54,7 @@ for jj = 1:gridNumPts
     
     for ii = 1:gridNumPts
         
-        if(vGridXY(ii) < 150)
+        if(vGridXY(ii) < 350)
             continue;
         end
         
