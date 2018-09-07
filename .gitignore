@@ -2,6 +2,10 @@
 SingularValueDecomposition/Code/*
 SingularValueDecomposition/KnowledgeBase/*
 
+**Build/
+**Release/
+**Debug/
+
 # Media Files
 # *.png
 *.jpg
