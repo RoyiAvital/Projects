@@ -37,13 +37,11 @@
 #define CACHE_ALIGN 16
 
 #ifdef __GNUC__
-    #define DECLARE_ALIGN(varType, varName, varSize) varType varName[varSize] __attribute__((aligned (CACHE_ALIGN)));
-    // #define DECLARE_ALIGN __declspec(align(CACHE_ALIGN))
+    #define DECLARE_ALIGN(varType, varName, varSize) varType varName[varSize] __attribute__((aligned(CACHE_ALIGN)));
 #endif
 
 #ifdef _MSC_VER
     #define DECLARE_ALIGN(varType, varName, varSize) __declspec(align(CACHE_ALIGN)) varType varName[varSize];
-    // #define DECLARE_ALIGN __declspec(align(CACHE_ALIGN))
 #endif
 
 // Macros
