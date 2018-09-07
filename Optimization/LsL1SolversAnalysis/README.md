@@ -29,3 +29,4 @@ TBC
 
 ## TO DO List
  *  Check the performance of Proximal Gradient Method with Line Search.
+ *  Add the [PANOC Algorithm (Proximal Averaged Newton Type Method for Optimal Control)](https://arxiv.org/abs/1709.06487).
