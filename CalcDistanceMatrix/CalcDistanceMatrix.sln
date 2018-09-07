@@ -9,23 +9,28 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CalcDistanceMatrixDll", "Ca
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		CLang|x64 = CLang|x64
 		Debug|x64 = Debug|x64
-		Release|x64 = Release|x64
 		ICC|x64 = ICC|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.CLang|x64.ActiveCfg = CLang|x64
+		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.CLang|x64.Build.0 = CLang|x64
 		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.Debug|x64.ActiveCfg = Debug|x64
 		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.Debug|x64.Build.0 = Debug|x64
-		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.Release|x64.ActiveCfg = Release|x64
-		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.Release|x64.Build.0 = Release|x64
 		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.ICC|x64.ActiveCfg = ICC|x64
 		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.ICC|x64.Build.0 = ICC|x64
+		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.Release|x64.ActiveCfg = Release|x64
+		{B7567430-2865-4FA2-8FD8-F8F8D27D178E}.Release|x64.Build.0 = Release|x64
+		{351B6D2C-A13F-4211-A353-1BAF575F270D}.CLang|x64.ActiveCfg = CLang|x64
+		{351B6D2C-A13F-4211-A353-1BAF575F270D}.CLang|x64.Build.0 = CLang|x64
 		{351B6D2C-A13F-4211-A353-1BAF575F270D}.Debug|x64.ActiveCfg = Debug|x64
 		{351B6D2C-A13F-4211-A353-1BAF575F270D}.Debug|x64.Build.0 = Debug|x64
-		{351B6D2C-A13F-4211-A353-1BAF575F270D}.Release|x64.ActiveCfg = Release|x64
-		{351B6D2C-A13F-4211-A353-1BAF575F270D}.Release|x64.Build.0 = Release|x64
 		{351B6D2C-A13F-4211-A353-1BAF575F270D}.ICC|x64.ActiveCfg = ICC|x64
 		{351B6D2C-A13F-4211-A353-1BAF575F270D}.ICC|x64.Build.0 = ICC|x64
+		{351B6D2C-A13F-4211-A353-1BAF575F270D}.Release|x64.ActiveCfg = Release|x64
+		{351B6D2C-A13F-4211-A353-1BAF575F270D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,8 +3,7 @@ SingularValueDecomposition/Code/*
 SingularValueDecomposition/KnowledgeBase/*
 
 **Build/
-**Release/
-**Debug/
+**x64/
 
 # Media Files
 # *.png
