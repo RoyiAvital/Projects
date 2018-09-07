@@ -88,6 +88,10 @@ void BilateralFilterFastCompressive(float* mO, float* mI, int numRows, int numCo
 	paramOmega	= M_PIf / paramL;
 
 	vParamD = (float*)_mm_malloc(paramN * sizeof(float), AVX_ALIGNMENT);
+#ifdef __GCC__
+#pragma vector aligned always
+#pragma ivdep
+#endif
 	for (ii = 1; ii <= paramN; ii++)
 	{
 		vParamD[ii - 1] = 2 * expf(-(ii * ii) / (2 * paramTau * paramTau));
@@ -97,22 +101,22 @@ void BilateralFilterFastCompressive(float* mO, float* mI, int numRows, int numCo
 
 	// Iteration Number 1
 	ii = 1;
-	ImageConvolutionGaussianKernel(mCFiltered, mCOmega, mT, numRows, numCols, spatialStd, paramK);
-	ImageConvolutionGaussianKernel(mSFiltered, mSOmega, mT, numRows, numCols, spatialStd, paramK);
+	// ImageConvolutionGaussianKernel(mCFiltered, mCOmega, mT, numRows, numCols, spatialStd, paramK);
+	// ImageConvolutionGaussianKernel(mSFiltered, mSOmega, mT, numRows, numCols, spatialStd, paramK);
 	UpdateArrays(mO, mZ, mCOmega, mSOmega, mCFiltered, mSFiltered, numRows, numCols, ii, vParamD[ii - 1]);
 
 	// Iteration Number 2
 	ii = 2;
 	InitArraysSC(mC, mS, mCOmega, mSOmega, numRows, numCols);
-	ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
-	ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);
+	/*ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
+	ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);*/
 	UpdateArrays(mO, mZ, mC, mS, mCFiltered, mSFiltered, numRows, numCols, ii, vParamD[ii - 1]);
 
 	for (ii = 3; ii <= paramN; ii++)
 	{
 		UpdateArraysSC(mC, mS, mT, mCOmega, mSOmega, numRows, numCols);
-		ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
-		ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);
+		/*ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
+		ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);*/
 		UpdateArrays(mO, mZ, mC, mS, mCFiltered, mSFiltered, numRows, numCols, ii, vParamD[ii - 1]);
 	}
 

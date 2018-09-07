@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
 	int unitTestFlag;
 	
 	if (argc == 1) {
-		unitTestFlag = UNIT_TEST_CALC_DISTANCE_MATRIX_AVX;
+		unitTestFlag = UNIT_TEST_CALC_DISTANCE_MATRIX_VANILLA;
 	}
 	else if (argc > 2) {
 		printf("Error: Number of Argument Is Larger Than 1");

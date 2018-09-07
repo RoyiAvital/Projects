@@ -2,8 +2,8 @@
 #include "ImageBilateralFilter.h"
 
 int main(int argc, char *argv[]) {
-	int numRows = 800;
-	int numCols = 800;
+	int numRows = 4000;
+	int numCols = 4000;
 	int numIter = 10;
 
 	int paramK;
