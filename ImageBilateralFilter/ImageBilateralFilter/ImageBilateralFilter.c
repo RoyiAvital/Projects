@@ -139,9 +139,13 @@ void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int
 
 	int ii;
 
+#ifdef __GCC__
 #pragma omp parallel for simd
 #pragma vector aligned always
 #pragma ivdep
+#else
+#pragma omp parallel for
+#endif
 	for (ii = 0; ii < numRows * numCols; ii++)
 	{
 		mCOmega[ii] = cosf(paramOmega * mI[ii]);
@@ -155,9 +159,13 @@ void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered,
 	
 	int ii;
 
+#ifdef __GCC__
 #pragma omp parallel for simd
 #pragma vector aligned always
 #pragma ivdep
+#else
+#pragma omp parallel for
+#endif
 	for (ii = 0; ii < numRows * numCols; ii++)
 	{
 		mO[ii] += (iterationIdx * paramD) * (mC[ii] * mSFiltered[ii] - mS[ii] * mCFiltered[ii]);
@@ -171,9 +179,13 @@ void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numR
 	
 	int ii;
 
+#ifdef __GCC__
 #pragma omp parallel for simd
 #pragma vector aligned always
 #pragma ivdep
+#else
+#pragma omp parallel for
+#endif
 	for (ii = 0; ii < numRows * numCols; ii++)
 	{
 		mS[ii] = 2.0f * mCOmega[ii] * mSOmega[ii];
@@ -187,9 +199,13 @@ void UpdateArraysSC(float* mC, float* mS, float* mT, float* mCOmega, float* mSOm
 
 	int ii;
 
+#ifdef __GCC__
 #pragma omp parallel for simd
 #pragma vector aligned always
 #pragma ivdep
+#else
+#pragma omp parallel for
+#endif
 	for (ii = 0; ii < numRows * numCols; ii++)
 	{
 		mT[ii] = mC[ii] * mSOmega[ii] + mS[ii] * mCOmega[ii];
@@ -206,9 +222,13 @@ void UpdtaeOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, flo
 
 	outFactor = (M_PIf * rangeStd * rangeStd) / paramL;
 
+#ifdef __GCC__
 #pragma omp parallel for simd
 #pragma vector aligned always
 #pragma ivdep
+#else
+#pragma omp parallel for
+#endif
 	for (ii = 0; ii < numRows * numCols; ii++)
 	{
 		mO[ii] = mI[ii] + (outFactor * (mO[ii] / (1.0f + mZ[ii])));
