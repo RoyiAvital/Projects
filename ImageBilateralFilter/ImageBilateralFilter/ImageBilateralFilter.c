@@ -139,6 +139,33 @@ void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int
 
 	int ii;
 
+#if defined(ICC) || defined(ICL)
+
+	__m256 m256ParamOmega;
+	__m256 m256Tmp;
+	__m256 m256Sin;
+	__m256 m256Cos;
+	__m256* m256C;
+	__m256* m256S;
+	__m256* m256I;
+
+	m256ParamOmega = _mm256_set1_ps(paramOmega);
+
+	m256C = (__m256*)(mCOmega);
+	m256S = (__m256*)(mSOmega);
+	m256I = (__m256*)(mI);
+
+#pragma omp parallel
+	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
+	{
+		m256Tmp = _mm256_mul_ps(m256ParamOmega, _mm256_loadu_ps(m256I));
+		m256Sin = _mm256_sincos_ps(&m256Cos, m256Tmp);
+
+		_mm256_storeu_ps(m256C, m256Cos);
+		_mm256_storeu_ps(m256S, m256Sin);
+	}
+
+#else
 #ifdef __GCC__
 #pragma omp parallel for simd
 #pragma vector aligned always
@@ -151,6 +178,8 @@ void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int
 		mCOmega[ii] = cosf(paramOmega * mI[ii]);
 		mSOmega[ii] = sinf(paramOmega * mI[ii]);
 	}
+
+#endif
 
 }
 
