@@ -18,6 +18,7 @@ run('InitScript.m');
 COMPILING_MODE_DEBUG    = 1;
 COMPILING_MODE_RELEASE  = 2;
 COMPILING_MODE_GCC      = 3;
+COMPILING_MODE_ICC      = 4;
 
 DYNAMIC_LIB_POSTFIX_WIN     = '.dll';
 DYNAMIC_LIB_POSTFIX_LINUX   = '.so';
@@ -28,13 +29,14 @@ H_FILE_NAME         = 'ImageBilateralFilterDll';
 LIB_PATH_DEBUG      = 'x64/Debug/';
 LIB_PATH_RELEASE    = 'x64/Release/';
 LIB_PATH_GCC        = 'x64/GCC/';
+LIB_PATH_ICC        = 'x64/ICC/';
 H_FILE_PATH         = 'ImageBilateralFilter/';
 
 
 %% Settings
 
 funName         = 'BilateralFilterFastCompressive';
-compilingMode   = COMPILING_MODE_GCC;
+compilingMode   = COMPILING_MODE_ICC;
 
 if(ispc())
     dyLibPostfix = DYNAMIC_LIB_POSTFIX_WIN;
@@ -64,6 +66,8 @@ switch(compilingMode)
         libFullPath = [LIB_PATH_RELEASE, LIB_NAME, dyLibPostfix];
     case(COMPILING_MODE_GCC)
         libFullPath = [LIB_PATH_GCC, LIB_NAME, dyLibPostfix];
+    case(COMPILING_MODE_ICC)
+        libFullPath = [LIB_PATH_ICC, LIB_NAME, dyLibPostfix];
 end
 
 headerFullPath = [H_FILE_PATH, H_FILE_NAME, '.h'];
