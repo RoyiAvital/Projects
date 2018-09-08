@@ -3,14 +3,13 @@ cmake_minimum_required (VERSION 3.10)
 # General Settings Prior to Project
 set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
 
-message("Release Default Flags: ${CMAKE_C_FLAGS_RELEASE}")
-message("Release Default Definitions: ${COMPILE_DEFINITIONS_RELEASE}")
-
 # Project
 project(ImageBilateralFilter)
 
 # General Settings Post to Project
-# set(CMAKE_VERBOSE_MAKEFILE ON)
+
+message("Release Default Flags: ${CMAKE_C_FLAGS_RELEASE}")
+message("Release Default Definitions: ${COMPILE_DEFINITIONS_RELEASE}")
 
 # Defining Paths, Sources and Resources
 set(CODE_FILES_PATH "${CMAKE_SOURCE_DIR}/ImageBilateralFilter/")
@@ -88,13 +87,13 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
 	if (WIN32)
 		# Windows
 		SET(COMPILER_DEFS_SHARED_LIB NDEBUG _USRDLL)
-		SET(COMPILER_FLAGS -O3 /Qopenmp /arch:avx2)
-		SET(LINKER_FLAGS /Qopenmp)
+		SET(COMPILER_FLAGS -O3 /Qopenmp /arch:CORE-AVX2 /fp:fast=2 /MT)
+		SET(LINKER_FLAGS "")
 	elseif(APPLE)
 		# macOS
 		SET(COMPILER_DEFS_SHARED_LIB NDEBUG _DYLIB)
-		SET(COMPILER_FLAGS -Ofast -qopenmp -mavx2)
-		SET(LINKER_FLAGS -qopenmp)
+		SET(COMPILER_FLAGS -Ofast -qopenmp -mavx2 -fp:fast=2)
+		SET(LINKER_FLAGS "")
 
 		# ICC has issues with uint16_t on macOS
 		# SET_SOURCE_FILES_PROPERTIES(${SOURCES_EXE} PROPERTIES LANGUAGE CXX)

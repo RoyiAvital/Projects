@@ -10,7 +10,7 @@
 #include "ImageBilateralFilter.h"
 
 #if defined(__ICC) || defined(__ICL) || defined(__INTEL_COMPILER)
-#define ENABLE_INTEL_COMPILER_OPTIMIZATIONS OFF
+#define ENABLE_INTEL_COMPILER_OPTIMIZATIONS ON
 #endif
 #define ENABLE_GAUSSIAN_BLUR OFF
 
@@ -19,7 +19,7 @@
 void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int numCols, float paramOmega);
 void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered, float* mSFiltered, int numRows, int numCols, int iterationIdx, float paramD);
 void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numRows, int numCols);
-void UpdateArraysSC(float* mC, float* mS, float* mT, float* mCOmega, float* mSOmega, int numRows, int numCols);
+void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numRows, int numCols);
 void UpdtaeOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, float rangeStd, float paramL);
 
 // ------------------------------- BilateralFilterFastCompressive ------------------------------- //
@@ -123,7 +123,7 @@ void BilateralFilterFastCompressive(float* mO, float* mI, int numRows, int numCo
 
 	for (ii = 3; ii <= paramN; ii++)
 	{
-		UpdateArraysSC(mC, mS, mT, mCOmega, mSOmega, numRows, numCols);
+		UpdateArraysSC(mC, mS, mCOmega, mSOmega, numRows, numCols);
 #if (ENABLE_GAUSSIAN_BLUR == ON)
 		ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
 		ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);
@@ -170,6 +170,7 @@ void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int
 	}
 
 #else
+
 #ifdef __GCC__
 #pragma omp parallel for simd
 #pragma vector aligned always
@@ -244,6 +245,28 @@ void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numR
 	
 	int ii;
 
+#if (ENABLE_INTEL_COMPILER_OPTIMIZATIONS == ON)
+
+	__m256 m256Val2_0;
+	__m256 m256Val1_0;
+
+	__m256 m256mCO;
+	__m256 m256mSO;
+
+	m256Val2_0 = _mm256_set1_ps(2.0f);
+	m256Val1_0 = _mm256_set1_ps(1.0f);
+
+#pragma omp parallel for private(m256mCO, m256mSO)
+	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
+	{
+		m256mCO = _mm256_loadu_ps(&mCOmega[ii]);
+		m256mSO = _mm256_loadu_ps(&mSOmega[ii]);
+		_mm256_storeu_ps(&mS[ii], _mm256_mul_ps(m256Val2_0, _mm256_mul_ps(m256mCO, m256mSO)));
+		_mm256_storeu_ps(&mC[ii], _mm256_sub_ps(_mm256_mul_ps(m256Val2_0, _mm256_mul_ps(m256mCO, m256mCO)), m256Val1_0));
+	}
+
+#else
+
 #ifdef __GCC__
 #pragma omp parallel for simd
 #pragma vector aligned always
@@ -257,12 +280,15 @@ void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numR
 		mC[ii] = 2.0f * mCOmega[ii] * mCOmega[ii] - 1.0f;
 	}
 
+#endif
+
 }
 
 
-void UpdateArraysSC(float* mC, float* mS, float* mT, float* mCOmega, float* mSOmega, int numRows, int numCols) {
+void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numRows, int numCols) {
 
 	int ii;
+	float varTmp;
 
 #if (ENABLE_INTEL_COMPILER_OPTIMIZATIONS == ON)
 
@@ -297,9 +323,9 @@ void UpdateArraysSC(float* mC, float* mS, float* mT, float* mCOmega, float* mSOm
 #endif
 	for (ii = 0; ii < numRows * numCols; ii++)
 	{
-		mT[ii] = mC[ii] * mSOmega[ii] + mS[ii] * mCOmega[ii];
+		varTmp = mC[ii] * mSOmega[ii] + mS[ii] * mCOmega[ii];
 		mC[ii] = mC[ii] * mCOmega[ii] - mS[ii] * mSOmega[ii];
-		mS[ii] = mT[ii];
+		mS[ii] = varTmp;
 	}
 
 #endif
@@ -309,6 +335,31 @@ void UpdateArraysSC(float* mC, float* mS, float* mT, float* mCOmega, float* mSOm
 void UpdtaeOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, float rangeStd, float paramL) {
 
 	int ii;
+
+#if (ENABLE_INTEL_COMPILER_OPTIMIZATIONS == ON)
+
+	__m256 m256Val1_0;
+
+	__m256 m256mO;
+	__m256 m256mZ;
+	__m256 m256mI;
+	__m256 m256OutFctr;
+
+	m256Val1_0 = _mm256_set1_ps(1.0f);
+	m256OutFctr = _mm256_set1_ps((M_PIf * rangeStd * rangeStd) / paramL);
+
+#pragma omp parallel for private(m256mO, m256mZ, m256mI)
+	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
+	{
+		m256mO = _mm256_loadu_ps(&mO[ii]);
+		m256mZ = _mm256_loadu_ps(&mZ[ii]);
+		m256mI = _mm256_loadu_ps(&mI[ii]);
+
+		_mm256_storeu_ps(&mO[ii], _mm256_add_ps(m256mI, _mm256_mul_ps(m256OutFctr, _mm256_div_ps(m256mO, _mm256_add_ps(m256Val1_0, m256mZ)))));
+	}
+
+#else
+
 	float outFactor;
 
 	outFactor = (M_PIf * rangeStd * rangeStd) / paramL;
@@ -324,5 +375,7 @@ void UpdtaeOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, flo
 	{
 		mO[ii] = mI[ii] + (outFactor * (mO[ii] / (1.0f + mZ[ii])));
 	}
+
+#endif
 
 }

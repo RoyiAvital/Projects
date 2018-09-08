@@ -84,6 +84,7 @@
       <OpenMP>GenerateParallelCode</OpenMP>
       <CCppSupport>C99Support</CCppSupport>
       <OptimizationDiagnosticLevel>Level5</OptimizationDiagnosticLevel>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
