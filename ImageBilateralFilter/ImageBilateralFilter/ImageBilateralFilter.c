@@ -162,11 +162,11 @@ void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int
 #pragma omp parallel for private(m256Tmp, m256Sin, m256Cos)
 	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
 	{
-		m256Tmp = _mm256_mul_ps(m256ParamOmega, _mm256_loadu_ps(&mI[ii]));
+		m256Tmp = _mm256_mul_ps(m256ParamOmega, _mm256_load_ps(&mI[ii]));
 		m256Sin = _mm256_sincos_ps(&m256Cos, m256Tmp);
 
-		_mm256_storeu_ps(&mCOmega[ii], m256Cos);
-		_mm256_storeu_ps(&mSOmega[ii], m256Sin);
+		_mm256_store_ps(&mCOmega[ii], m256Cos);
+		_mm256_store_ps(&mSOmega[ii], m256Sin);
 	}
 
 #else
@@ -211,14 +211,14 @@ void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered,
 #pragma omp parallel for private(m256mO, m256mZ, m256mC, m256mS, m256mCF, m256mSF)
 	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
 	{
-		m256mO = _mm256_loadu_ps(&mO[ii]);
-		m256mZ = _mm256_loadu_ps(&mZ[ii]);
-		m256mC = _mm256_loadu_ps(&mC[ii]);
-		m256mS = _mm256_loadu_ps(&mS[ii]);
-		m256mCF = _mm256_loadu_ps(&mCFiltered[ii]);
-		m256mSF = _mm256_loadu_ps(&mSFiltered[ii]);
-		_mm256_storeu_ps(&mO[ii], _mm256_add_ps(m256mO, _mm256_mul_ps(_mm256_mul_ps(m256IterIdx, m256paramD), _mm256_sub_ps(_mm256_mul_ps(m256mC, m256mSF), _mm256_mul_ps(m256mS, m256mCF)))));
-		_mm256_storeu_ps(&mZ[ii], _mm256_add_ps(m256mZ, _mm256_mul_ps(m256paramD, _mm256_add_ps(_mm256_mul_ps(m256mC, m256mCF), _mm256_mul_ps(m256mS, m256mSF)))));
+		m256mO = _mm256_load_ps(&mO[ii]);
+		m256mZ = _mm256_load_ps(&mZ[ii]);
+		m256mC = _mm256_load_ps(&mC[ii]);
+		m256mS = _mm256_load_ps(&mS[ii]);
+		m256mCF = _mm256_load_ps(&mCFiltered[ii]);
+		m256mSF = _mm256_load_ps(&mSFiltered[ii]);
+		_mm256_store_ps(&mO[ii], _mm256_add_ps(m256mO, _mm256_mul_ps(_mm256_mul_ps(m256IterIdx, m256paramD), _mm256_sub_ps(_mm256_mul_ps(m256mC, m256mSF), _mm256_mul_ps(m256mS, m256mCF)))));
+		_mm256_store_ps(&mZ[ii], _mm256_add_ps(m256mZ, _mm256_mul_ps(m256paramD, _mm256_add_ps(_mm256_mul_ps(m256mC, m256mCF), _mm256_mul_ps(m256mS, m256mSF)))));
 	}
 
 #else
@@ -259,10 +259,10 @@ void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numR
 #pragma omp parallel for private(m256mCO, m256mSO)
 	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
 	{
-		m256mCO = _mm256_loadu_ps(&mCOmega[ii]);
-		m256mSO = _mm256_loadu_ps(&mSOmega[ii]);
-		_mm256_storeu_ps(&mS[ii], _mm256_mul_ps(m256Val2_0, _mm256_mul_ps(m256mCO, m256mSO)));
-		_mm256_storeu_ps(&mC[ii], _mm256_sub_ps(_mm256_mul_ps(m256Val2_0, _mm256_mul_ps(m256mCO, m256mCO)), m256Val1_0));
+		m256mCO = _mm256_load_ps(&mCOmega[ii]);
+		m256mSO = _mm256_load_ps(&mSOmega[ii]);
+		_mm256_store_ps(&mS[ii], _mm256_mul_ps(m256Val2_0, _mm256_mul_ps(m256mCO, m256mSO)));
+		_mm256_store_ps(&mC[ii], _mm256_sub_ps(_mm256_mul_ps(m256Val2_0, _mm256_mul_ps(m256mCO, m256mCO)), m256Val1_0));
 	}
 
 #else
@@ -301,15 +301,15 @@ void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int nu
 #pragma omp parallel for private(m256mC, m256mS, m256mCO, m256mSO, m256mT)
 	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
 	{
-		m256mC = _mm256_loadu_ps(&mC[ii]);
-		m256mS = _mm256_loadu_ps(&mS[ii]);
-		m256mCO = _mm256_loadu_ps(&mCOmega[ii]);
-		m256mSO = _mm256_loadu_ps(&mSOmega[ii]);
+		m256mC = _mm256_load_ps(&mC[ii]);
+		m256mS = _mm256_load_ps(&mS[ii]);
+		m256mCO = _mm256_load_ps(&mCOmega[ii]);
+		m256mSO = _mm256_load_ps(&mSOmega[ii]);
 
 		m256mT = _mm256_add_ps(_mm256_mul_ps(m256mC, m256mSO), _mm256_mul_ps(m256mS, m256mCO));
 
-		_mm256_storeu_ps(&mC[ii], _mm256_sub_ps(_mm256_mul_ps(m256mC, m256mCO), _mm256_mul_ps(m256mS, m256mSO)));
-		_mm256_storeu_ps(&mS[ii], m256mT);
+		_mm256_store_ps(&mC[ii], _mm256_sub_ps(_mm256_mul_ps(m256mC, m256mCO), _mm256_mul_ps(m256mS, m256mSO)));
+		_mm256_store_ps(&mS[ii], m256mT);
 	}
 
 #else
@@ -351,11 +351,11 @@ void UpdtaeOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, flo
 #pragma omp parallel for private(m256mO, m256mZ, m256mI)
 	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
 	{
-		m256mO = _mm256_loadu_ps(&mO[ii]);
-		m256mZ = _mm256_loadu_ps(&mZ[ii]);
-		m256mI = _mm256_loadu_ps(&mI[ii]);
+		m256mO = _mm256_load_ps(&mO[ii]);
+		m256mZ = _mm256_load_ps(&mZ[ii]);
+		m256mI = _mm256_load_ps(&mI[ii]);
 
-		_mm256_storeu_ps(&mO[ii], _mm256_add_ps(m256mI, _mm256_mul_ps(m256OutFctr, _mm256_div_ps(m256mO, _mm256_add_ps(m256Val1_0, m256mZ)))));
+		_mm256_store_ps(&mO[ii], _mm256_add_ps(m256mI, _mm256_mul_ps(m256OutFctr, _mm256_div_ps(m256mO, _mm256_add_ps(m256Val1_0, m256mZ)))));
 	}
 
 #else
