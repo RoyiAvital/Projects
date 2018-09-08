@@ -24,7 +24,7 @@ void UpdateOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, flo
 
 // ------------------------------- BilateralFilterFastCompressive ------------------------------- //
 /*
-Applies Convolution on an Image (2D Array) using given 2D Kernel.
+Applies Gaussian Bilateral Filter using approximation made by Fourier Series.
 Input:
 - mO			-	Output Image.
 					Structure: Image Array (Single Channel).
@@ -61,6 +61,7 @@ Input:
 					Range : {2, 3, ...}.
 Reference:
 1.	Fast Compressive Bilateral Filter (https://ieeexplore.ieee.org/document/7843844/).
+	The code is actually a simple improvement of the idea to make it more efficient and faster.
 Remarks:
 1.	The input size must have 'numCols' which is a multiplication of 16 for vectorization.
 2.	Requires CPU with AVX2 support.
