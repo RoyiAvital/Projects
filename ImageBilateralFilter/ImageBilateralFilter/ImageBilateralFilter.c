@@ -9,6 +9,11 @@
 
 #include "ImageBilateralFilter.h"
 
+#if defined(__ICC) || defined(__ICL) || defined(__INTEL_COMPILER)
+#define ENABLE_INTEL_COMPILER_OPTIMIZATIONS OFF
+#endif
+#define ENABLE_GAUSSIAN_BLUR OFF
+
 #define M_PIf (float)(M_PI)
 
 void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int numCols, float paramOmega);
@@ -101,22 +106,28 @@ void BilateralFilterFastCompressive(float* mO, float* mI, int numRows, int numCo
 
 	// Iteration Number 1
 	ii = 1;
-	// ImageConvolutionGaussianKernel(mCFiltered, mCOmega, mT, numRows, numCols, spatialStd, paramK);
-	// ImageConvolutionGaussianKernel(mSFiltered, mSOmega, mT, numRows, numCols, spatialStd, paramK);
+#if (ENABLE_GAUSSIAN_BLUR == ON)
+	 ImageConvolutionGaussianKernel(mCFiltered, mCOmega, mT, numRows, numCols, spatialStd, paramK);
+	 ImageConvolutionGaussianKernel(mSFiltered, mSOmega, mT, numRows, numCols, spatialStd, paramK);
+#endif
 	UpdateArrays(mO, mZ, mCOmega, mSOmega, mCFiltered, mSFiltered, numRows, numCols, ii, vParamD[ii - 1]);
 
 	// Iteration Number 2
 	ii = 2;
 	InitArraysSC(mC, mS, mCOmega, mSOmega, numRows, numCols);
-	/*ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
-	ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);*/
+#if (ENABLE_GAUSSIAN_BLUR == ON)
+	ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
+	ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);
+#endif
 	UpdateArrays(mO, mZ, mC, mS, mCFiltered, mSFiltered, numRows, numCols, ii, vParamD[ii - 1]);
 
 	for (ii = 3; ii <= paramN; ii++)
 	{
 		UpdateArraysSC(mC, mS, mT, mCOmega, mSOmega, numRows, numCols);
-		/*ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
-		ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);*/
+#if (ENABLE_GAUSSIAN_BLUR == ON)
+		ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
+		ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);
+#endif
 		UpdateArrays(mO, mZ, mC, mS, mCFiltered, mSFiltered, numRows, numCols, ii, vParamD[ii - 1]);
 	}
 
@@ -139,30 +150,23 @@ void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int
 
 	int ii;
 
-#if defined(ICC) || defined(ICL)
+#if (ENABLE_INTEL_COMPILER_OPTIMIZATIONS == ON)
 
 	__m256 m256ParamOmega;
 	__m256 m256Tmp;
-	__m256 m256Sin;
 	__m256 m256Cos;
-	__m256* m256C;
-	__m256* m256S;
-	__m256* m256I;
+	__m256 m256Sin;
 
 	m256ParamOmega = _mm256_set1_ps(paramOmega);
 
-	m256C = (__m256*)(mCOmega);
-	m256S = (__m256*)(mSOmega);
-	m256I = (__m256*)(mI);
-
-#pragma omp parallel
+#pragma omp parallel for private(m256Tmp, m256Sin, m256Cos)
 	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
 	{
-		m256Tmp = _mm256_mul_ps(m256ParamOmega, _mm256_loadu_ps(m256I));
+		m256Tmp = _mm256_mul_ps(m256ParamOmega, _mm256_loadu_ps(&mI[ii]));
 		m256Sin = _mm256_sincos_ps(&m256Cos, m256Tmp);
 
-		_mm256_storeu_ps(m256C, m256Cos);
-		_mm256_storeu_ps(m256S, m256Sin);
+		_mm256_storeu_ps(&mCOmega[ii], m256Cos);
+		_mm256_storeu_ps(&mSOmega[ii], m256Sin);
 	}
 
 #else
@@ -188,6 +192,36 @@ void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered,
 	
 	int ii;
 
+#if (ENABLE_INTEL_COMPILER_OPTIMIZATIONS == ON)
+
+	__m256 m256IterIdx;
+	__m256 m256paramD;
+
+	__m256 m256mO;
+	__m256 m256mZ;
+	__m256 m256mC;
+	__m256 m256mS;
+	__m256 m256mCF;
+	__m256 m256mSF;
+
+	m256IterIdx = _mm256_set1_ps(iterationIdx); 
+	m256paramD = _mm256_set1_ps(paramD);
+
+#pragma omp parallel for private(m256mO, m256mZ, m256mC, m256mS, m256mCF, m256mSF)
+	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
+	{
+		m256mO = _mm256_loadu_ps(&mO[ii]);
+		m256mZ = _mm256_loadu_ps(&mZ[ii]);
+		m256mC = _mm256_loadu_ps(&mC[ii]);
+		m256mS = _mm256_loadu_ps(&mS[ii]);
+		m256mCF = _mm256_loadu_ps(&mCFiltered[ii]);
+		m256mSF = _mm256_loadu_ps(&mSFiltered[ii]);
+		_mm256_storeu_ps(&mO[ii], _mm256_add_ps(m256mO, _mm256_mul_ps(_mm256_mul_ps(m256IterIdx, m256paramD), _mm256_sub_ps(_mm256_mul_ps(m256mC, m256mSF), _mm256_mul_ps(m256mS, m256mCF)))));
+		_mm256_storeu_ps(&mZ[ii], _mm256_add_ps(m256mZ, _mm256_mul_ps(m256paramD, _mm256_add_ps(_mm256_mul_ps(m256mC, m256mCF), _mm256_mul_ps(m256mS, m256mSF)))));
+	}
+
+#else
+
 #ifdef __GCC__
 #pragma omp parallel for simd
 #pragma vector aligned always
@@ -200,6 +234,8 @@ void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered,
 		mO[ii] += (iterationIdx * paramD) * (mC[ii] * mSFiltered[ii] - mS[ii] * mCFiltered[ii]);
 		mZ[ii] += paramD * (mC[ii] * mCFiltered[ii] + mS[ii] * mSFiltered[ii]);
 	}
+
+#endif
 
 }
 
@@ -228,6 +264,30 @@ void UpdateArraysSC(float* mC, float* mS, float* mT, float* mCOmega, float* mSOm
 
 	int ii;
 
+#if (ENABLE_INTEL_COMPILER_OPTIMIZATIONS == ON)
+
+	__m256 m256mC;
+	__m256 m256mS;
+	__m256 m256mCO;
+	__m256 m256mSO;
+	__m256 m256mT;
+
+#pragma omp parallel for private(m256mC, m256mS, m256mCO, m256mSO, m256mT)
+	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
+	{
+		m256mC = _mm256_loadu_ps(&mC[ii]);
+		m256mS = _mm256_loadu_ps(&mS[ii]);
+		m256mCO = _mm256_loadu_ps(&mCOmega[ii]);
+		m256mSO = _mm256_loadu_ps(&mSOmega[ii]);
+
+		m256mT = _mm256_add_ps(_mm256_mul_ps(m256mC, m256mSO), _mm256_mul_ps(m256mS, m256mCO));
+
+		_mm256_storeu_ps(&mC[ii], _mm256_sub_ps(_mm256_mul_ps(m256mC, m256mCO), _mm256_mul_ps(m256mS, m256mSO)));
+		_mm256_storeu_ps(&mS[ii], m256mT);
+	}
+
+#else
+
 #ifdef __GCC__
 #pragma omp parallel for simd
 #pragma vector aligned always
@@ -241,6 +301,8 @@ void UpdateArraysSC(float* mC, float* mS, float* mT, float* mCOmega, float* mSOm
 		mC[ii] = mC[ii] * mCOmega[ii] - mS[ii] * mSOmega[ii];
 		mS[ii] = mT[ii];
 	}
+
+#endif
 
 }
 
