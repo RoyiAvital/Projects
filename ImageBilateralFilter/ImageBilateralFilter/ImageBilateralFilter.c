@@ -12,7 +12,7 @@
 #if defined(__ICC) || defined(__ICL) || defined(__INTEL_COMPILER)
 #define ENABLE_INTEL_COMPILER_OPTIMIZATIONS ON
 #endif
-#define ENABLE_GAUSSIAN_BLUR OFF
+#define ENABLE_GAUSSIAN_BLUR ON
 
 #define M_PIf (float)(M_PI)
 
@@ -39,23 +39,26 @@ Input:
 					Type : 'Int'.
 					Range : {1, 2, ...}.
 - numCols		-	Number of Columns.
-					Assumbed to be a factor of 4 (SSE Stride).
+					Assumbed to be a factor of 16 (AVX 512 Stride).
 					Structure: Scalar.
 					Type : 'Int'.
 					Range : {1, 2, ...}.
-- mConvKernel	-	Convolution Kernel.
+- spatialStd	-	Spatial STD.
+					The STD of the Gaussian Kernel applied on Spatial data.
 					Structure: 2D Array.
-					Type : 'Single'.
-					Range : (-inf, inf).
-- kernelNumRows	-	Kernel Number of Rows.
+					Type : 'Float32'.
+					Range : (0, inf).
+- rangeStd		-	Range STD.
+					The STD of the Gaussian Kernel applied on Range data.
+					Structure: Scalar.
+					Type : 'Float32'.
+					Range : (0, inf).
+- paramK		-	Parameter K.
+					Sets the quality of the aprpxomation.
+					Higher number yields better approximation.
 					Structure: Scalar.
 					Type : 'Int'.
-					Range : {1, 2, ...}.
-- kernelNumCols -	Kernel Number of Columns.
-					Assumbed to be a factor of 4 (SSE Stride).
-					Structure: Scalar.
-					Type : 'Int'.
-					Range : {1, 2, ...}.
+					Range : {2, 3, ...}.
 Reference:
 1.	Fast Compressive Bilateral Filter (https://ieeexplore.ieee.org/document/7843844/).
 Remarks:
@@ -65,7 +68,7 @@ Remarks:
 TODO :
 1.	C
 Release Notes:
--	1.0.000	07/09/2017	Royi Avital
+-	1.0.000	08/09/2018	Royi Avital
 *   First release version
 */
 // ------------------------------- BilateralFilterFastCompressive ------------------------------- //

@@ -31,9 +31,9 @@ int main(int argc, char *argv[]) {
 		switch (unitTestFlag)
 		{
 		case UNIT_TEST_IMAGE_GAUSSIAN_BLUR:
-			break;
 			spatialStd	= atof(argv[6]);
 			paramK		= atoi(argv[7]);
+            break;
 		case UNIT_TEST_IMAGE_BILATERAL_FILTER:
 			spatialStd	= atof(argv[5]);
 			rangeStd	= atof(argv[6]);
