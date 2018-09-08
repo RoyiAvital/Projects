@@ -20,7 +20,7 @@ void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int
 void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered, float* mSFiltered, int numRows, int numCols, int iterationIdx, float paramD);
 void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numRows, int numCols);
 void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numRows, int numCols);
-void UpdtaeOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, float rangeStd, float paramL);
+void UpdateOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, float rangeStd, float paramL);
 
 // ------------------------------- BilateralFilterFastCompressive ------------------------------- //
 /*
@@ -335,7 +335,7 @@ void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int nu
 
 }
 
-void UpdtaeOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, float rangeStd, float paramL) {
+void UpdateOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, float rangeStd, float paramL) {
 
 	int ii;
 
