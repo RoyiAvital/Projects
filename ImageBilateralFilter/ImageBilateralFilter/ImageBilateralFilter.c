@@ -137,7 +137,7 @@ void BilateralFilterFastCompressive(float* mO, float* mI, int numRows, int numCo
 		ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
 		ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);
 #endif
-		UpdateArrays(mO, mZ, mC, mS, mCFiltered, mSFiltered, numRows, numCols, ii, vParamD[ii - 1]);
+		UpdateArrays(mO, mZ, mC, mS, mCFiltered, mSFiltered, numElements, ii, vParamD[ii - 1]);
 	}
 
 	UpdateOutput(mO, mZ, mI, numElements, rangeStd, paramL);
