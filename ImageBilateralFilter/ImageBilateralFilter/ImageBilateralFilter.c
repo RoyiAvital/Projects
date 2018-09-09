@@ -16,11 +16,11 @@
 
 #define M_PIf (float)(M_PI)
 
-void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int numCols, float paramOmega);
-void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered, float* mSFiltered, int numRows, int numCols, int iterationIdx, float paramD);
-void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numRows, int numCols);
-void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numRows, int numCols);
-void UpdateOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, float rangeStd, float paramL);
+void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numElements, float paramOmega);
+void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered, float* mSFiltered, int numElements, int iterationIdx, float paramD);
+void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numElements);
+void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numElements);
+void UpdateOutput(float* mO, float* mZ, float* mI, int numElements, float rangeStd, float paramL);
 
 // ------------------------------- BilateralFilterFastCompressive ------------------------------- //
 /*
@@ -69,25 +69,30 @@ Remarks:
 TODO :
 1.	C
 Release Notes:
+-	1.0.001	09/09/2018	Royi Avital
+	*   Using 'numElements' instead of 'numRows * numCols'.
+	*	Fixed typo in the name of 'UpdateOutput'.
 -	1.0.000	08/09/2018	Royi Avital
-*   First release version
+	*   First release version.
 */
 // ------------------------------- BilateralFilterFastCompressive ------------------------------- //
 void BilateralFilterFastCompressive(float* mO, float* mI, int numRows, int numCols, float spatialStd, float rangeStd, int paramK)
 {
-	int ii, paramN;
+	int ii, numElements, paramN;
 	float paramL, paramTau, *vParamD, *mZ, *mT, paramOmega, *mCOmega, *mSOmega, *mC, *mS, *mCFiltered, *mSFiltered;
 
-	mZ = (float*)_mm_malloc(numRows * numCols * sizeof(float), AVX_ALIGNMENT); // Should be initialized to Zero
-	mT = (float*)_mm_malloc(numRows * numCols * sizeof(float), AVX_ALIGNMENT); // Buffer
-	mC = (float*)_mm_malloc(numRows * numCols * sizeof(float), AVX_ALIGNMENT);
-	mS = (float*)_mm_malloc(numRows * numCols * sizeof(float), AVX_ALIGNMENT);
-	mCOmega = (float*)_mm_malloc(numRows * numCols * sizeof(float), AVX_ALIGNMENT);
-	mSOmega = (float*)_mm_malloc(numRows * numCols * sizeof(float), AVX_ALIGNMENT);
-	mCFiltered = (float*)_mm_malloc(numRows * numCols * sizeof(float), AVX_ALIGNMENT);
-	mSFiltered = (float*)_mm_malloc(numRows * numCols * sizeof(float), AVX_ALIGNMENT);
+	numElements = numRows * numCols;
 
-	memset(mZ, 0.0f, numRows * numCols * sizeof(float));
+	mZ = (float*)_mm_malloc(numElements * sizeof(float), AVX_ALIGNMENT); // Should be initialized to Zero
+	mT = (float*)_mm_malloc(numElements * sizeof(float), AVX_ALIGNMENT); // Buffer
+	mC = (float*)_mm_malloc(numElements * sizeof(float), AVX_ALIGNMENT);
+	mS = (float*)_mm_malloc(numElements * sizeof(float), AVX_ALIGNMENT);
+	mCOmega = (float*)_mm_malloc(numElements * sizeof(float), AVX_ALIGNMENT);
+	mSOmega = (float*)_mm_malloc(numElements * sizeof(float), AVX_ALIGNMENT);
+	mCFiltered = (float*)_mm_malloc(numElements * sizeof(float), AVX_ALIGNMENT);
+	mSFiltered = (float*)_mm_malloc(numElements * sizeof(float), AVX_ALIGNMENT);
+
+	memset(mZ, 0.0f, numElements * sizeof(float));
 
 	// Init Parameters
 
@@ -106,7 +111,7 @@ void BilateralFilterFastCompressive(float* mO, float* mI, int numRows, int numCo
 		vParamD[ii - 1] = 2 * expf(-(ii * ii) / (2 * paramTau * paramTau));
 	}
 
-	InitOmegaArrays(mCOmega, mSOmega, mI, numRows, numCols, paramOmega);
+	InitOmegaArrays(mCOmega, mSOmega, mI, numElements, paramOmega);
 
 	// Iteration Number 1
 	ii = 1;
@@ -114,20 +119,20 @@ void BilateralFilterFastCompressive(float* mO, float* mI, int numRows, int numCo
 	 ImageConvolutionGaussianKernel(mCFiltered, mCOmega, mT, numRows, numCols, spatialStd, paramK);
 	 ImageConvolutionGaussianKernel(mSFiltered, mSOmega, mT, numRows, numCols, spatialStd, paramK);
 #endif
-	UpdateArrays(mO, mZ, mCOmega, mSOmega, mCFiltered, mSFiltered, numRows, numCols, ii, vParamD[ii - 1]);
+	UpdateArrays(mO, mZ, mCOmega, mSOmega, mCFiltered, mSFiltered, numElements, ii, vParamD[ii - 1]);
 
 	// Iteration Number 2
 	ii = 2;
-	InitArraysSC(mC, mS, mCOmega, mSOmega, numRows, numCols);
+	InitArraysSC(mC, mS, mCOmega, mSOmega, numElements);
 #if (ENABLE_GAUSSIAN_BLUR == ON)
 	ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
 	ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);
 #endif
-	UpdateArrays(mO, mZ, mC, mS, mCFiltered, mSFiltered, numRows, numCols, ii, vParamD[ii - 1]);
+	UpdateArrays(mO, mZ, mC, mS, mCFiltered, mSFiltered, numElements, ii, vParamD[ii - 1]);
 
 	for (ii = 3; ii <= paramN; ii++)
 	{
-		UpdateArraysSC(mC, mS, mCOmega, mSOmega, numRows, numCols);
+		UpdateArraysSC(mC, mS, mCOmega, mSOmega, numElements);
 #if (ENABLE_GAUSSIAN_BLUR == ON)
 		ImageConvolutionGaussianKernel(mCFiltered, mC, mT, numRows, numCols, spatialStd, paramK);
 		ImageConvolutionGaussianKernel(mSFiltered, mS, mT, numRows, numCols, spatialStd, paramK);
@@ -135,7 +140,7 @@ void BilateralFilterFastCompressive(float* mO, float* mI, int numRows, int numCo
 		UpdateArrays(mO, mZ, mC, mS, mCFiltered, mSFiltered, numRows, numCols, ii, vParamD[ii - 1]);
 	}
 
-	UpdtaeOutput(mO, mZ, mI, numRows, numCols, rangeStd, paramL);
+	UpdateOutput(mO, mZ, mI, numElements, rangeStd, paramL);
 
 	_mm_free(mZ);
 	_mm_free(mT);
@@ -150,7 +155,7 @@ void BilateralFilterFastCompressive(float* mO, float* mI, int numRows, int numCo
 }
 
 // Auxiliary Functions
-void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int numCols, float paramOmega) {
+void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numElements, float paramOmega) {
 
 	int ii;
 
@@ -164,7 +169,7 @@ void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int
 	m256ParamOmega = _mm256_set1_ps(paramOmega);
 
 #pragma omp parallel for private(m256Tmp, m256Sin, m256Cos)
-	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
+	for (ii = 0; ii < numElements; ii += AVX_STRIDE)
 	{
 		m256Tmp = _mm256_mul_ps(m256ParamOmega, _mm256_load_ps(&mI[ii]));
 		m256Sin = _mm256_sincos_ps(&m256Cos, m256Tmp);
@@ -182,7 +187,7 @@ void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int
 #else
 #pragma omp parallel for
 #endif
-	for (ii = 0; ii < numRows * numCols; ii++)
+	for (ii = 0; ii < numElements; ii++)
 	{
 		mCOmega[ii] = cosf(paramOmega * mI[ii]);
 		mSOmega[ii] = sinf(paramOmega * mI[ii]);
@@ -193,7 +198,7 @@ void InitOmegaArrays(float* mCOmega, float* mSOmega, float* mI, int numRows, int
 }
 
 
-void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered, float* mSFiltered, int numRows, int numCols, int iterationIdx, float paramD) {
+void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered, float* mSFiltered, int numElements, int iterationIdx, float paramD) {
 	
 	int ii;
 
@@ -213,7 +218,7 @@ void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered,
 	m256paramD = _mm256_set1_ps(paramD);
 
 #pragma omp parallel for private(m256mO, m256mZ, m256mC, m256mS, m256mCF, m256mSF)
-	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
+	for (ii = 0; ii < numElements; ii += AVX_STRIDE)
 	{
 		m256mO = _mm256_load_ps(&mO[ii]);
 		m256mZ = _mm256_load_ps(&mZ[ii]);
@@ -234,7 +239,7 @@ void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered,
 #else
 #pragma omp parallel for
 #endif
-	for (ii = 0; ii < numRows * numCols; ii++)
+	for (ii = 0; ii < numElements; ii++)
 	{
 		mO[ii] += (iterationIdx * paramD) * (mC[ii] * mSFiltered[ii] - mS[ii] * mCFiltered[ii]);
 		mZ[ii] += paramD * (mC[ii] * mCFiltered[ii] + mS[ii] * mSFiltered[ii]);
@@ -245,7 +250,7 @@ void UpdateArrays(float* mO, float* mZ, float* mC, float* mS, float* mCFiltered,
 }
 
 
-void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numRows, int numCols) {
+void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numElements) {
 	
 	int ii;
 
@@ -261,7 +266,7 @@ void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numR
 	m256Val1_0 = _mm256_set1_ps(1.0f);
 
 #pragma omp parallel for private(m256mCO, m256mSO)
-	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
+	for (ii = 0; ii < numElements; ii += AVX_STRIDE)
 	{
 		m256mCO = _mm256_load_ps(&mCOmega[ii]);
 		m256mSO = _mm256_load_ps(&mSOmega[ii]);
@@ -278,7 +283,7 @@ void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numR
 #else
 #pragma omp parallel for
 #endif
-	for (ii = 0; ii < numRows * numCols; ii++)
+	for (ii = 0; ii < numElements; ii++)
 	{
 		mS[ii] = 2.0f * mCOmega[ii] * mSOmega[ii];
 		mC[ii] = 2.0f * mCOmega[ii] * mCOmega[ii] - 1.0f;
@@ -289,7 +294,7 @@ void InitArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numR
 }
 
 
-void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numRows, int numCols) {
+void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int numElements) {
 
 	int ii;
 	float varTmp;
@@ -303,7 +308,7 @@ void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int nu
 	__m256 m256mT;
 
 #pragma omp parallel for private(m256mC, m256mS, m256mCO, m256mSO, m256mT)
-	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
+	for (ii = 0; ii < numElements; ii += AVX_STRIDE)
 	{
 		m256mC = _mm256_load_ps(&mC[ii]);
 		m256mS = _mm256_load_ps(&mS[ii]);
@@ -325,7 +330,7 @@ void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int nu
 #else
 #pragma omp parallel for
 #endif
-	for (ii = 0; ii < numRows * numCols; ii++)
+	for (ii = 0; ii < numElements; ii++)
 	{
 		varTmp = mC[ii] * mSOmega[ii] + mS[ii] * mCOmega[ii];
 		mC[ii] = mC[ii] * mCOmega[ii] - mS[ii] * mSOmega[ii];
@@ -336,7 +341,7 @@ void UpdateArraysSC(float* mC, float* mS, float* mCOmega, float* mSOmega, int nu
 
 }
 
-void UpdateOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, float rangeStd, float paramL) {
+void UpdateOutput(float* mO, float* mZ, float* mI, int numElements, float rangeStd, float paramL) {
 
 	int ii;
 
@@ -353,7 +358,7 @@ void UpdateOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, flo
 	m256OutFctr = _mm256_set1_ps((M_PIf * rangeStd * rangeStd) / paramL);
 
 #pragma omp parallel for private(m256mO, m256mZ, m256mI)
-	for (ii = 0; ii < numRows * numCols; ii += AVX_STRIDE)
+	for (ii = 0; ii < numElements; ii += AVX_STRIDE)
 	{
 		m256mO = _mm256_load_ps(&mO[ii]);
 		m256mZ = _mm256_load_ps(&mZ[ii]);
@@ -375,7 +380,7 @@ void UpdateOutput(float* mO, float* mZ, float* mI, int numRows, int numCols, flo
 #else
 #pragma omp parallel for
 #endif
-	for (ii = 0; ii < numRows * numCols; ii++)
+	for (ii = 0; ii < numElements; ii++)
 	{
 		mO[ii] = mI[ii] + (outFactor * (mO[ii] / (1.0f + mZ[ii])));
 	}
