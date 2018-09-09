@@ -24,17 +24,30 @@ int main(int argc, char *argv[]) {
 	}
 	else { // argc == 2 -> Single Input
 		unitTestFlag	= atoi(argv[1]);
-		numRows			= atoi(argv[2]);
-		numCols			= atoi(argv[3]);
-		numIter			= atoi(argv[4]);
 
 		switch (unitTestFlag)
 		{
 		case UNIT_TEST_IMAGE_GAUSSIAN_BLUR:
-			spatialStd	= atof(argv[6]);
-			paramK		= atoi(argv[7]);
+			if (argc < 7) {
+				printf("Error: Number of Argument Is Smaller Than 7");
+				return 0;
+			}
+
+			numRows		= atoi(argv[2]);
+			numCols		= atoi(argv[3]);
+			numIter		= atoi(argv[4]);
+			spatialStd	= atof(argv[5]);
+			paramK		= atoi(argv[6]);
             break;
 		case UNIT_TEST_IMAGE_BILATERAL_FILTER:
+			if (argc < 8) {
+				printf("Error: Number of Argument Is Smaller Than 8");
+				return 0;
+			}
+
+			numRows		= atoi(argv[2]);
+			numCols		= atoi(argv[3]);
+			numIter		= atoi(argv[4]);
 			spatialStd	= atof(argv[5]);
 			rangeStd	= atof(argv[6]);
 			paramK		= atoi(argv[7]);
