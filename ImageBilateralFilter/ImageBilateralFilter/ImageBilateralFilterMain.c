@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
 		{
 		case UNIT_TEST_IMAGE_GAUSSIAN_BLUR:
 			if (argc < 7) {
-				printf("Error: Number of Argument Is Smaller Than 7");
+				printf("Error: Number of Argument Is Smaller Than 6");
 				return 0;
 			}
 
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
             break;
 		case UNIT_TEST_IMAGE_BILATERAL_FILTER:
 			if (argc < 8) {
-				printf("Error: Number of Argument Is Smaller Than 8");
+				printf("Error: Number of Argument Is Smaller Than 7");
 				return 0;
 			}
 
