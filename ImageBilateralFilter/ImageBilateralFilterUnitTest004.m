@@ -58,7 +58,6 @@ paramK      = 5;
 
 %% Loading Library
 
-
 switch(compilingMode)
     case(COMPILING_MODE_DEBUG)
         libFullPath = [LIB_PATH_DEBUG, LIB_NAME, dyLibPostfix];
