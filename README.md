@@ -1,9 +1,12 @@
 # Projects
-Various Small Projects on Various Subjects
+Various Small Projects on Various Subjects.
+
+## Calculate Distance Matrix
+Implementation for calculation of the distance matrix between 2 sets of vectors.
 
 ## Deep Learning Matched Filter
 Analyze the Matched Filter performance using Deep Learning.  
-Mainly if it could have better pefromance compared to [Matched Filter](https://en.wikipedia.org/wiki/Matched_filter) in low SNR.  
+Mainly if it could have better performance compared to [Matched Filter](https://en.wikipedia.org/wiki/Matched_filter) in low SNR.  
 Project in Progress...
 
 ## Dynamic Time Warping
@@ -13,6 +16,9 @@ Introduction and implementation of the [Dynamic Time Warping](https://en.wikiped
 Implementation of Image Convolution using Multi Threading and SIMD (Vectrorization) for speed.
 The project generates DLL / DYLIB / SO to be used in MATLAB.
 
+## Image Bilateral Filter
+Implementation of the Bilateral Filter for Image Processing.
+
 ## Image to Columns
 Optimized C based implementation of MATLAB's [`im2col()`](https://www.mathworks.com/help/images/ref/im2col.html) function.
 
@@ -20,12 +26,17 @@ Optimized C based implementation of MATLAB's [`im2col()`](https://www.mathworks.
 Implementation of the [Levinson Recursion](https://en.wikipedia.org/wiki/Levinson_recursion) on MATLAB.  
 This allows solving Linear System `A x = b` where `A` is a [Toeplitz Matrix](https://en.wikipedia.org/wiki/Toeplitz_matrix) in O(N^2) complexity instead of O(N^3) using classic solution.
 
+## Localization 
+Simulation of Localization Methods.  
+Deriving DTOA / TDOA Localization Cramer Rao Lower Bound.
+
 ## Optimization
 Various projects which are Optimization (Numerical Methods) oriented such as:
 
  * Projection into Balls (Like Norm Balls, the Simplex Ball, etc...).
  * Interior Point () - Implementation in MATLAB.
  * Steepest Descent - Calculation of the Steepest Descent Direction for various norms ($ {L}_{1} $, $ {L}_{2} $, $ {L}_{\infty} $).
+
 
 ## Singular Value Decomposition
 A Presentation about [Singular Value Decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition) (SVD).  
@@ -40,8 +51,8 @@ It covers the following:
 
 The PDF can be viewed directly - [SVD Presentation PDF](https://docs.google.com/viewer?url=https://github.com/RoyiAvital/Projects/raw/master/SingularValueDecomposition/SVD.pdf).
 
-## Localization
-Simulation of Localization Methods.
+## SLEEF vs. SVML
+Comparison (Run Time Benchmark) of SLEEF vs. SVML for various numerical functions.
 
 ## Task Assignment Problem
 Analysis of a variation of the [Knapsack Problem](https://en.wikipedia.org/wiki/Knapsack_problem).

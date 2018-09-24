@@ -61,12 +61,8 @@ SingularValueDecomposition/KnowledgeBase/*
 *.db3
 *.exp
 *.o
-*ImageConvolution/ImageConvolution/x64
-*ImageConvolution/x64
-*CalcDistanceMatrix/Build/*
-*CalcDistanceMatrix/CalcDistanceMatrix/x64/*
-*CalcDistanceMatrix/CalcDistanceMatrixDll/x64/*
-*CalcDistanceMatrix/x64/*
+**/x64/*
+**/My A*/*
 
 # Binary Files
 *.dll
