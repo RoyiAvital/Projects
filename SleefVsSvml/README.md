@@ -25,7 +25,7 @@ Open the Solution File (``) in Visual Studio with Intel Compiler 19 integrated a
 Run the EXE file using `SleefVsSvml.exe <TEST NUMBER> <NUM ELEMENTS> <NUM ITERATIONS> <NEGATIVE VALUES FLAG> <MAX VALUE>`.
 Where:
 
- * 	`TEST NUMBER` - Sets the test to be executed.
+ * 	`TEST NUMBER` - Sets the test to be executed.  
  	Valid Values:
   	*	`1` - Sine Function.
   	*	`3` - Exponent Function.
