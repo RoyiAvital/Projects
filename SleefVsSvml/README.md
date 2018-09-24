@@ -24,11 +24,11 @@ Open the Solution File (``) in Visual Studio with Intel Compiler 19 integrated a
 ## Run
 Run the EXE file using `SleefVsSvml.exe <TEST NUMBER> <NUM ELEMENTS> <NUM ITERATIONS> <NEGATIVE VALUES FLAG> <MAX VALUE>`.
 Where:
+
  * 	`TEST NUMBER` - Sets the test to be executed.
  	Valid Values:
-
- 		*	`1` - Sine Function.
- 		*	`3` - Exponent Function.
+  	*	`1` - Sine Function.
+  	*	`3` - Exponent Function.
  *	`NUM ELEMENTS` - Sets the number of `Float32` elements in the array to process. Must be an integer multiplication of 16 (AVX).
  * 	`NUM ITERATIONS` - How many time to process the array to gather statistics of run time.
  * 	`NEGATIVE VALUES FLAG` - Sets whether to generate negative values in the array. `0` to allow only non negative values and `1` to generate negative values.
