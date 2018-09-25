@@ -14,6 +14,7 @@ The VS 2017 Solution includes 2 Project:
 
 ## Remarks
  *	The test is using a single thread.
+ *	All arrays are AVX Aligned (16 Bytes).
  *	The project is using `Single`  / `Float32` data type.
  *	Each test runs SSE and AVX flavors of the implementation.
  * 	The project is compiled with `/fp:precise`.
