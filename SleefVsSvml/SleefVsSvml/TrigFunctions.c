@@ -21,7 +21,6 @@ void SineSleefSse(float* vO, float* vI, int numElements)
 		_mm_store_ps(&vO[ii], elmI);
 	}
 
-
 }
 
 
@@ -36,7 +35,6 @@ void SineSleefAvx(float* vO, float* vI, int numElements)
 		elmI = Sleef_sinf8_u10avx2(elmI);
 		_mm256_store_ps(&vO[ii], elmI);
 	}
-
 
 }
 
@@ -53,7 +51,6 @@ void SineSvmlSse(float* vO, float* vI, int numElements)
 		_mm_store_ps(&vO[ii], elmI);
 	}
 
-
 }
 
 
@@ -68,6 +65,5 @@ void SineSvmlAvx(float* vO, float* vI, int numElements)
 		elmI = _mm256_sin_ps(elmI);
 		_mm256_store_ps(&vO[ii], elmI);
 	}
-
 
 }

@@ -17,10 +17,6 @@ int main(int argc, char *argv[]) {
 		negValFlag		= OFF;
 		maxVal			= 100;
 		printf("\nUsing Default Settings\n");
-		printf("Number of Elements - %d\n", numElements);
-		printf("Number of Iterations - %d\n", numIter);
-		printf("Negative Values Flag - %d\n", negValFlag);
-		printf("Maximum Value - %f\n", maxVal);
 	}
 	else if (argc > 6) {
 		printf("\nError: Number of Argument Is Larger Than 5\n");
@@ -32,7 +28,13 @@ int main(int argc, char *argv[]) {
 		numIter			= atoi(argv[3]);
 		negValFlag		= atoi(argv[4]);
 		maxVal			= (float)(atof(argv[5]));
+        printf("\nUsing Users Settings\n");
 	}
+    
+    printf("Number of Elements - %d\n", numElements);
+	printf("Number of Iterations - %d\n", numIter);
+	printf("Negative Values Flag - %d\n", negValFlag);
+	printf("Maximum Value - %f\n", maxVal);
 
 	switch (unitTestFlag)
 	{
