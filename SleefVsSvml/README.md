@@ -28,7 +28,7 @@ The VS 2017 Solution includes 2 Project:
  *	Open the Solution File (`SleefVsSvml.sln`) in Visual Studio 2017.  
  	The projects in the solution are configured to use Intel Compiler 19 (Required for SVML).
  *	Build the project `SleefVsSvml`.
- *	Run the `EXE` file which is the output of t he build using the instructions in *Run*.
+ *	Run the `EXE` file which is the output of the build using the instructions in *Run*.
 
 ## Run
 Run the EXE file using `SleefVsSvml.exe <TEST NUMBER> <NUM ELEMENTS> <NUM ITERATIONS> <NEGATIVE VALUES FLAG> <MAX VALUE>`.
