@@ -30,4 +30,4 @@ Includes both derivations and code for implementation.
 ## TO DO List
  *  [SparseStep: Approximating the Counting Norm for Sparse Regularization](https://arxiv.org/abs/1701.06967).  
     [GitHub Code Repository](https://github.com/GjjvdBurg/SparseStep).
- *  newItem.
+ *  [Utilizing Second Order Information in Minibatch Stochastic Variance Reduced Proximal Iterations](http://jmlr.org/papers/v20/17-594.html).
