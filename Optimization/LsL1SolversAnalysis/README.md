@@ -1,7 +1,7 @@
 # ${L}_{1}$ Regularized Least Squares - Solvers Analysis
 This project analyze the performance and implementation of solvers which solves the ${L}_{1}$ Regularized Least Squares problem:
 
-$$ \arg \min_{x} \frac{1}{2} {\left\| A x - b \right|}_{2}^{2} + \lambda {\left\| x \right\|}_{1} $$
+$$ \arg \min_{x} \frac{1}{2} {\left\| A x - b \right\|}_{2}^{2} + \lambda {\left\| x \right\|}_{1} $$
 
 ## Solvers
 
