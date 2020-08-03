@@ -56,3 +56,9 @@ Comparison (Run Time Benchmark) of SLEEF vs. SVML for various numerical function
 
 ## Task Assignment Problem
 Analysis of a variation of the [Knapsack Problem](https://en.wikipedia.org/wiki/Knapsack_problem).
+
+## To Do
+
+ *  [Exploratory Principal Component Analysis](https://github.com/fchen365/epca).  
+    Implement in MATLAB.
+ *  
