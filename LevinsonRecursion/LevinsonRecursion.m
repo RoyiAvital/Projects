@@ -6,15 +6,15 @@ function [ vX ] = LevinsonRecursion( mT, vY )
 % of N^3). Input:
 %   - mT    -   Input Matrix.
 %               Matrix with a Toeplitz Structure.
-%               Structure: Matrix (M x N).
+%               Structure: Matrix (N x N).
 %               Type: 'Single' / 'Double'.
 %               Range: (-inf, inf).
 %   - vY    -   Input Vector.
-%               Structure: Column Vector (M x 1).
+%               Structure: Column Vector (N x 1).
 %               Type: 'Single' / 'Double'.
 %               Range: (-inf, inf).
 % Output:
-%   - vY    -   Output Vector.
+%   - vX    -   Output Vector.
 %               The solution of the system mT * vX = vY.
 %               Structure: Column Vector (N x 1).
 %               Type: 'Single' / 'Double'.
@@ -23,6 +23,7 @@ function [ vX ] = LevinsonRecursion( mT, vY )
 %   1.  Levinson Recursion (Wikipedia) - https://en.wikipedia.org/wiki/Levinson_recursion
 % Remarks:
 %   1.  Joint work with Yair Shemer.
+%   2.  This implementation supports only rectangular matrices.
 % TODO:
 %   1.  A
 % Release Notes:

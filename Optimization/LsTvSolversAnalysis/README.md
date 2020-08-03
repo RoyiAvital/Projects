@@ -48,14 +48,14 @@ Where:
  1. As the Dual Norm (Support Function) of $ {\left\| x \right\|}_{1} = \sup \left\{ {p}^{T} x  \mid {\left\| p \right\|}_{\infty} \leq 1 \right\} $.
  2. By the [Min Max Theorem](https://en.wikipedia.org/wiki/Minimax_theorem) (The objective is Convex in 𝑥 and Concave in 𝑝) one could switch the order of the Maximum and Minimum.
  3. Setting the optimal $ {x}^{\ast} = {\left( {A}^{T} A \right)}^{-1} \left( {A}^{T} b - \lambda {D}^{T} p \right) $.
- 4. Switching Maixmization to Minimization by negation of the function.
+ 4. Switching Maximization to Minimization by negation of the function.
 
-Now, the function $ \frac{1}{2} {\left\| A {x}^{\ast} - b \right\|}_{2}^{2} + \lambda {p}^{T} D {x}^{\ast} $ is conacave and smooth in $ p $ and constraint $ {\left\| p \right\|}_{\infty} \leq 1 $ is convex set. Hence the problem can be solved using Projected Gradient Descent.  
+Now, the function $ \frac{1}{2} {\left\| A {x}^{\ast} - b \right\|}_{2}^{2} + \lambda {p}^{T} D {x}^{\ast} $ is concave and smooth in $ p $ and constraint $ {\left\| p \right\|}_{\infty} \leq 1 $ is convex set. Hence the problem can be solved using Projected Gradient Descent.  
 The gradient is given by:
 
 $$ {\nabla}_{p} \left( \frac{1}{2} {\left\| A {x}^{\ast} - b \right\|}_{2}^{2} + \lambda {p}^{T} D {x}^{\ast} \right) = \lambda D {\left( {A}^{T} A \right)}^{-1} {A}^{T} b - {\lambda}^{2} D {\left( {A}^{T} A \right)}^{-1} {D}^{T} p $$
 
-For clairty we'll negate the function (And the derivative) to work with Convex Function over Convex Set in a minimization problem.
+For clarity we'll negate the function (And the derivative) to work with Convex Function over Convex Set in a minimization problem.
 
 So the step is given by:
 
@@ -74,14 +74,14 @@ $$\begin{aligned}
 \text{subject to} & \quad D x = z
 \end{aligned}$$
 
-The Augmented Lagrangiuan is given by:
+The Augmented Lagrangian is given by:
 
 $$ {L}_{\rho} \left( x, z, u \right) = \frac{1}{2} {\left\| A x - b \right\|}_{2}^{2} + \lambda {\left\| z \right\|}_{1} + \rho {u}^{T} \left( D x - z \right) + \frac{\rho}{2} {\left\| D x - z \right\|}_{2}^{2} $$
 
 The steps are:
 
  1. $ {x}^{k + 1} = \arg \min_{x} \frac{1}{2} {\left\| A x - b \right\|}_{2}^{2} + \rho {u}^{T} \left( D x - z \right) + \frac{\rho}{2} {\left\| D x - z \right\|}_{2}^{2} $ which is given by $ {x}^{k + 1} = {\left( {A}^{T} A + \rho {D}^{T} D \right)}^{-1} \left( {A}^{T} b + \rho {D}^{T} \left( {z}^{k} - {u}^{k} \right) \right) $.
- 2. $ {z}^{k + 1} = \arg \min_{z} \lambda {\left\| z \right\|}_{1} + \rho {u}^{T} \left( D x - z \right) + \frac{\rho}{2} {\left\| D x - z \right\|}_{2}^{2} $. Since minimzing $ \rho {u}^{T} \left( D x - z \right) + \frac{\rho}{2} {\left\| D x - z \right\|}_{2}^{2} $ with respect to $ z $ is equivalent to miniminzg $ \frac{\rho}{2} {\left\| D x - z + u \right\|}_{2}^{2} $ (Open the expression and the only difference is $ {\left\| u \right\|}_{2}^{2} $ which has no effect) then $ {z}^{k + 1} = \arg \min_{z} \lambda {\left\| z \right\|}_{1} + \frac{\rho}{2} {\left\| D x + u - z \right\|}_{2}^{2} $ which in the ADMM iteration means $ {z}^{k + 1} = \mathbf{S}_{ \frac{\lambda}{\rho} } \left( D {x}^{k + 1} + {u}^{k} \right) $ where $ \mathbf{S}_{\lambda} \left( \cdot \right) $ is the Soft Threshold operator with parameter $ \lambda $.
+ 2. $ {z}^{k + 1} = \arg \min_{z} \lambda {\left\| z \right\|}_{1} + \rho {u}^{T} \left( D x - z \right) + \frac{\rho}{2} {\left\| D x - z \right\|}_{2}^{2} $. Since minimizing $ \rho {u}^{T} \left( D x - z \right) + \frac{\rho}{2} {\left\| D x - z \right\|}_{2}^{2} $ with respect to $ z $ is equivalent to minimizing $ \frac{\rho}{2} {\left\| D x - z + u \right\|}_{2}^{2} $ (Open the expression and the only difference is $ {\left\| u \right\|}_{2}^{2} $ which has no effect) then $ {z}^{k + 1} = \arg \min_{z} \lambda {\left\| z \right\|}_{1} + \frac{\rho}{2} {\left\| D x + u - z \right\|}_{2}^{2} $ which in the ADMM iteration means $ {z}^{k + 1} = \mathbf{S}_{ \frac{\lambda}{\rho} } \left( D {x}^{k + 1} + {u}^{k} \right) $ where $ \mathbf{S}_{\lambda} \left( \cdot \right) $ is the Soft Threshold operator with parameter $ \lambda $.
  3. $ {u}^{k + 1} = {u}^{k} + D {x}^{ k + 1} - {z}^{k + 1} $.
 
 ## Results
