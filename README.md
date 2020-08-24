@@ -4,6 +4,9 @@ Various Small Projects on Various Subjects.
 ## Calculate Distance Matrix
 Implementation for calculation of the distance matrix between 2 sets of vectors.
 
+## Clustering
+Some implementations of *Clustering* algorithms.
+
 ## Deep Learning Matched Filter
 Analyze the Matched Filter performance using Deep Learning.  
 Mainly if it could have better performance compared to [Matched Filter](https://en.wikipedia.org/wiki/Matched_filter) in low SNR.  
