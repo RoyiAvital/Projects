@@ -31,3 +31,6 @@ Includes both derivations and code for implementation.
  *  [SparseStep: Approximating the Counting Norm for Sparse Regularization](https://arxiv.org/abs/1701.06967).  
     [GitHub Code Repository](https://github.com/GjjvdBurg/SparseStep).
  *  [Utilizing Second Order Information in Minibatch Stochastic Variance Reduced Proximal Iterations](http://jmlr.org/papers/v20/17-594.html).
+ *	[`MLJLinearModels.jl`](https://github.com/alan-turing-institute/MLJLinearModels.jl).  
+	Resources for algorithms.
+ *	
