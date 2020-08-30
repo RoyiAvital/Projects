@@ -24,9 +24,9 @@ SingularValueDecomposition/KnowledgeBase/*
 *.md~
 
 # MS Office Temp Files
-~$*.docx
-~$*.pptx
-~$*.xlsx
+*.docx
+*.pptx
+*.xlsx
 
 ## TeX / LaTeX Files
 *.aux
@@ -44,6 +44,8 @@ SingularValueDecomposition/KnowledgeBase/*
 # MATLAB Files
 *.asv
 *.m~
+*.mex*
+*.mat
 
 ## Compilation Files:
 **/.vs/*

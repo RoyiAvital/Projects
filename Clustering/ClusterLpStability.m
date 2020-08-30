@@ -41,7 +41,7 @@ function [ vClusterIdx, vMedoidIdx ] = ClusterLpStability( mD, paramMu, maxNumMe
 %                       Describe per sample to which cluster it was
 %                       assigned. If 'vClusterIdx(ii) = k' the the 'ii'
 %                       samples is assigned to the 'k' cluster represented
-%                       by the 'k' sample which is a medoid. 
+%                       by the 'k' sample which is a medoid.
 %                       Number of clusters is 'length(unique(vClusterIdx))'
 %                       or 'length(vMedoidIdx)'.
 %                       Structure: Vector (numSamples x 1).
@@ -57,7 +57,6 @@ function [ vClusterIdx, vMedoidIdx ] = ClusterLpStability( mD, paramMu, maxNumMe
 %                       Range: {1, 2, ..., numSamples}.
 % References:
 %   1.  Nikos Komodakis - Clustering via LP Based Stabilities (NIPS 2009).
-%   2.  Lucas Fidon's code - https://github.com/LucasFidon/Clustering-via-LP-based-Stabilities. 
 % Remarks:
 %   1.  The algorithm extracts medoids by their "Dominance". Namely how
 %       stable they are as a medoid.
@@ -71,9 +70,15 @@ function [ vClusterIdx, vMedoidIdx ] = ClusterLpStability( mD, paramMu, maxNumMe
 %       medoids.
 % TODO:
 %   1.  Optimize the data structure and allocations for better performance.
+%   2.  Pre sort 'vQ' and pre generate 'vP' so all other functions can
+%       assume they are pre defined in the struct.
 % Release Notes:
+%   -   1.1.007     30/08/2020  Royi Avital
+%       *   Optimized the use of 'CalcMargin()' in 'Distribute()' and 
+%           'SearchStablePoint()' by removing 'vMargin'.
+%       *   Pre defined 'vP' and sort 'vQ' as 'vQs'.
 %   -   1.1.006     24/08/2020  Royi Avital
-%       *   Preallocating the field 'sSolState.Q'.
+%       *   Preallocating the field 'sSolState.vQ'.
 %   -   1.1.005     21/08/2020  Royi Avital
 %       *   Took a constant term calculation out of the loop.
 %       *   Optimized performance for Set Operations.
@@ -94,7 +99,7 @@ function [ vClusterIdx, vMedoidIdx ] = ClusterLpStability( mD, paramMu, maxNumMe
 %   -   1.0.001     25/04/2020  Royi Avital
 %       *   Fixed crash when the value of paramMu was low enough to make
 %           all samples centroids.
-%   -   1.0.000     10/04/2020  Royi Avital
+%   -   1.0.000     10/04/2020  Or Yair
 %       *   First release version.
 % ----------------------------------------------------------------------------------------------- %
 
@@ -114,29 +119,36 @@ maxNumMedoids = min(maxNumMedoids, numSamples);
 sSolState               = struct();
 sSolState.numSamples    = numSamples;
 sSolState.mD            = mD + diag(medoidPenalty * ones(numSamples, 1));
-sSolState.h             = sSolState.mD;
+sSolState.mH            = sSolState.mD;
 sSolState.numMedoids    = 0;
-sSolState.Q             = zeros(1, maxNumMedoids);
+sSolState.vQ            = zeros(1, maxNumMedoids);
+sSolState.vQs           = zeros(1, maxNumMedoids); % Sorted
+sSolState.numNotMedoids = numSamples;
+sSolState.vP            = 1:numSamples;
 
 % Running the algorithm
 % The q parameter is the index of a new medoid
-[sSolState, q] = SearchStablePoint(sSolState, debugMode);
-while((CalcMargin(sSolState, q) >= 0)) %>! While adding new medoid makes sense
+[sSolState, qq] = SearchStablePoint(sSolState, debugMode);
+while(CalcMargin(sSolState, qq) >= 0) %>! While adding new medoid makes sense
     sSolState.numMedoids = sSolState.numMedoids + 1;
-    sSolState.Q(sSolState.numMedoids) = q;
+    sSolState.vQ(sSolState.numMedoids)  = qq;
+    sSolState.vQs(sSolState.numMedoids) = qq;
     if(sSolState.numMedoids == maxNumMedoids)
         break;
     end
     if(debugMode)
-        fprintf('\nadd point %d to the centroids set (total: %d centroids)\n', q, length(sSolState.Q));
+        fprintf('\nadd point %d to the centroids set (total: %d centroids)\n', qq, length(sSolState.vQ));
     end
-    sSolState       = ProjectMedoid(sSolState, q);
-    [sSolState, q]  = SearchStablePoint(sSolState, debugMode);
+    sSolState.vQs(1:sSolState.numMedoids) = sort(sSolState.vQs(1:sSolState.numMedoids), 'ascend');
+    sSolState.numNotMedoids = sSolState.numNotMedoids - 1;
+    sSolState.vP(:) = UpdateP(sSolState.vP, sSolState.numNotMedoids, qq);
+    sSolState       = ProjectMedoid(sSolState, qq);
+    [sSolState, qq] = SearchStablePoint(sSolState, debugMode);
 end
 
 % Extracting the medoids and cluster assignments
 numMedoids  = sSolState.numMedoids;
-vMedoidIdx  = sSolState.Q(1:numMedoids);
+vMedoidIdx  = sSolState.vQ(1:numMedoids);
 mD          = mD(vMedoidIdx, :);
 [~, vIdx]   = min(mD, [], 1);
 
@@ -147,41 +159,43 @@ end
 
 function [ sSolState ] = ProjectMedoid( sSolState, q )
 
-numSamples  = sSolState.numSamples;
-numMedoids  = sSolState.numMedoids;
 mD          = sSolState.mD;
-h           = sSolState.h;
-Q           = sSolState.Q(1:numMedoids);
+mH          = sSolState.mH;
+numNotMedoids   = sSolState.numNotMedoids;
+vP              = sSolState.vP(1:numNotMedoids);
 
-vP = SetDiffQ(Q, numSamples);
 for pp = vP
-    h(pp, pp) = h(pp, pp) + h(q, pp) - mD(q, pp);
-    h(q, pp)  = mD(q, pp);
-    h(pp, q)  = mD(pp, q);
+    mH(pp, pp) = mH(pp, pp) + mH(q, pp) - mD(q, pp);
+    mH(q, pp)  = mD(q, pp);
+    mH(pp, q)  = mD(pp, q);
 end
 
-h(q, q) = mD(q, q);
-sSolState.h  = h;
+mH(q, q) = mD(q, q);
+sSolState.mH  = mH;
 
 
 end
 
-function [ sSolState, q ] = SearchStablePoint( sSolState, debugMode )
+function [ sSolState, qq ] = SearchStablePoint( sSolState, debugMode )
 
 valEps = 1e-5;
 
 numSamples  = sSolState.numSamples;
-numMedoids  = sSolState.numMedoids;
-Q           = sSolState.Q(1:numMedoids);
-Q_c         = SetDiffQ(Q, numSamples);
-Nqc         = length(Q_c);
-vMargin     = zeros(1, Nqc);
-for ii = 1:Nqc
-    vMargin(ii) = CalcMargin(sSolState, Q_c(ii));
+numNotMedoids = sSolState.numNotMedoids;
+vQc         = sSolState.vP(1:numNotMedoids);
+Nqc         = numNotMedoids;
+
+maxMargin   = CalcMargin(sSolState, vQc(1));
+maxIdx      = 1;
+for ii = 2:Nqc
+    currMargin = CalcMargin(sSolState, vQc(ii));
+    if(currMargin > maxMargin)
+        maxMargin = currMargin;
+        maxIdx = ii;
+    end
 end
 
-dualObjVal  = CalcDualObjective(sSolState);
-maxMargin   = max(vMargin);
+dualObjVal          = CalcDualObjective(sSolState);
 
 if(debugMode)
     fprintf('\ndual sSolStateective = %.2f, max margin = %.2f\n', dualObjVal, maxMargin);
@@ -192,108 +206,120 @@ while((maxMargin < 0) && ((abs(dualObjVal - dualObjValPrev) / numSamples) > valE
     dualObjValPrev  = dualObjVal;
     sSolState       = Distribute(sSolState);
     dualObjVal      = CalcDualObjective(sSolState);
-    vMargin(:)      = 0;
-    for ii = 1:Nqc
-        vMargin(ii) = CalcMargin(sSolState, Q_c(ii));
+    maxMargin   = CalcMargin(sSolState, vQc(1));
+    maxIdx      = 1;
+    for ii = 2:Nqc
+        currMargin = CalcMargin(sSolState, vQc(ii));
+        if(currMargin > maxMargin)
+            maxMargin = currMargin;
+            maxIdx = ii;
+        end
     end
-    maxMargin  = max(vMargin);
     if(debugMode)
         fprintf('\ndual sSolStateective = %.2f, max margin = %.2f\n', dualObjVal, maxMargin);
     end
 end
 
-[~, maxIdx] = max(vMargin);
-q           = Q_c(maxIdx);
+qq          = vQc(maxIdx);
 
 
 end
 
 function [ sSolState ] = Distribute( sSolState )
 
-numSamples  = sSolState.numSamples;
 numMedoids  = sSolState.numMedoids;
 mD          = sSolState.mD;
-h           = sSolState.h;
-Q           = sSolState.Q(1:numMedoids);
+mH          = sSolState.mH;
+vQ          = sSolState.vQs(1:numMedoids);
 
-Q_c         = SetDiffQ(Q, numSamples);
-[h_min, nn] = min(h, [], 2);
-h_thres     = h;
-for pp = Q_c
-    h_thres(pp, nn(pp)) = 1e30; %<! Prevent using Inf
+numNotMedoids = sSolState.numNotMedoids;
+vQc         = sSolState.vP(1:numNotMedoids);
+[vNVal, vN] = min(mH, [], 2);
+mHH         = mH;
+for pp = vQc
+    mHH(pp, vN(pp)) = 1e30; %<! Prevent using Inf
 end
-h_hat = min(h_thres, [], 2);
+vH = min(mHH, [], 2);
 
-Nqc     = length(Q_c);
-vMargin = zeros(Nqc, 1);
-for ii = 1:Nqc
-    vMargin(ii) = CalcMargin(sSolState, Q_c(ii));
-end
+Nqc = numNotMedoids;
 
-L_Q     = Q_c(IsMemberInt(nn(Q_c), Q));
-vV      = ~(IsMemberInt(Q_c, L_Q))';
+vLq     = vQc(IsMemberInt(vN(vQc), vQ, true));
+vV      = ~(IsMemberInt(vQc, vLq, true))';
 vIdx    = false(Nqc, 1);
 
 for ii = 1:Nqc
-    qq          = Q_c(ii);
-    margin_q    = vMargin(ii);
-    vIdx(:)     = vV & (h_min(Q_c) >= mD(Q_c, qq));
+    qq          = vQc(ii);
+    valMarginQ  = CalcMargin(sSolState, qq);
+    vIdx(:)     = vV & (vNVal(vQc) >= mD(vQc, qq));
     
-    card_V_q = sum(vIdx);
-    if(~IsMemberScalar(qq, Q_c(vIdx)))
-        card_V_q = card_V_q + 1;
-    end        
+    valCardVq = sum(vIdx);
+    if(~IsMemberScalar(qq, vQc(vIdx)))
+        valCardVq = valCardVq + 1;
+    end
     
-    for pp = Q_c
-        if((pp ~= qq) && (IsMemberScalar(pp, L_Q) || (h_min(pp) < mD(pp, qq))))
-            h(pp, qq) = max(h_min(pp), mD(pp, qq));
-        elseif(h(pp, qq) > h_min(pp))
-            h(pp, qq) = h_min(pp) - margin_q / card_V_q;
-        elseif(h(pp, qq) == h_min(pp))
-            h(pp, qq) = h_hat(pp) - margin_q / card_V_q;
+    for pp = vQc
+        if((pp ~= qq) && (IsMemberScalar(pp, vLq) || (vNVal(pp) < mD(pp, qq))))
+            mH(pp, qq) = max(vNVal(pp), mD(pp, qq));
+        elseif(mH(pp, qq) > vNVal(pp))
+            mH(pp, qq) = vNVal(pp) - (valMarginQ / valCardVq);
+        elseif(mH(pp, qq) == vNVal(pp))
+            mH(pp, qq) = vH(pp) - (valMarginQ / valCardVq);
         end
     end
 end
 
-sSolState.h = h;
+sSolState.mH = mH;
 
 
 end
 
 function [ dualObjVal ] = CalcDualObjective( sSolState )
 
-dualObjVal = sum(min(sSolState.h, [], 2));
+dualObjVal = sum(min(sSolState.mH, [], 2));
 
 
 end
 
-function [ valDelta ] = CalcMargin( sSolState, q )
+function [ valMargin ] = CalcMargin( sSolState, qq )
 
-valDelta    = 0;
+valMargin   = 0;
 numSamples  = sSolState.numSamples;
-numMedoids  = sSolState.numMedoids;
 mD          = sSolState.mD;
-h           = sSolState.h;
-Q           = sSolState.Q(1:numMedoids);
+mH          = sSolState.mH;
 
-[~, nn] = min(h, [], 2);
+[~, vN] = min(mH, [], 2);
 
-[~, nn_notq]  = min(h(:, [1:(q - 1), (q + 1):numSamples]), [], 2);
-vIdx          = nn_notq >= q;
-nn_notq(vIdx) = nn_notq(vIdx) + 1;
+[~, vNq]    = min(mH(:, [1:(qq - 1), (qq + 1):numSamples]), [], 2);
+vIdx        = vNq >= qq; % Compensation for removing the qq column
+vNq(vIdx)   = vNq(vIdx) + 1; % Compensation for removing the qq column
 
-vPP = SetDiffQ(Q, numSamples); %<! Not in Q
+numNotMedoids = sSolState.numNotMedoids;
+vP = sSolState.vP(1:numNotMedoids);
 
-for pp = vPP
-    if(h(pp, q) == h(pp, nn(pp)))
-        valDelta = valDelta + h(pp, nn_notq(pp)) - h(pp, q);
+for pp = vP
+    if(mH(pp, qq) == mH(pp, vN(pp)))
+        valMargin = valMargin + mH(pp, vNq(pp)) - mH(pp, qq);
     end
-    if(pp ~= q)
-        valDelta = valDelta - (h(pp, q) - max(h(pp, nn(pp)), mD(pp, q)));
+    if(pp ~= qq)
+        valMargin = valMargin - (mH(pp, qq) - max(mH(pp, vN(pp)), mD(pp, qq)));
     end
 end
 
-valDelta = valDelta - (h(q, q) - h(q, nn(q)));
+valMargin = valMargin - (mH(qq, qq) - mH(qq, vN(qq)));
+
+
+end
+
+function [ vP ] = UpdateP( vP, numNotMedoids, qq )
+
+shiftFlag = false;
+
+for ii = 1:numNotMedoids
+    shiftFlag = shiftFlag || (vP(ii) == qq);
+    if(shiftFlag)
+        vP(ii) = vP(ii + 1);
+    end
+end
 
 
 end
@@ -307,13 +333,13 @@ if(numElements == 0)
     return;
 end
 
-vD  = zeros(1, numSamples - numElements);
-vQs = sort(vQ, 'ascend');
+vD = zeros(1, numSamples - numElements);
+vQ = sort(vQ, 'ascend');
 
 idxQ = 1;
 idxD = 1;
 for ii = 1:numSamples
-    if(vQs(idxQ) == ii)
+    if(vQ(idxQ) == ii)
         idxQ = idxQ + 1;
         idxQ = min(idxQ, numElements);
     else
@@ -338,21 +364,23 @@ isMember = any(valIn == vA);
 
 end
 
-function [ vF ] = IsMemberInt( vA, vB )
+function [ vF ] = IsMemberInt( vA, vB, isBSorted )
 
 numElements = length(vA);
 
-vBs = sort(vB, 'ascend');
+if(~isBSorted)
+    vB(:) = sort(vB, 'ascend');
+end
 vF  = false(size(vA));
 
 for ii = 1:numElements
-    vF(ii) = IsMemberValSorted(vBs, vA(ii));
+    vF(ii) = IsMemberValSorted(vA(ii), vB);
 end
 
 
 end
 
-function [ isMember ] = IsMemberValSorted( vA, valIn )
+function [ isMember ] = IsMemberValSorted( valIn, vA )
 % Simple Binary Search to find if 'valIn' exists in 'vA'.
 
 
