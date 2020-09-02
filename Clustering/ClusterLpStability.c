@@ -32,7 +32,6 @@ struct structLpStability
 	double* mH;
 	unsigned int numMedoids;
 	unsigned int* vQ;
-	unsigned int* vQs; // Sorted version of vQ
 	unsigned int numNotMedoids;
 	unsigned int* vP;
 	unsigned int* vBuffer1; // _Distribute()
@@ -96,11 +95,13 @@ int _CmpDouble(const void* a, const void* b)
 
 void _SortArray(double* vA, double* vB, unsigned int numElements)
 {
+	// Resouecse:
+	// * Median Sort - https://github.com/CarlosLunaMota/MedianSort.
 	memcpy(vA, vB, numElements * sizeof(double));
 	qsort(vA, numElements, sizeof(double), _CmpDouble);
 }
 
-void _UpdateP(unsigned int* vP, unsigned int numNotMedoids, unsigned int qq)
+void _UpdateP(unsigned int * RESTRICT vP, unsigned int numNotMedoids, unsigned int qq)
 {
 	unsigned int ii;
 	int shiftFlag;
@@ -117,23 +118,69 @@ void _UpdateP(unsigned int* vP, unsigned int numNotMedoids, unsigned int qq)
 	}
 }
 
-int _IsMember(unsigned int valIn, unsigned int* vA, unsigned int numElements)
+int _IsMember(unsigned int valIn, unsigned int * RESTRICT vA, unsigned int numElements)
 {
+	// Resouecse:
+	// * Linear vs. Binary Search - https://github.com/stgatilov/linear-vs-binary-search (Code and comparison).
+	// * Exploring Linear vs Binary Search - https://github.com/schani/linbin.
 	unsigned int ii;
 	int isMember;
 
 	isMember = FALSE;
 
+	if (numElements == 0) return isMember;
+	if (numElements < 2) return (vA[0] == valIn);
+	if ((vA[numElements - 1] < valIn) || (vA[0] > valIn)) return isMember;
+
 	for (ii = 0; ii < numElements; ii++)
 	{
 		isMember = (valIn == vA[ii]);
-		if (isMember)
+		/*if (isMember) // Seems to be faster without the branch
 		{
 			break;
-		}
+		}*/
 	}
 
 	return isMember;
+
+}
+
+int _IsMemberSorted(unsigned int valIn, unsigned int * RESTRICT vA, unsigned int numElements) {
+	// Resouecse:
+	// * Linear vs. Binary Search - https://github.com/stgatilov/linear-vs-binary-search (Code and comparison).
+	// * Exploring Linear vs Binary Search - https://github.com/schani/linbin.
+	// * Fast Binary Search - https://gist.github.com/slode/5ce2a6eb9be1b185b584d2b7f3b94422 (Seems to support only arrasy with power of 2 elements).
+	// * Binary Search - https://github.com/scandum/binary_search (Comparison of few implementations of Binary Search).
+	unsigned int i, mid, bot;
+
+	if (numElements == 0) return FALSE;
+	if (numElements < 2) return (vA[0] == valIn);
+	if ((vA[numElements - 1] < valIn) || (vA[0] > valIn)) return FALSE;
+
+	bot = 0;
+	i = numElements - 1;
+	mid = i / 2;
+
+	while (mid)
+	{
+
+		if (valIn < vA[i - mid])
+		{
+			i -= mid + 1;
+		}
+		else
+		{
+			bot = i - mid;
+		}
+		mid = (i - bot) / 2;
+	}
+
+	if (bot < i && valIn < vA[i])
+	{
+		--i;
+	}
+
+	return (valIn == vA[i]);
 }
 
 double _CalcMargin( struct structLpStability* sLpStability, unsigned int qq )
@@ -255,8 +302,8 @@ void _Distribute(struct structLpStability* sLpStability)
 	vNVal = sLpStability->vBuffer7;
 	vH = sLpStability->vBuffer8;
 	vLq = sLpStability->vBuffer2;
-	vV = sLpStability->vBuffer4;
-	vIdx = sLpStability->vBuffer3;
+	vV = sLpStability->vBuffer3;
+	vIdx = sLpStability->vBuffer4;
 	mHH = sLpStability->mBuffer1;
 	mHT = sLpStability->mBuffer2;
 
@@ -318,12 +365,15 @@ void _Distribute(struct structLpStability* sLpStability)
 
 	for (ii = 0; ii < Nqc; ii++)
 	{
-		vV[ii] = !(_IsMember(vQc[ii], vLq, numMedoids));
+		vV[ii] = !(_IsMemberSorted(vQc[ii], vLq, idxQ));
 	}
 
 	for (ii = 0; ii < Nqc; ii++)
 	{
 		qq = vQc[ii];
+		// Working on 'mH' as it is at the entrance.
+		// In original code it is pre calculated as an array and used by call.
+
 		valMarginQ = _CalcMargin(sLpStability, qq);
 
 		cardVq = 0;
@@ -347,7 +397,7 @@ void _Distribute(struct structLpStability* sLpStability)
 		{
 			pp = vQc[jj];
 			idxPq = (qq * numSamples) + pp;
-			if ((pp != qq) && (_IsMember(pp, vLq, Nqc) || vNVal[pp] < mD[idxPq]))
+			if ((pp != qq) && (_IsMemberSorted(pp, vLq, Nqc) || vNVal[pp] < mD[idxPq]))
 			{
 				mHT[idxPq] = max(vNVal[pp], mD[idxPq]);
 			}
@@ -376,8 +426,6 @@ void _ProjectMedoid( struct structLpStability * sLpStability, unsigned int qq )
 	mH = sLpStability->mH;
 	mD = sLpStability->mD;
 	numSamples = sLpStability->numSamples;
-
-	// _SetDiffQ(vP, vQs, numMedoids, numSamples);
 
 	for (ii = 0; ii < numNotMedoids; ii++)
 	{
@@ -447,7 +495,7 @@ unsigned int _SearchStablePoint( struct structLpStability* sLpStability )
 	
 }
 
-void ClusterLpStability( unsigned int* vMedoidIdx, unsigned int numMedoids[1], double* mD, unsigned int numSamples, double paramMu, unsigned int maxNumMedoids )
+void ClusterLpStability( unsigned int* vMedoidIdx, unsigned int numMedoids[1], double * RESTRICT mD, unsigned int numSamples, double paramMu, unsigned int maxNumMedoids )
 {
 	unsigned int numElements, ii, qq, *vP;
 	double medoidPenalty;
@@ -465,7 +513,6 @@ void ClusterLpStability( unsigned int* vMedoidIdx, unsigned int numMedoids[1], d
 	sLpStability.mH = (double*)_mm_malloc(numElements * sizeof(double), SIMD_ALIGNMENT);
 	sLpStability.numMedoids = 0;
 	sLpStability.vQ = (unsigned int*)_mm_malloc(maxNumMedoids * sizeof(unsigned int), SIMD_ALIGNMENT);
-	sLpStability.vQs = (unsigned int*)_mm_malloc(maxNumMedoids * sizeof(unsigned int), SIMD_ALIGNMENT); // Sorted version of vQ
 	sLpStability.numNotMedoids = numSamples;
 	sLpStability.vP = (unsigned int*)_mm_malloc(numSamples * sizeof(unsigned int), SIMD_ALIGNMENT);
 	sLpStability.vBuffer1 = (unsigned int*)_mm_malloc(numSamples * sizeof(unsigned int), SIMD_ALIGNMENT);
@@ -504,7 +551,6 @@ void ClusterLpStability( unsigned int* vMedoidIdx, unsigned int numMedoids[1], d
 	while (_CalcMargin(&sLpStability, qq) >= 0)
 	{
 		sLpStability.vQ[sLpStability.numMedoids] = qq;
-		sLpStability.vQs[sLpStability.numMedoids] = qq;
 		sLpStability.numMedoids++;
 		if (sLpStability.numMedoids == maxNumMedoids)
 		{
@@ -525,7 +571,6 @@ void ClusterLpStability( unsigned int* vMedoidIdx, unsigned int numMedoids[1], d
 	_mm_free(sLpStability.mD);
 	_mm_free(sLpStability.mH);
 	_mm_free(sLpStability.vQ);
-	_mm_free(sLpStability.vQs);
 	_mm_free(sLpStability.vP);
 	_mm_free(sLpStability.vBuffer1);
 	_mm_free(sLpStability.vBuffer2);
