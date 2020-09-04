@@ -150,15 +150,14 @@ int _IsMember(unsigned int valIn, unsigned int * RESTRICT vA, unsigned int numEl
 
 	if (numElements == 0) return isMember;
 	if (numElements < 2) return (vA[0] == valIn);
-	if ((vA[numElements - 1] < valIn) || (vA[0] > valIn)) return isMember;
 
 	for (ii = 0; ii < numElements; ii++)
 	{
-		isMember = (valIn == vA[ii]);
-		/*if (isMember) // Seems to be faster without the branch
-		{
-			break;
-		}*/
+		isMember = isMember || (valIn == vA[ii]); // Faster than the branch
+		//if (isMember) // Seems to be faster without the branch
+		//{
+		//	break;
+		//}
 	}
 
 	return isMember;
@@ -171,36 +170,35 @@ int _IsMemberSorted(unsigned int valIn, unsigned int * RESTRICT vA, unsigned int
 	// * Exploring Linear vs Binary Search - https://github.com/schani/linbin.
 	// * Fast Binary Search - https://gist.github.com/slode/5ce2a6eb9be1b185b584d2b7f3b94422 (Seems to support only arrasy with power of 2 elements).
 	// * Binary Search - https://github.com/scandum/binary_search (Comparison of few implementations of Binary Search).
-	unsigned int i, mid, bot;
+	unsigned int ii, idxMid, idxLeft;
 
 	if (numElements == 0) return FALSE;
 	if (numElements < 2) return (vA[0] == valIn);
 	if ((vA[numElements - 1] < valIn) || (vA[0] > valIn)) return FALSE;
 
-	bot = 0;
-	i = numElements - 1;
-	mid = i / 2;
+	idxLeft = 0;
+	ii = numElements - 1; // Right Index
+	idxMid = ii / 2;
 
-	while (mid)
+	while (idxMid)
 	{
-
-		if (valIn < vA[i - mid])
+		if (valIn < vA[ii - idxMid])
 		{
-			i -= mid + 1;
+			ii -= idxMid + 1;
 		}
 		else
 		{
-			bot = i - mid;
+			idxLeft = ii - idxMid;
 		}
-		mid = (i - bot) / 2;
+		idxMid = (ii - idxLeft) / 2;
 	}
 
-	if (bot < i && valIn < vA[i])
+	if (idxLeft < ii && valIn < vA[ii])
 	{
-		--i;
+		--ii;
 	}
 
-	return (valIn == vA[i]);
+	return (valIn == vA[ii]);
 }
 
 double _CalcMargin( struct structLpStability* sLpStability, unsigned int qq )
@@ -452,9 +450,11 @@ void _ProjectMedoid( struct structLpStability * sLpStability, unsigned int qq )
 		idxPq = (qq * numSamples) + pp;
 		idxQp = (pp * numSamples) + qq;
 
-		mH[idxPp] = mH[idxPp] + mH[idxQp] - mD[idxQp];
+		mH[idxPp] = mH[idxPp] + mH[idxQp] - mD[idxQp]; // In order to match MATLAB
+		// mH[idxPp] += mH[idxQp] - mD[idxQp];
 		mH[idxQp] = mD[idxQp];
-		mH[idxPq] = mD[idxPq]; // Should be symmetric so might not be needed for the new idx
+		// mH[idxPq] = mD[idxPq]; // Should be symmetric so might not be needed for the new idx
+		mH[idxPq] = mD[idxQp]; // Should be symmetric so might not be needed for the new idx
 
 	}
 	
