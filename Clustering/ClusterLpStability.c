@@ -42,9 +42,9 @@ struct structLpStability
 	unsigned int* vBuffer6; // _CalcMargin
 	double* vBuffer7; // _Distribute()
 	double* vBuffer8; // _Distribute()
-	double* vBuffer9;
+	double* vBuffer9; // _Distribute()
 	double* mBuffer1;
-	double* mBuffer2;
+	// double* mBuffer2;
 };
 
 //void _SetDiffQ(unsigned int *vP, unsigned int* vQ, unsigned int numMedoids, unsigned int numSamples)
@@ -116,6 +116,26 @@ void _UpdateP(unsigned int * RESTRICT vP, unsigned int numNotMedoids, unsigned i
 			vP[ii] = vP[ii + 1];
 		}
 	}
+}
+
+void _UpdateQs(unsigned int* RESTRICT vQs, unsigned int numMedoids, unsigned int qq)
+{
+	unsigned int ii, shiftIdx;
+
+	shiftIdx = 0;
+
+	for (ii = 0; ii < numMedoids - 1; ii++)
+	{
+		shiftIdx = qq > vQs[ii] ? ii + 1 : shiftIdx;
+	}
+
+	// `memmove()` can handle overlap: https://stackoverflow.com/a/12635815/195787
+	for (ii = numMedoids; ii > shiftIdx; ii--)
+	{
+		vQs[ii] = vQs[ii - 1];
+	}
+
+	vQs[shiftIdx] = qq;
 }
 
 int _IsMember(unsigned int valIn, unsigned int * RESTRICT vA, unsigned int numElements)
@@ -288,7 +308,7 @@ double _CalcDualObjective( struct structLpStability* sLpStability )
 
 void _Distribute(struct structLpStability* sLpStability)
 {
-	double *mH, *mD, minVal, *mHH, *mHT, *vNVal, * vH, valMarginQ;
+	double *mH, *mD, minVal, *mHH, *vNVal, * vH, *vM;
 	unsigned int numSamples, numElements, numMedoids, Nqc, qq, ii, jj, idxH, idxMin, *vQ, *vQc, *vN, *vLq, *vV, *vIdx, pp, idxPn, idxQ, idxD, cardVq, shiftVal, idxPq;
 
 	numSamples = sLpStability->numSamples;
@@ -304,13 +324,12 @@ void _Distribute(struct structLpStability* sLpStability)
 	vLq = sLpStability->vBuffer2;
 	vV = sLpStability->vBuffer3;
 	vIdx = sLpStability->vBuffer4;
+	vM = sLpStability->vBuffer9;
 	mHH = sLpStability->mBuffer1;
-	mHT = sLpStability->mBuffer2;
 
 	numElements = numSamples * numSamples;
 
 	memcpy(mHH, mH, numElements * sizeof(double));
-	memcpy(mHT, mH, numElements * sizeof(double));
 
 	for (ii = 0; ii < numSamples; ii++)
 	{
@@ -370,11 +389,12 @@ void _Distribute(struct structLpStability* sLpStability)
 
 	for (ii = 0; ii < Nqc; ii++)
 	{
-		qq = vQc[ii];
-		// Working on 'mH' as it is at the entrance.
-		// In original code it is pre calculated as an array and used by call.
+		vM[ii] = _CalcMargin(sLpStability, vQc[ii]); // Margins
+	}
 
-		valMarginQ = _CalcMargin(sLpStability, qq);
+	for (ii = 0; ii < Nqc; ii++)
+	{
+		qq = vQc[ii];
 
 		cardVq = 0;
 		shiftVal = 1;
@@ -399,20 +419,18 @@ void _Distribute(struct structLpStability* sLpStability)
 			idxPq = (qq * numSamples) + pp;
 			if ((pp != qq) && (_IsMemberSorted(pp, vLq, Nqc) || vNVal[pp] < mD[idxPq]))
 			{
-				mHT[idxPq] = max(vNVal[pp], mD[idxPq]);
+				mH[idxPq] = max(vNVal[pp], mD[idxPq]);
 			}
-			else if (mHT[idxPq] > vNVal[pp])
+			else if (mH[idxPq] > vNVal[pp])
 			{
-				mHT[idxPq] = vNVal[pp] - (valMarginQ / (double)cardVq);
+				mH[idxPq] = vNVal[pp] - (vM[ii] / (double)cardVq);
 			}
 			else if (mH[idxPq] == vNVal[pp])
 			{
-				mHT[idxPq] = vH[pp] - (valMarginQ / (double)cardVq);
+				mH[idxPq] = vH[pp] - (vM[ii] / (double)cardVq);
 			}
 		}
 	}
-
-	memcpy(mH, mHT, numElements * sizeof(double));
 
 }
 
@@ -505,7 +523,6 @@ void ClusterLpStability( unsigned int* vMedoidIdx, unsigned int numMedoids[1], d
 	numElements = numSamples * numSamples;
 
 	medoidPenalty = paramMu * CalcMedianVal(mD, numElements);
-	// mexPrintf("medoidPenalty = %f\n", medoidPenalty);
 	maxNumMedoids = min(numSamples, maxNumMedoids);
 
 	sLpStability.numSamples = numSamples;
@@ -525,13 +542,8 @@ void ClusterLpStability( unsigned int* vMedoidIdx, unsigned int numMedoids[1], d
 	sLpStability.vBuffer8 = (double*)_mm_malloc(numSamples * sizeof(double), SIMD_ALIGNMENT);
 	sLpStability.vBuffer9 = (double*)_mm_malloc(numSamples * sizeof(double), SIMD_ALIGNMENT);
 	sLpStability.mBuffer1 = (double*)_mm_malloc(numElements * sizeof(double), SIMD_ALIGNMENT);
-	sLpStability.mBuffer2 = (double*)_mm_malloc(numElements * sizeof(double), SIMD_ALIGNMENT);
 
 	memcpy(sLpStability.mD, mD, numElements * sizeof(double));
-
-	//_SortArray(sLpStability.mBuffer1, mD, numElements);
-	//medoidPenalty = paramMu * ((sLpStability.mBuffer1[numElements / 2] + sLpStability.mBuffer1[(numElements / 2) - 1]) / 2.0);
-	//mexPrintf("medoidPenalty = %f\n", medoidPenalty);
 
 	for (ii = 0; ii < numElements; ii += (numSamples + 1))
 	{
@@ -578,6 +590,9 @@ void ClusterLpStability( unsigned int* vMedoidIdx, unsigned int numMedoids[1], d
 	_mm_free(sLpStability.vBuffer4);
 	_mm_free(sLpStability.vBuffer5);
 	_mm_free(sLpStability.vBuffer6);
+	_mm_free(sLpStability.vBuffer7);
+	_mm_free(sLpStability.vBuffer8);
+	_mm_free(sLpStability.vBuffer9);
 	_mm_free(sLpStability.mBuffer1);
 
 }

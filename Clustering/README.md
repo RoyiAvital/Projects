@@ -13,3 +13,5 @@ In order to generate the MEX file run `MakeMex()`.
 ## To Do
 
  *	Generalize the `C` code of `Clustering via LP Based Stabilities` to support `Float32` in addition to `Float64`.
+ *	Optimize `Clustering via LP Based Stabilities` with SIMD and parallelization.
+ *	Look for hot spot in `Clustering via LP Based Stabilities` in case of large data sets.
