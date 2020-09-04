@@ -1,6 +1,9 @@
 
 #include "AuxFun.h"
 
+// Resouecse:
+	// * Median Sort - https://github.com/CarlosLunaMota/MedianSort.
+
 unsigned int MaxIdx(ELM_TYPE *RESTRICT vA, unsigned int numElements)
 {
 #if defined(FA_INTEL_COMPILER)
