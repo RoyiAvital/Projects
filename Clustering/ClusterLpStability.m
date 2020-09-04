@@ -157,7 +157,7 @@ vClusterIdx = vMedoidIdx(vIdx); %<! Cluster labels are the medoid sample index
 
 end
 
-function [ sSolState ] = ProjectMedoid( sSolState, q )
+function [ sSolState ] = ProjectMedoid( sSolState, qq )
 
 mD          = sSolState.mD;
 mH          = sSolState.mH;
@@ -165,13 +165,13 @@ numNotMedoids   = sSolState.numNotMedoids;
 vP              = sSolState.vP(1:numNotMedoids);
 
 for pp = vP
-    mH(pp, pp) = mH(pp, pp) + mH(q, pp) - mD(q, pp);
-    mH(q, pp)  = mD(q, pp);
-    mH(pp, q)  = mD(pp, q);
+    mH(pp, pp)  = mH(pp, pp) + mH(qq, pp) - mD(qq, pp);
+    mH(qq, pp)  = mD(qq, pp);
+    mH(pp, qq)  = mD(pp, qq);
 end
 
-mH(q, q) = mD(q, q);
-sSolState.mH  = mH;
+mH(qq, qq)      = mD(qq, qq);
+sSolState.mH    = mH;
 
 
 end
@@ -388,7 +388,7 @@ idxLeft     = 1;
 idxRight    = length(vA);
 isMember    = false();
 
-while idxLeft <= idxRight
+while(idxLeft <= idxRight)
     idxMid = ceil((idxLeft + idxRight) / 2);
     
     if(vA(idxMid) == valIn)

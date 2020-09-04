@@ -14,7 +14,7 @@
 %% Setting Environment Parameters
 
 subStreamNumberDefault = 192;
-subStreamNumberDefault = 542428563;
+% subStreamNumberDefault = 542428563;
 run('InitScript.m');
 
 figureIdx           = 0;
@@ -23,26 +23,31 @@ figureCounterSpec   = '%04d';
 
 %% Settings 
 
-numTests        = 800;
-numSamples      = 200;
-maxNumMedoids   = 10;
+numTests        = 4;
+numSamples      = 100;
+maxNumMedoids   = 8;
 
 
 %% Validation
+
+maxDiff = 0;
 
 for ii = 1:numTests
     
     paramMu = 5 * rand(1);
     
-    if((ii == 1) || (ii == numTests + 1))
+    if((ii == 1) || (ii == numTests))
         load('mD.mat');
     elseif(ii == 2)
         mA = [0, 0; 0.1, 0.1; -0.1, -0.1; 2, 2; 2.1, 2.1; 1.9, 1.9];
         mD = squareform(pdist(mA));
     else
-        mD = 5 * rand(numSamples, numSamples);
-        mD = mD + mD.';
-        SetDiag(mD, 0);
+        % mD = 5 * rand(numSamples, numSamples);
+        % mD = mD + mD.';
+        % SetDiag(mD, 0);
+        
+        mA = 5 * rand(numSamples, 2);
+        mD = squareform(pdist(mA));
     end
     
     [vClusterIdx, vMedoidIdx]   = ClusterLpStability(mD, paramMu, maxNumMedoids);
@@ -51,12 +56,16 @@ for ii = 1:numTests
     
     % assert(isequal(vClusterIdxM, vClusterIdx));
     % assert(isequal(vMedoidIdxM(:), vMedoidIdx(:)));
-    assert(isequal(vMedoidIdxM(1), vMedoidIdx(1)));
+    % assert(isequal(vMedoidIdxM(1), vMedoidIdx(1)));
     % assert(isequal(sort(vMedoidIdxM(:)), sort(vMedoidIdx(:))));
+    
+    maxDiff = max(maxDiff, (CalcObjVal(mD, vMedoidIdx) - CalcObjVal(mD, vMedoidIdxM)));
     
     disp(['Finished Test #', num2str(ii, figureCounterSpec), ' Out of ', num2str(numTests), ' Tests']);
     
 end
+
+maxDiff
 
 
 %% Run Time Analysis
