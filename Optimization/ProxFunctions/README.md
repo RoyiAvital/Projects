@@ -1,14 +1,14 @@
 # Prox Functions
 
-This repository is dedicated to have functions which apply the $ \operatorname{Prox} \left( \cdot \right) $ operator.
+This repository is dedicated to have functions which apply the $ \operatorname{Prox}_{\lambda g \left( \cdot \right)} \left( \cdot \right) $ operator.
 
-The $ \operatorname{Prox} \left( \cdot \right) $ is given by:
+The $ \operatorname{Prox}_{\lambda g \left( \cdot \right)} \left( \cdot \right) $ is given by:
 
 $$ \operatorname{Prox}_{\lambda g \left( \cdot \right)} \left( y \right) = \arg \min_{x} \frac{1}{2} {\left\| x - y \right\|}_{2}^{2} + \lambda g \left( x \right) $$
 
-The funcitons in this peoject solve the problem for various functions $ g \left( \cdot \right) $.
+The functions in this project solve the problem for various functions $ g \left( \cdot \right) $.
 
-In thi project we'll assume $ x \in \mathbb{R}^{n} $,
+In this project it is assumed $ x \in \mathbb{R}^{n} $,
 
 ## Total Variation
 
@@ -30,4 +30,4 @@ $$ \begin{bmatrix}
 \end{bmatrix} $$
 
 ## TO DO List
- *  Look for others methods.
+ *  Look for other methods.

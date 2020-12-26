@@ -5,7 +5,7 @@ function [ vX, mX ] = SolveLsTvAdmm( vX, mA, vB, mD, paramLambda, numIterations 
 % Multipliers (ADMM) Method. Basically solves the problem given by:
 % $$ \arg \min_{ x \in \mathbb{R}^{n} } \frac{1}{2} {\left\| A x - b \right|}_{2}^{2} + \lambda {\left\| D x \right\|}_{1} $$
 % Input:
-%   - vX                -   input Vector.
+%   - vX                -   Input Vector.
 %                           Initialization of the iterative process.
 %                           Structure: Vector (n X 1).
 %                           Type: 'Single' / 'Double'.
@@ -15,7 +15,7 @@ function [ vX, mX ] = SolveLsTvAdmm( vX, mA, vB, mD, paramLambda, numIterations 
 %                           Structure: Matrix (m X n).
 %                           Type: 'Single' / 'Double'.
 %                           Range: (-inf, inf).
-%   - vB                -   input Vector.
+%   - vB                -   Input Vector.
 %                           The model known data.
 %                           Structure: Vector (m X 1).
 %                           Type: 'Single' / 'Double'.
