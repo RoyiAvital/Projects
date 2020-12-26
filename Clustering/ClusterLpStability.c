@@ -135,6 +135,8 @@ void _UpdateQs(unsigned int* RESTRICT vQs, unsigned int numMedoids, unsigned int
 		vQs[ii] = vQs[ii - 1];
 	}
 
+	// memmove(&vQs[shiftIdx + 1], &vQs[shiftIdx], numMedoids - shiftIdx + 1 * sizeof(unsigned int)); // Doesn't seem to improve speed
+
 	vQs[shiftIdx] = qq;
 }
 
