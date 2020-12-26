@@ -35,7 +35,7 @@ function [ vX, mX ] = SolveLsL1Admm( mA, vB, paramLambda, numIterations )
 %       smoothing.
 %   2.  Matrix Factorization caching according to "Matrix Inversion Lemma"
 %       (See S. Boyd, N. Parikh, E. Chu, B. Peleato, and J. Eckstein -
-%       istributed Optimization and Statistical Learning via the
+%       Distributed Optimization and Statistical Learning via the
 %       Alternating Direction Method of Multipliers Page 28). Basically:
 %       (mA.' * mA + paramRho * I)^(-1) = (1 / paramRho) + (1 / (paramRho * paramRho)) * mA.' * (I + (1 /
 %       paramRho) * mA * mA.')^(-1) * mA
@@ -44,9 +44,9 @@ function [ vX, mX ] = SolveLsL1Admm( mA, vB, paramLambda, numIterations )
 % TODO:
 %   1.  Pre calculate decomposition of the Linear System.
 % Release Notes:
-%   -   1.1.000     23/08/2017
+%   -   1.1.000     23/08/2017  Royi Avital
 %       *   Added optimized factorization.
-%   -   1.0.000     23/08/2017
+%   -   1.0.000     23/08/2017  Royi Avital
 %       *   First realease version.
 % ----------------------------------------------------------------------------------------------- %
 
@@ -64,7 +64,7 @@ vX  = pinv(mA) * vB; %<! Dealing with "Fat Matrix"
 
 paramRho    = 5;
 
-% Cahing Factorization
+% Caching Factorization
 [mL, mU] = MatrixFactorize(mA, paramRho, matType);
 
 vZ = vX;

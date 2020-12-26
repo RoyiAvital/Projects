@@ -90,3 +90,6 @@ The steps are:
 
 ## TO DO List
  *  Look for others methods.
+ *  [Total Variation Denoising (An MM Algorithm)](https://eeweb.engineering.nyu.edu/iselesni/lecture_notes/TVDmm/).  
+    Work of [Ivan W. Selesnick](https://eeweb.engineering.nyu.edu/iselesni/).
+ *  

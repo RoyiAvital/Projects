@@ -1,4 +1,4 @@
-function [ vX ] = SolveProxTvAdmm( vY, mD, paramLambda, numIterations )
+function [ vX, mX ] = SolveProxTvAdmm( vX, vY, mD, paramLambda, sSolverParams )
 % ----------------------------------------------------------------------------------------------- %
 %[ vX ] = SolveProxTvAdmm( vY, mD, paramLambda, numIterations )
 % Solves the Prox of the Total Variation (TV) Norm using Alternating
@@ -6,19 +6,20 @@ function [ vX ] = SolveProxTvAdmm( vY, mD, paramLambda, numIterations )
 % Basically solves the problem given by:
 % $$ \arg \min_{ x \in \mathbb{R}^{n} } \frac{1}{2} {\left\| x - y \right|}_{2}^{2} + \lambda {\left\| D x \right\|}_{1} $$
 % Input:
-%   - vX                -   input Vector.
-%                           Initialization of the iterative process.
+%   - vX                -   Optimization Vector.
+%                           The vector to be optimized. Initialization of
+%                           the iterative process.
 %                           Structure: Vector (n X 1).
 %                           Type: 'Single' / 'Double'.
 %                           Range: (-inf, inf).
-%   - mA                -   Input Matirx.
-%                           The model matrix.
-%                           Structure: Matrix (m X n).
+%   - vY                -   Measurements Vector.
+%                           The model known data.
+%                           Structure: Vector (n X 1).
 %                           Type: 'Single' / 'Double'.
 %                           Range: (-inf, inf).
-%   - vB                -   input Vector.
-%                           The model known data.
-%                           Structure: Vector (m X 1).
+%   - mD                -   Model Matrix.
+%                           The model matrix.
+%                           Structure: Vector (m X n).
 %                           Type: 'Single' / 'Double'.
 %                           Range: (-inf, inf).
 %   - paramLambda       -   Parameter Lambda.
@@ -26,6 +27,11 @@ function [ vX ] = SolveProxTvAdmm( vY, mD, paramLambda, numIterations )
 %                           Structure: Scalar.
 %                           Type: 'Single' / 'Double'.
 %                           Range: (0, inf).
+%   - paramRho          -   The Rho Parameter.
+%                           Sets the weight of the equality constraint.
+%                           Structure: Scalar.
+%                           Type: 'Single' / 'Double'.
+%                           Range (0, inf).
 %   - numIterations     -   Number of Iterations.
 %                           Number of iterations of the algorithm.
 %                           Structure: Scalar.
@@ -41,35 +47,48 @@ function [ vX ] = SolveProxTvAdmm( vY, mD, paramLambda, numIterations )
 % Remarks:
 %   1.  Using vanilla ADMM with no optimization of the parameter or
 %       smoothing.
-%   2.  Matrix Factorization caching according to "Matrix Inversion Lemma"
-%       (See S. Boyd, N. Parikh, E. Chu, B. Peleato, and J. Eckstein -
-%       Distributed Optimization and Statistical Learning via the
-%       Alternating Direction Method of Multipliers Page 28). Basically:
-%       (mA.' * mA + paramRho * I)^(-1) = (1 / paramRho) + (1 / (paramRho * paramRho)) * mA.' * (I + (1 /
-%       paramRho) * mA * mA.')^(-1) * mA
+%   2.  For high values of `paramLambda` it will require many iterations.
+%   3.  The implementation support `mD` to be sparse matrix.
 % Known Issues:
-%   1.  A
+%   1.  C
 % TODO:
-%   1.  Pre calculate decomposition of the Linear System.
+%   1.  D
 % Release Notes:
+%   -   1.1.000     28/05/2021  Royi Avital
+%       *   Updated to modern MATLAB (R2021a).
 %   -   1.0.000     27/11/2019  Royi Avital
-%       *   First realease version.
+%       *   First release version.
 % ----------------------------------------------------------------------------------------------- %
 
-paramRho = 5;
+arguments
+    vX (:, 1) {mustBeFloat, mustBeReal}
+    vY (:, 1) {mustBeFloat, mustBeReal}
+    mD (:, :) {mustBeFloat, mustBeReal}
+    paramLambda (1, 1) {mustBeFloat, mustBeReal, mustBePositive}
+    sSolverParams.paramRho (1, 1) {mustBeNumeric, mustBeReal, mustBePositive} = 5
+    sSolverParams.numIterations (1, 1) {mustBeNumeric, mustBeReal, mustBePositive, mustBeInteger} = 100
+end
 
-mI = eye(size(vY, 1));
+paramRho        = sSolverParams.paramRho;
+numIterations   = sSolverParams.numIterations;
+
+mX = zeros(size(vY, 1), numIterations);
+
+mI = speye(size(vY, 1));
 mC = decomposition(mI + paramRho * (mD.' * mD), 'chol');
 
-vX = vY;
 vZ = ProxL1(mD * vX, paramLambda / paramRho);
 vU = mD * vX - vZ;
+
+mX(:, 1) = vX;
 
 for ii = 2:numIterations
     
     vX = mC \ (vY + (paramRho * mD.' * (vZ - vU)));
     vZ = ProxL1(mD * vX + vU, paramLambda / paramRho);
     vU = vU + mD * vX - vZ;
+    
+    mX(:, ii) = vX;
     
 end
 
