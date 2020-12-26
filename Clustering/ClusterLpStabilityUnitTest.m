@@ -23,9 +23,9 @@ figureCounterSpec   = '%04d';
 
 %% Settings 
 
-numTests        = 4;
-numSamples      = 100;
-maxNumMedoids   = 8;
+numTests        = 800;
+numSamples      = 80;
+maxNumMedoids   = 6;
 
 
 %% Validation
