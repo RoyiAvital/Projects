@@ -8,8 +8,9 @@ This document describe a [_Dynamic Programming_](https://en.wikipedia.org/wiki/D
 > Notebook by:  
 > - Royi Avital RoyiAvital@yahoo.com
 
-> Attribution
-> 
+> Attribution  
+> Avital Royi. (2023). Piece Wise Linear Segmentation by Dynamic Programming (0.1). Zenodo. https://doi.org/10.5281/zenodo.8143915
+
 
 References:
 
