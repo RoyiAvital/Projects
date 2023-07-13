@@ -67,7 +67,7 @@ $$ \mathbf{P}_{{\left\| p \right\|}_{\infty} \leq 1} \left( x \right)_{i} = \fra
 
 ### Alternating Direction Method of Multipliers (ADMM)
 
-The problem is rwritten as:
+The problem is rewritten as:
 
 $$\begin{aligned}
 \arg \min_{x, z} & \quad \frac{1}{2} {\left\| A x - b \right\|}_{2}^{2} + \lambda {\left\| z \right\|}_{1} \\
