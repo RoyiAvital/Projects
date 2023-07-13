@@ -1,5 +1,6 @@
-[![Visitors](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FRoyiAvital%2FStackExchangeCodes&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Visitors+%28Daily+%2F+Total%29&edge_flat=false)](https://github.com/RoyiAvital/Julia100Exercises)
-[![Royi Avital](https://i.imgur.com/ghq7NUE.png)](https://github.com/RoyiAvital/StackExchangeCodes)
+[![Visitors](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FRoyiAvital%2FStackExchangeCodes&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Visitors+%28Daily+%2F+Total%29&edge_flat=false)](https://github.com/RoyiAvital/Projects)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8143915.svg)](https://doi.org/10.5281/zenodo.8143915)
+[![Royi Avital](https://i.imgur.com/ghq7NUE.png)](https://github.com/RoyiAvital/)
 
 # Linear Segmentation
 This document describe a [_Dynamic Programming_](https://en.wikipedia.org/wiki/Dynamic_programming) based method to solve the _linear segmentation_ problem.
