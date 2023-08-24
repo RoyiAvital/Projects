@@ -66,7 +66,7 @@ Then the cost matrix $\boldsymbol{C}$ is given by:
 
 One way to solve it is by defining the matrix which defines the _Dynamic Programming_ path:
 
-$$ \boldsymbol{S}_{i, j} = \begin{cases} \min_{k \in \left\{ 1, 2, \ldots, i - 1 \right\}} \boldsymbol{S}_{k, i - 1} + \boldsymbol{C}_{i, j} & \text{ if } i < j \\ \infty & \text{ if } i => j \end{cases} $$
+$$ \boldsymbol{S}_{i, j} = \begin{cases} \min_{k \in \left\{ 1, 2, \ldots, i - 1 \right\}} \boldsymbol{S}_{k, i - 1} + \boldsymbol{C}_{i, j} & \text{ if } i < j \\ \infty & \text{ if } i \geq j \end{cases} $$
 
 Where:
 
