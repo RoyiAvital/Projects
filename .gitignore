@@ -23,6 +23,9 @@ SingularValueDecomposition/KnowledgeBase/*
 #*.pdf
 *.md~
 
+# Julia
+Manifest.toml
+
 # MS Office Temp Files
 *.docx
 *.pptx
