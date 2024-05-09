@@ -33,6 +33,11 @@ end
     CONV_MODE_VALID
 end
 
+@enum OriginLoc begin
+    BOTTOM_LEFT
+    TOP_LEFT
+end
+
 # Display UIntx numbers as integers
 Base.show(io::IO, x::T) where {T<:Union{UInt, UInt128, UInt64, UInt32, UInt16, UInt8}} = Base.print(io, x)
 
