@@ -23,12 +23,23 @@ include("./JuliaInit.jl");
 
 ## Functions
 
-function DisplayImage( mI :: Matrix{T}; tuImgSize :: Tuple{N, N} = size(mI), titleStr :: String = "" ) where {T, N <: Integer}
+function DisplayImage( mI :: Matrix{T}; tuImgSize :: Tuple{N, N} = size(mI), originLoc :: OriginLoc = TOP_LEFT, titleStr :: String = "" ) where {T, N <: Integer}
     # Displays a grayscale image in the range [0, 1]
     
-    oTr1 = heatmap(z = UInt8.(round.(255 * mI))[end:-1:1, :], showscale = false, colorscale = "Greys");
+    if originLoc == BOTTOM_LEFT
+        mZ = UInt8.(round.(255 * mI))[end:-1:1, :];
+        yAxisAutoRange = "true";
+    elseif originLoc == TOP_LEFT
+        mZ = UInt8.(round.(255 * mI));
+        yAxisAutoRange = "reversed";
+    else
+        error("Invalid value for `originLoc` parameter");
+    end
+
+    oTr1 = heatmap(z = mZ, showscale = false, colorscale = "Greys");
     oLayout = Layout(title = titleStr, width = tuImgSize[2] + 100, height = tuImgSize[1] + 100, 
-                hovermode = "closest", margin = attr(l = 50, r = 50, b = 50, t = 50, pad = 0));
+                hovermode = "closest", margin = attr(l = 50, r = 50, b = 50, t = 50, pad = 0),
+                yaxis_autorange = yAxisAutoRange);
                 
     hP = plot([oTr1], oLayout);
     
