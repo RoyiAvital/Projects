@@ -1,4 +1,4 @@
-# StackExchange Code - Julia Optimization
+# Projects Code - Julia Optimization
 # Set of functions for Optimization.
 # References:
 #   1.  
@@ -7,6 +7,10 @@
 # TODO:
 # 	1.  B
 # Release Notes
+# - 1.0.004     28/06/2024  Royi Avital RoyiAvital@yahoo.com
+#   *   Updated `ADMM()` and `ADMM!()`.
+#   *   Added a function to project onto intersection of convex sets.
+#   *   Added Accelerated Proximal Gradient Descent.
 # - 1.0.003     21/01/2024  Royi Avital RoyiAvital@yahoo.com
 #   *   Added `IRLS()` and `IRLS!()` for || A x - b ||_p.
 # - 1.0.002     27/11/2023  Royi Avital RoyiAvital@yahoo.com
@@ -25,8 +29,81 @@
 
 
 ## Constants & Configuration
+include("./JuliaInit.jl");
 
 ## Functions
+
+function CalcFunGrad!( vG :: AbstractVecOrMat{T}, vP :: AbstractVecOrMat{T}, vX :: AbstractVecOrMat{T}, hFun :: Function; diffMode :: DiffMode = DIFF_MODE_CENTRAL, ε :: T = T(1e-6) ) where {T <: AbstractFloat}
+    # Non allocating assuming `hFun()` is non allocating.
+    # vP is assumed to be zeros.
+
+    numElements = length(vX);
+    funValRef   = hFun(vX);
+
+    # It seems that Julia can not define local functions in `if` block
+    # See https://github.com/JuliaLang/julia/issues/15602, https://discourse.julialang.org/t/13815
+    # if (diffMode == DIFF_MODE_BACKWARD)
+    #     DiffFun(vP) = (funValRef - hFun(vX - vP)) / ε;
+    # elseif (diffMode == DIFF_MODE_CENTRAL) 
+    #     DiffFun(vP) = (hFun(vX + vP) - hFun(vX - vP)) / (2ε);
+    # elseif (diffMode == DIFF_MODE_COMPLEX) 
+    #     DiffFun(vP) = imag(hFun(vX + (1im * vP))) / ε;
+    # elseif (diffMode == DIFF_MODE_FORWARD) 
+    #     DiffFun(vP) = (hFun(vX + vP) - funValRef) / ε;
+    # end
+
+    # Could be solved using anonymous functions.
+    # One could use hDiffFun = vP :: AbstractVecOrMat{T} -> (funValRef - hFun(vX - vP)) / ε;.
+    # Yet, performance wise, it won't do anything and `vP` is already guaranteed to be `AbstractVecOrMat{T}`.
+    if (diffMode == DIFF_MODE_BACKWARD)
+        DiffFun = vP -> (funValRef - hFun(vX - vP)) / ε;
+    elseif (diffMode == DIFF_MODE_CENTRAL) 
+        DiffFun = vP -> (hFun(vX + vP) - hFun(vX - vP)) / (2ε);
+    elseif (diffMode == DIFF_MODE_COMPLEX) 
+        DiffFun = vP -> imag(hFun(vX + (1im * vP))) / ε;
+    elseif (diffMode == DIFF_MODE_FORWARD) 
+        DiffFun = vP -> (hFun(vX + vP) - funValRef) / ε;
+    end
+
+    # Using actual function defintion (Equivaklent to the anonymous above).
+    # Functions are processed as objects and then assigned.
+    # if (diffMode == DIFF_MODE_BACKWARD)
+    #     DiffFun = function( vP :: AbstractVecOrMat{T} ) 
+    #         return (funValRef - hFun(vX - vP)) / ε;
+    #     end
+    # elseif (diffMode == DIFF_MODE_CENTRAL) 
+    #     DiffFun = function( vP :: AbstractVecOrMat{T} )
+    #         return (hFun(vX + vP) - hFun(vX - vP)) / (2ε);
+    #     end
+    # elseif (diffMode == DIFF_MODE_COMPLEX) 
+    #     DiffFun = function( vP :: AbstractVecOrMat{T} )
+    #         return imag(hFun(vX + (1im * vP))) / ε;
+    #     end
+    # elseif (diffMode == DIFF_MODE_FORWARD) 
+    #     DiffFun = function( vP :: AbstractVecOrMat{T} )
+    #         return (hFun(vX + vP) - funValRef) / ε;
+    #     end
+    # end
+
+    for ii ∈ 1:numElements
+        vP[ii] = ε;
+        vG[ii] = DiffFun(vP);
+        vP[ii] = zero(T);
+    end
+
+end
+
+function CalcFunGrad( vX :: AbstractVecOrMat{T}, hFun :: Function; diffMode :: DiffMode = DIFF_MODE_CENTRAL, ε :: T = T(1e-6) ) where {T <: AbstractFloat}
+
+    vP = zeros(T, size(vX));
+    vG = zeros(T, size(vX));
+
+    CalcFunGrad!(vG, vP, vX, hFun; diffMode = diffMode, ε = ε);
+
+    return vG;
+
+end
+
 
 function GradientDescent( vX :: AbstractVecOrMat{T}, numIter :: S, η :: T, ∇ObjFun :: Function; ProjFun :: Function = identity ) where {T <: AbstractFloat, S <: Integer}
     # This variation allocates memory.
@@ -51,14 +128,46 @@ function GradientDescent!( vX :: AbstractVecOrMat{T}, numIter :: S, η :: T, ∇
 
 end
 
-function GradientDescentAccelerated( vX :: AbstractVecOrMat{T}, numIter :: S, η :: T, ∇ObjFun :: Function; ProjFun :: Function = identity ) where {T <: AbstractFloat, S <: Integer}
+function GradientDescentBackTracking!( vX :: AbstractVecOrMat{T}, vG :: AbstractVecOrMat{T}, vZ :: AbstractVecOrMat{T}, numIter :: S, η :: T, ObjFun :: Function, ∇ObjFun :: Function; ProjFun :: Function = identity, α :: T = T(0.5), β :: T = T(1e-10) ) where {T <: AbstractFloat, S <: Integer}
+    # Non allocating assuming function are not allocating.
+
+    for ii ∈ 1:numIter
+        vG .= ∇ObjFun(vX);
+        objFunVal = ObjFun(vX);
+        vZ .= vX .- η .*  vG;
+        while ((hObjFun(vZ) > objFunVal) && (α > β))
+            η *= α;
+            vZ .= vX .- η .*  vG;
+        end
+        vG .*= η;
+        η   /= α;
+        vX .-= vG;
+    
+        vX .= mX .- (η .* ∇vX);
+        vX = ProjFun(vX);
+    end
+
+end
+
+function GradientDescentBackTracking( vX :: AbstractVecOrMat{T}, numIter :: S, η :: T, ObjFun :: Function, ∇ObjFun :: Function; ProjFun :: Function = identity, α :: T = T(0.5), β :: T = T(1e-10) ) where {T <: AbstractFloat, S <: Integer}
+    # Mutates vX
+
+    vG = copy(vX);
+    vZ = copy(vX);
+
+    GradientDescentBackTracking(vX, vG, vZ, numIter, η, ObjFun, ∇ObjFun; ProjFun = ProjFun, α = α, β = β);
+
+end
+
+
+function GradientDescentAccelerated( vX :: AbstractVecOrMat{T}, numIter :: S, η :: T, ∇ObjFun :: Function; ProjFun :: Function = identity ) where {T <: AbstractFloat, S <: Integer} #, F <: Function, G <: Function}
     # This variation allocates memory.
     # No requirements from ∇ObjFun, ProjFun to be allocations free.
 
-    vW = Array{T, length(size(vX))}(undef, size(vX));
+    vW = Array{T, ndims(vX)}(undef, size(vX));
     vZ = copy(vX);
 
-    ∇vZ = Array{T, length(size(vX))}(undef, size(vX));
+    ∇vZ = Array{T, ndims(vX)}(undef, size(vX));
 
     for ii ∈ 1:numIter
         # FISTA (Nesterov) Accelerated
@@ -71,7 +180,7 @@ function GradientDescentAccelerated( vX :: AbstractVecOrMat{T}, numIter :: S, η
     
         fistaStepSize = (ii - 1) / (ii + 2);
     
-        vZ .= vX .+ (fistaStepSize .* (vX .- vW))
+        vZ .= vX .+ (fistaStepSize .* (vX .- vW));
     end
 
 end
@@ -91,12 +200,12 @@ function GradientDescentAccelerated!( vX :: AbstractVecOrMat{T}, numIter :: S, �
     
         fistaStepSize = (ii - 1) / (ii + 2);
     
-        vZ .= vX .+ (fistaStepSize .* (vX .- vW))
+        vZ .= vX .+ (fistaStepSize .* (vX .- vW));
     end
 
 end
 
-function ADMM!(mX :: Matrix{T}, vZ :: Vector{T}, vU :: Vector{T}, mA :: AbstractMatrix{T}, hProxF :: Function, hProxG :: Function; ρ :: T = T(2.5), λ :: T = one(T)) where {T <: AbstractFloat}
+function ADMM!(vX :: AbstractVector{T}, vZ :: AbstractVector{T}, vU :: AbstractVector{T}, mA :: AbstractMatrix{T}, hProxF :: Function, hProxG :: Function, numIterations :: N; ρ :: T = T(2.5), λ :: T = one(T)) where {T <: AbstractFloat, N <: Integer}
     # Solves f(x) + λ g(Ax)
     # Where z = Ax, and g(z) has a well defined Prox.
     # ADMM for the case Ax + z = 0
@@ -104,12 +213,8 @@ function ADMM!(mX :: Matrix{T}, vZ :: Vector{T}, vU :: Vector{T}, mA :: Abstract
     # ProxG(y) = \arg \minₓ 0.5ρ * || x - y ||_2^2 + λ g(x)
     # Initialization by mX[:, 1]
     # Supports in place ProxG
-
-    numIterations = size(mX, 2);
     
-    for ii ∈ 2:numIterations
-        vX = @view mX[:, ii];
-
+    for ii ∈ 1:numIterations
         vZ .-= vU;
         vX .= hProxF(vZ, ρ);
         mul!(vZ, mA, vX);
@@ -117,12 +222,138 @@ function ADMM!(mX :: Matrix{T}, vZ :: Vector{T}, vU :: Vector{T}, mA :: Abstract
         vZ .= hProxG(vZ, λ / ρ);
         # vX .= hProxF(vZ - vU, ρ);
         # vZ .= hProxG(mA * vX + vU, λ / ρ);
-        vU .= vU + mA * vX - vZ;
+        vU .= mul!(vU, mA, vX, one(T), one(T)) .- vZ;
     end
+
+    return vX;
 
 end
 
-function IRLS!( vX :: Vector{T}, mA :: Matrix{T}, vB :: Vector{T}, vW :: Vector{T}, mWA :: Matrix{T}, mC :: Matrix{T}, vT :: Vector{T}, sBKWorkSpace :: BunchKaufmanWs{T}; normP :: T = one(T), numItr :: N = 1000, ϵ :: T = T(1e-6) ) where {T <: AbstractFloat, N <: Unsigned}
+function ADMM(vX :: AbstractVector{T}, mA :: AbstractMatrix{T}, hProxF :: Function, hProxG :: Function, numIterations :: N; ρ :: T = T(2.5), λ :: T = one(T)) where {T <: AbstractFloat, N <: Integer}
+    # Solves f(x) + λ g(Ax)
+    # Where z = Ax, and g(z) has a well defined Prox.
+    # ADMM for the case Ax + z = 0
+    # ProxF(y) = \arg \minₓ 0.5ρ * || A x - y ||_2^2 + f(x)
+    # ProxG(y) = \arg \minₓ 0.5ρ * || x - y ||_2^2 + λ g(x)
+    # Initialization by mX[:, 1]
+    # Supports in place ProxG
+    # https://nikopj.github.io/notes/admm_scaled
+    # TODO: Add support for uniform scaling for mA.
+
+    numRows = size(mA, 1);
+
+    vZ = zeros(T, numRows);
+    vU = zeros(T, numRows);
+
+    vX = ADMM!(vX, vZ, vU, mA, hProxF, hProxG, numIterations; ρ = ρ, λ = λ);
+    
+    return vX;
+
+end
+
+function ProximalGradientDescent!( vX :: AbstractVector{T}, vG :: AbstractVector{T}, ∇F :: Function, ProxG :: Function, η :: T, numIterations :: S; λ :: T = one(T) ) where {T <: AbstractFloat, S <: Integer}
+    # Solves f(x) + λ g(x)
+    # ∇F(y) = ∇f(y)
+    # ProxG(y) = \arg \minₓ 0.5 * || x - y ||_2^2 + λ g(x)
+    # Supports in place ProxG
+
+    λ *= η;
+
+    for ii ∈ 1:numIterations
+        vG = ∇F(vX);
+        vX .-= η .* vG; 
+        vX .= ProxG(vX, λ);
+    end
+
+    return vX;
+
+end
+
+function ProximalGradientDescent( vX :: AbstractVector{T}, ∇F :: Function, ProxFun :: Function, η :: T, numIterations :: S; λ :: T = one(T) ) where {T <: AbstractFloat, S <: Integer}
+
+    vG = similar(vX);
+    vX = ProximalGradientDescent!(vX, vG, ∇F, ProxFun, η, numIterations; λ = λ);
+
+    return vX;
+
+end
+
+function ProximalGradientDescentAcc!( vX :: AbstractVector{T}, vG :: AbstractVector{T}, vZ :: AbstractVector{T}, vW :: AbstractVector{T}, ∇F :: Function, ProxG :: Function, η :: T, numIterations :: S; λ :: T = one(T) ) where {T <: AbstractFloat, S <: Integer}
+    # Solves f(x) + λ g(x)
+    # ∇F(y) = ∇f(y)
+    # ProxG(y) = \arg \minₓ 0.5 * || x - y ||_2^2 + λ g(x)
+    # Supports in place ProxG
+
+    λ *= η;
+
+    for ii ∈ 1:numIterations
+        # FISTA (Nesterov) Accelerated
+    
+        vG = ∇F(vZ);
+    
+        vW .= vX; #<! Previous iteration
+        vX .= vZ .- (η .* vG);
+        vX .= ProxG(vX, λ);
+    
+        fistaStepSize = (ii - 1) / (ii + 2);
+    
+        vZ .= vX .+ (fistaStepSize .* (vX .- vW));
+    end
+
+    return vX;
+
+end
+
+function ProximalGradientDescentAcc( vX :: AbstractVector{T}, ∇F :: Function, ProxFun :: Function, η :: T, numIterations :: S; λ :: T = one(T) ) where {T <: AbstractFloat, S <: Integer}
+
+    vG = similar(vX);
+    vZ = copy(vX);
+    vW = similar(vX);
+    vX = ProximalGradientDescentAcc!(vX, vG, vZ, vW, ∇F, ProxFun, η, numIterations; λ = λ);
+
+    return vX;
+
+end
+
+function OrthogonalProjectionOntoConvexSets( vY :: AbstractVecOrMat{T}, vProjFun :: AbstractVector{<: Function}; numIter :: S = 1_000, ε :: T = T(1e-6) ) where {T <: AbstractFloat, S <: Integer}
+
+    numSets = length(vProjFun);
+    
+    aZ = [zeros(T, size(vY)) for _ ∈ 1:numSets];
+    aU = [zeros(T, size(vY)) for _ ∈ 1:numSets]; #<! TODO: Optimize vU (Probably single instance)
+    vT = copy(vY);
+    vX = copy(vY);
+
+    for ii ∈ 1:numIter
+        maxVal = zero(T);
+        for jj ∈ 1:numSets
+            # aU[jj]  = vProjFun[jj](vT + aZ[jj]);
+            aU[jj] .= vT .+ aZ[jj];
+            aU[jj]  = vProjFun[jj](aU[jj]);
+            aZ[jj] .= vT .+ aZ[jj] .- aU[jj];
+
+            vT .= aU[jj]
+
+            maxI = @fastmath maximum(abs(x - y) for (x, y) ∈ zip(vX, aU[jj])); #<! maximum(abs.(vX .- aU[jj]));
+            if (maxVal < maxI)
+                maxVal = maxI;
+            end
+        end
+        stopCond = maxVal < ε;
+
+        vX .= vT;
+        
+        if stopCond
+            break;
+        end
+    end
+
+    return vX;
+
+end
+
+function IRLS!( vX :: Vector{T}, mA :: Matrix{T}, vB :: Vector{T}, vW :: Vector{T}, mWA :: Matrix{T}, mC :: Matrix{T}, vT :: Vector{T}, sBKWorkSpace :: BunchKaufmanWs{T}; normP :: T = one(T), numItr :: N = UInt32(100), ϵ :: T = T(1e-6) ) where {T <: AbstractFloat, N <: Unsigned}
+    # Solves ||A * x - y||ₚ
 
     errThr = T(1e-6); #<! Should be adaptive per iteration
     effNorm = ((normP - T(2)) / T(2));
@@ -162,7 +393,7 @@ function IRLS!( vX :: Vector{T}, mA :: Matrix{T}, vB :: Vector{T}, vW :: Vector{
     
 end
 
-function IRLS(mA :: Matrix{T}, vB :: Vector{T}; normP :: T = one(T), numItr :: N = 1000 ) where {T <: AbstractFloat, N <: Unsigned}
+function IRLS( mA :: Matrix{T}, vB :: Vector{T}; normP :: T = one(T), numItr :: N = UInt32(100) ) where {T <: AbstractFloat, N <: Unsigned}
 
     vX  = Vector{T}(undef, size(mA, 2));
     vT  = Vector{T}(undef, size(mA, 2));
