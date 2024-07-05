@@ -77,9 +77,7 @@ $$
 \end{align*}
 $$  
 
-> TODO: This can be simplified into something like $ \boldsymbol{y}^{T} \boldsymbol{X} {\left( \boldsymbol{X}^{T} \boldsymbol{X} \right)}^{-1} \boldsymbol{X}^{T} \boldsymbol{y} $.
-
-In our case, the matrix $ \left(\boldsymbol{X}^{T} \boldsymbol{X}\right) \in \mathbb{R}^{2 \times 2} $, which has a simple closed form.  
+In our case, the matrix $ \left(\boldsymbol{X}^{T} \boldsymbol{X}\right) \in \mathbb{R}^{2 \times 2} $, which has a simple closed form[^005].  
 This makes the search for the optimal frequency quite simple even over a grid.  
 A good initialization could be made by the frequency bin which maximizes the the magnitude of the DFT of the data.   
 
@@ -151,6 +149,9 @@ Where
  *	[A smoothed Monotonic Regression via L2 Regularization](https://link.springer.com/article/10.1007/s10115-018-1201-2).
  *  [Julien Arzi - Frequency Estimation](http://www.tsdconseil.fr/log/scriptscilab/festim/index-en.html).
 
+### Estimators
+ * [Eric Jacobsen's Frequency Estimation Page](http://www.ericjacobsen.org/fe.htm).
+
 ## License
 Free for non commercial use.
 
@@ -159,4 +160,5 @@ Free for non commercial use.
   [^002]: Since the noise is AWGN the maximum likelihood estimator is given by the Least Squares estimator.
   [^003]: A more generalized form of it (For sum of sines) was derived in a project in the RADAR world.
   [^004]: The equality in the derivation assumes optimal estimation of the phase. As there is no efficient estimator for the phase this is only an approximation in practice.
+  [^005]: The matrix $ \boldsymbol{X} $ is full rank (Independent columns).
 
