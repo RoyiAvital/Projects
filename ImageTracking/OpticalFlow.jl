@@ -127,9 +127,48 @@ function GenGaussKernel( σ :: T, kernelRadius :: N ) where {T <: AbstractFloat,
 
 end
 
-function OpticalFlow( mI1 :: Matrix{T}, mI2 :: Matrix{T}, localPatchRadius :: N, numPyr :: N ) where {T <: AbstractFloat, N <: Integer}
+function GenPyrPatch( mPts :: Matrix{T}, mP :: Matrix{T}, vG, vU :: Vector{T}, vV :: Vector{T} ) where {T <: AbstractFloat}
 
-    localPatchLen = T(2) * localPatchRadius + one(T);
+    numRows = size(mP, 1);
+    numCols = size(mP, 2);
+
+    numGridPts  = length(vG);
+    numPts      = size(mPts, 1);
+
+    vXi = zeros(T, numGridPts * numGridPts * numPts);
+    vYi = zeros(T, numGridPts * numGridPts * numPts);
+
+    ii = 0;
+    for pp ∈ 1:numPts
+        shiftX = mPts[pp, 1] - vU[pp];
+        shiftY = mPts[pp, 2] - vV[pp];
+        for uu ∈ 1:numGridPts
+            for vv ∈ 1:numGridPts
+                ii += 1;
+                # Clamp can be avoided by setting nearest extrapolation mode
+                vXi[ii] = clamp(vG[uu] + shiftX, 1, N);
+                vYi[ii] = clamp(vG[vv] + shiftY, 1, M);
+            end
+        end
+    end
+
+    oIntrp = cubic_spline_interpolation((1:numRows, 1:numCols), mP, extrapolation_bc = Flat());
+
+    return oIntrp.(vXi, vYi);
+
+end
+
+
+
+function OpticalFlow( mI1 :: Matrix{T}, mI2 :: Matrix{T}, mPts1 :: Matrix{T}, mPts2 :: Matrix{T}, localPatchRadius :: N, numPyr :: N ) where {T <: AbstractFloat, N <: Integer}
+
+    numPts        = size(mPts1, 1);
+    localPatchLen = T(2) * localPatchRadius + one(T);    
+
+    vU  = zeros(T, numPts);
+    vV  = zeros(T, numPts);
+    vU₀ = zeros(T, numPts);
+    vV₀ = zeros(T, numPts);
     
     for pp ∈ numPyr:-1:0
 
@@ -141,12 +180,36 @@ function OpticalFlow( mI1 :: Matrix{T}, mI2 :: Matrix{T}, localPatchRadius :: N,
             kerRadius   = ceil(radFctr * σₚ);
             mK          = GenGaussKernel(σₚ, kerRadius);
 
-            mP1 = Conv2D(mI1, mK; convMode = CONV_MODE_SAME);
-            mP2 = Conv2D(mI2, mK; convMode = CONV_MODE_SAME);
+            mO  = Conv2D(mOnes, mK; convMode = CONV_MODE_SAME);
+            mP1 = Conv2D(mI1, mK; convMode = CONV_MODE_SAME) ./ mO;
+            mP2 = Conv2D(mI2, mK; convMode = CONV_MODE_SAME) ./ mO;
+        else
+            mP1 = mI1;
+            mP2 = mI2;
         end
 
-        fs
+        patchGridRad = decFactor * localPatchRadius;
+        vG = -patchGridRad:decFactor:patchGridRad;
 
+        tP1 = GenPyrPatch(mPts1, mP1, vG, vU, vV);
+        tP2 = GenPyrPatch(mPts2, mP1, vG, vU₀, vV₀);
+
+        tD = CalcOptDerivative(tP1, tP2); #<! TODO
+        tS = LocalDerivativeSum(tD); #<! TODO
+
+        for rr ∈ 1:numRef #<! Refinements
+            vUi, vVi = EstUV(tS); #<! TODO Estimate du, dv per point
+        end
+
+        vU .+= decFactor .* vUi;
+        vV .+= decFactor .* vVi;
+
+    end
+
+    # Set the estimated coordinates in next image
+    for pp ∈ 1:numPts
+        mP2[pp, 1] = mP1[pp, 1] + vU[pp]
+        mP2[pp, 2] = mP1[pp, 2] + vV[pp]
     end
 
 end
