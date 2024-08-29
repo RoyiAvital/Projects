@@ -57,6 +57,8 @@ figureIdx = 0;
 
 exportFigures = false;
 
+oRng = StableRNG(1234);
+
 ## Functions
 
 function CalcImgGrad( mI :: Matrix{T} ) where {T <: AbstractFloat}
@@ -65,29 +67,29 @@ function CalcImgGrad( mI :: Matrix{T} ) where {T <: AbstractFloat}
     numRows = size(mI, 1);
     numCols = size(mI, 2);
     
-    mDx = similar(mI);
-    mDy = similar(mI);
+    mIx = similar(mI);
+    mIy = similar(mI);
 
     for jj ∈ 1:numCols
         for ii ∈ 1:numRows
             if (ii == 1)
-                mDy[ii, jj] = mI[2, jj] - mI[1, jj];
+                mIy[ii, jj] = mI[2, jj] - mI[1, jj];
             elseif (ii == numRows)
-                mDy[ii, jj] = mI[numRows, jj] - mI[numRows - 1, jj];
+                mIy[ii, jj] = mI[numRows, jj] - mI[numRows - 1, jj];
             else
-                mDy[ii, jj] = 0.5 * (mI[ii + 1, jj] - mI[ii - 1, jj]);
+                mIy[ii, jj] = 0.5 * (mI[ii + 1, jj] - mI[ii - 1, jj]);
             end
             if (jj == 1)
-                mDx[ii, jj] = mI[ii, 2] - mI[ii, 1];
+                mIx[ii, jj] = mI[ii, 2] - mI[ii, 1];
             elseif (jj == numCols)
-                mDx[ii, jj] = mI[ii, numCols] - mI[ii, numCols - 1];
+                mIx[ii, jj] = mI[ii, numCols] - mI[ii, numCols - 1];
             else
-                mDx[ii, jj] = 0.5 * (mI[ii, jj + 1] - mI[ii, jj - 1]);
+                mIx[ii, jj] = 0.5 * (mI[ii, jj + 1] - mI[ii, jj - 1]);
             end
         end
     end
 
-    return mDx, mDy;
+    return mIx, mIy;
 
 end
 
@@ -158,7 +160,161 @@ function GenPyrPatch( mPts :: Matrix{T}, mP :: Matrix{T}, vG, vU :: Vector{T}, v
 
 end
 
+function CalcOptFlSpatialDerivative( tP :: Array{T, 3} ) where {T <: AbstractFloat}
 
+    # The Optical Flow equation will be calculated on half pixel shift grid.  
+    #
+    # ---------------
+    # |x * x * x * x|
+    # |x * x * x * x|
+    # |x * x * x * x|
+    # |x * x * x * x|
+    # |x * x * x * x|
+    # ---------------
+    #
+    # The patch `tP` is sampled on `x` while the derivatives are evaluated at 
+    # `z` (Half pixel shift).
+    
+    # TODO: Use views
+    tPx = tP[:, 2:end, :] .- tP[:, 1:(end - 1), :]; #<! Horizontal derivative
+    tPx = T(0.5) .* (tP1[2:end, :, :] .+ tP[1:(end - 1), :, :]); #<! Averaging with half pixel shift
+
+    tPy = tP[2:end, :, :] .- tP[1:(end - 1), :, :]; #<! Vertical derivative
+    tPy = T(0.5) .* (tP1[:, 2:end, :] .+ tP[:, 1:(end - 1), :]); #<! Averaging with half pixel shift
+
+    return tPx, tPy;
+
+end
+
+function CalcOptFlDerivative( tP1 :: Array{T, 3}, tP2 :: Array{T, 3} ) where {T <: AbstractFloat}
+
+    # The Optical Flow equation will be calculated on half pixel shift grid.  
+    #
+    # ---------------
+    # |x * x * x * x|
+    # |x * x * x * x|
+    # |x * x * x * x|
+    # |x * x * x * x|
+    # |x * x * x * x|
+    # ---------------
+    #
+    # The patches (`tP1` / `tP2`) are sampled on `x` while the derivatives are
+    # evaluated at `z` (Half pixel shift).
+    
+    tPx, tPy = CalcOptFlSpatialDerivative(tP2);
+
+    tTmp = tP2 - tP1;
+    # TODO: Use views
+    tPt = T(0.25) .* (tTmp[1:(end - 1), 1:(end - 1), :] .+ tTmp[2:end, 1:(end - 1), :] .+
+                      tTmp[1:(end - 1), 2:end, :] .+ tTmp[2:end, 2:end, :]);
+    
+    tPxx = tPx .* tPx;
+    tPyy = tPy .* tPy;
+    tPxy = tPx .* tPy;    
+    tPxt = tPx .* tPt;
+    tPyt = tPy .* tPt;
+
+    return tPxx, tPyy, tPxy, tPxt, tPyt;
+
+end
+
+function CalcLocalDerivativeSum( tPxx :: Array{T, 3}, tPyy :: Array{T, 3}, tPxy :: Array{T, 3}, tPxt :: Array{T, 3}, tPyt :: Array{T, 3} ) where {T <: AbstractFloat}
+
+    vPxx = dropdims(sum(tPxx, dims = (1, 2)), dims = (1, 2));
+    vPyy = dropdims(sum(tPyy, dims = (1, 2)), dims = (1, 2));
+    vPxy = dropdims(sum(tPxy, dims = (1, 2)), dims = (1, 2));
+    vPxt = dropdims(sum(tPxt, dims = (1, 2)), dims = (1, 2));
+    vPyt = dropdims(sum(tPyt, dims = (1, 2)), dims = (1, 2));
+
+    return vPxx, vPyy, vPxy, vPxt, vPyt;
+
+end
+
+
+function SolveLSBnd( vX :: Vector{T}, mAA :: Matrix{T}, vAY :: Vector{T}, K :: N, α :: T, ε :: T, αₘ :: T, M :: N ) where {T <: AbstractFloat, N <: Integer}
+    # Solving Bounded Least Squares using Projected Gradient Descent.
+    # \arg \minₓ 0.5 * || A x - y ||_2^2 \subject to -1 ≤ xᵢ ≤ 1
+    # The objective is equivalent to: x' * A' * A * x - 2 (A' * y)' x + y' y
+    # Since `y` is constant, one could optimize x' * A' * A * x - 2 (A' * y)'.
+    # Hence the objective value can be evaluated without `y`.
+    # Should be used when the given initial value `vX` is close to optimal.  
+    # As the method is slow to converge, hence useful when only small number
+    # of iterations are required.
+    # K - Maximum iterations.
+    # α - Initial step size.
+    # ε - Stopping threshold.
+    # αₘ - Minimum step size.
+    # M - Maximum backtracking iterations.
+
+    vT = similar(vX);
+    vZ = similar(vX);
+    
+    for ii ∈ 1:K
+        copy!(vT, vX); #<! Buffer
+        vG = mAA * vX - vAY; #<! Gradient
+        objVal = dot(vX, mAA, vX) - T(2.0) * dot(vAY, vX);
+        vZ .= vX .- α .* vG; #<! Gradient Descent Step
+        currVal = dot(vZ, mAA, vZ) - T(2.0) * dot(vAY, vZ);
+        jj = 0;
+        while ( (currVal > objVal) && (α > αₘ) && (jj < M) )
+            α *= T(0.5);
+            vZ .= vX .- α .* vG;
+            currVal = dot(vZ, mAA, vZ) - T(2.0) * dot(vAY, vZ);
+            jj += 1;
+        end
+
+        vX = clamp.(vZ, -one(T), one(T)); #<! Projection
+        α = T(2.0) * α;
+
+        vT .-= vX;
+        maxChange = maximum(abs, vT);
+
+        if (maxChange < ε)
+            break;
+        end
+
+    end
+
+end
+
+function EstUV( vPxx :: Vector{T}, vPyy :: Vector{T}, vPxy :: Vector{T}, vPxt :: Vector{T}, vPyt :: Vector{T} ) where {T <: AbstractFloat}
+
+    K = 100;
+    α = 1e-2;
+    ε = 1e-6;
+    αₘ = 1e-6;
+    M = 10;
+
+    numPts = length(vU);
+
+    for ii ∈ 1:numPts
+        # Solving a 2x2 linear system of a PD matrix
+        detVal = max(detThr, vPxx[ii] * vPyy[ii] - vPxy[ii] * vPxy[ii]); #<! Determinant
+        vU[ii] = (vPxy[ii] * vPyt[ii] - vPyy[ii] * vPxt[ii]) / detVal;
+        vV[ii] = (vPxy[ii] * vPxt[ii] - vPxx[ii] * vPyt[ii]) / detVal;
+
+        if (applyCons) #<! Apply constraint of |vU[ii], vV[ii]| ≤ 1
+            mA[1, 1] = vPxx[ii] + λ;
+            mA[1, 2] = vPxy[ii];
+            mA[2, 1] = vPxy[ii]; #<! Symmetric
+            mA[2, 2] = vPyy[ii] + λ;
+
+            vY[1] = -vPxt[ii];
+            vY[2] = -vPyt[ii];
+            vX[1] = vU[ii];
+            vX[2] = vV[ii];
+            
+            # Solve:
+            # \arg \minₓ || A x - y ||_2^2 subject to -1 ≤ xᵢ ≤ 1
+            vX = SolveLSBnd(vX, mA, vY, K, α, ε, αₘ, M);
+            
+            vU[ii] = vX[1];
+            vV[ii] = vX[2];
+        end
+    end
+
+
+end
 
 function OpticalFlow( mI1 :: Matrix{T}, mI2 :: Matrix{T}, mPts1 :: Matrix{T}, mPts2 :: Matrix{T}, localPatchRadius :: N, numPyr :: N ) where {T <: AbstractFloat, N <: Integer}
 
@@ -191,17 +347,20 @@ function OpticalFlow( mI1 :: Matrix{T}, mI2 :: Matrix{T}, mPts1 :: Matrix{T}, mP
         patchGridRad = decFactor * localPatchRadius;
         vG = -patchGridRad:decFactor:patchGridRad;
 
-        tP1 = GenPyrPatch(mPts1, mP1, vG, vU, vV);
-        tP2 = GenPyrPatch(mPts2, mP1, vG, vU₀, vV₀);
+        # The multi scale process compensate for the previous scale shift.
+        # The idea is each scale has maximum shift of 1 pixel in each direction.  
+        # Hence, if the largest scale has 1, the next scale is first shifted by it.
+        tP1 = GenPyrPatch(mPts1, mP1, vG, vU, vV); #<! Size: (length(vG) x length(vG) x numPts)
+        tP2 = GenPyrPatch(mPts2, mP1, vG, vU₀, vV₀); #<! Size: (length(vG) x length(vG) x numPts)
 
-        tD = CalcOptDerivative(tP1, tP2); #<! TODO
-        tS = LocalDerivativeSum(tD); #<! TODO
+        tPxx, tPyy, tPxy, tPxt, tPyt = CalcOptFlDerivative(tP1, tP2);
+        vPxx, vPyy, vPxy, vPxt, vPyt = LocalDerivativeSum(tPxx, tPyy, tPxy, tPxt, tPyt);
 
         for rr ∈ 1:numRef #<! Refinements
-            vUi, vVi = EstUV(tS); #<! TODO Estimate du, dv per point
+            vUi, vVi = EstUV(vPxx, vPyy, vPxy, vPxt, vPyt); #<! TODO Estimate du, dv per point
         end
 
-        vU .+= decFactor .* vUi;
+        vU .+= decFactor .* vUi; #<! Shift factored by the scale
         vV .+= decFactor .* vVi;
 
     end
@@ -223,25 +382,18 @@ end
 # Data
 imgUrl = raw"https://i.imgur.com/WLROWkE.png"; #<! Lena Image 256x256 Gray
 
-# Warp Matrix
-αᵤ = 1.0 #<! Scaling
-αᵥ = 1.0 #<! Scaling
-θ = (5.0 / 180.0) * π; #<! Rotation
-tᵤ = 0.95;
-tᵥ = 0.25;
-mW = [1.0 0.0 tᵤ; 0.0 1.0 tᵥ];
-mW = [αᵤ * cos(θ) sin(θ) 0.35; -sin(θ) αᵥ * cos(θ) 0.0];
+# Point to track
+vRefPt = [43.3, 33.7];
 
-# Template
-vTr = 125:155; #<! Rows
-vTc = 110:140; #<! Columns
+# Shift
+dU = 0.6;
+dV = 0.3;
 
 # Solver
-numIter = 100;
-mP = [0.0 0.0 vTc[1]; 0.0 0.0 vTr[1]];
+
 
 ## Generate / Load Data
-oRng = StableRNG(1234);
+
 
 # Read Image
 mI = ConvertJuliaImgArray(load(download(imgUrl)));
@@ -258,16 +410,8 @@ imgItrp = extrapolate(imgItrp, 0);
 
 ## Analysis
 numPts  = numRows * numCols;
-mY      = zeros(2, numPts);
 
-ii = 0;
-for valX ∈ vX, valY ∈ vY
-    # valY is the inner (Running on the rows)
-    global ii += 1;
-    mY[:, ii] = mW * [valX, valY, 1.0];
-end
-
-mII = imgItrp.(mY[2, :], mY[1, :]); #<! Interpolations works rows / cols
+mII = imgItrp.(vX .+ dU, vY .+ dV); #<! Interpolations works rows / cols
 mII = reshape(mII, (length(vY), length(vX))); #<! Image for template
 
 DisplayImage(mI)
