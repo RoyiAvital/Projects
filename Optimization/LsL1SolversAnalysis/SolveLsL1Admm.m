@@ -3,7 +3,7 @@ function [ vX, mX ] = SolveLsL1Admm( mA, vB, paramLambda, numIterations )
 %[ vX, mX ] = SolveLsL1Admm( mA, vB, lambdaFctr, numIterations )
 % Solve L1 Regularized Least Squares Using Alternating Direction Method of Multipliers (ADMM) Method.
 % Input:
-%   - mA                -   Input Matirx.
+%   - mA                -   Input Matrix.
 %                           The model matrix.
 %                           Structure: Matrix (m X n).
 %                           Type: 'Single' / 'Double'.
@@ -47,7 +47,7 @@ function [ vX, mX ] = SolveLsL1Admm( mA, vB, paramLambda, numIterations )
 %   -   1.1.000     23/08/2017  Royi Avital
 %       *   Added optimized factorization.
 %   -   1.0.000     23/08/2017  Royi Avital
-%       *   First realease version.
+%       *   First release version.
 % ----------------------------------------------------------------------------------------------- %
 
 MAT_TYPE_SKINNY = 1;

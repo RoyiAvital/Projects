@@ -3,7 +3,7 @@ function [ vX, mX ] = SolveLsL0Prox( mA, vB, paramLambda, numIterations )
 %[ vX, mX ] = SolveLsL0Prox( mA, vB, paramLambda, numIterations )
 % Solve L0 Regularized Least Squares Using Proximal Gradient (PGM) Method.
 % Input:
-%   - mA                -   Input Matirx.
+%   - mA                -   Input Matrix.
 %                           The model matrix.
 %                           Structure: Matrix (m X n).
 %                           Type: 'Single' / 'Double'.
@@ -30,7 +30,7 @@ function [ vX, mX ] = SolveLsL0Prox( mA, vB, paramLambda, numIterations )
 %                           Range: (-inf, inf).
 % References
 %   1.  Wikipedia PGM - https://en.wikipedia.org/wiki/Proximal_gradient_method.
-%   2.  Bummer, thought it is new, Yet Michael Elad referreed me to
+%   2.  Bummer, thought it is new, Yet Michael Elad referred me to
 %       "Iterative Thresholding for Sparse Approximations" by Thomas 
 %       Blumensath and Mike E. Davies.
 % Remarks:
@@ -41,7 +41,7 @@ function [ vX, mX ] = SolveLsL0Prox( mA, vB, paramLambda, numIterations )
 %   1.  B
 % Release Notes:
 %   -   1.0.000     30/03/2018
-%       *   First realease version.
+%       *   First release version.
 % ----------------------------------------------------------------------------------------------- %
 
 mAA = mA.' * mA;

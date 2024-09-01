@@ -11,7 +11,7 @@ function [ vX ] = SolveProxTvChambolle( vY, mD, paramLambda, numIterations )
 %                           Type: 'Single' / 'Double'.
 %                           Range: (-inf, inf).
 %   - mD                -   Finite Differences Operator Matrix.
-%                           Matrix which implemets the Forward Finite
+%                           Matrix which implements the Forward Finite
 %                           Differences operator.
 %                           Structure: Matrix ((n - 1) X n).
 %                           Type: 'Single' / 'Double'.
@@ -41,7 +41,7 @@ function [ vX ] = SolveProxTvChambolle( vY, mD, paramLambda, numIterations )
 %   1.  B
 % Release Notes:
 %   -   1.0.000     27/11/2019  Royi Avital
-%       *   First realease version.
+%       *   First release version.
 % ----------------------------------------------------------------------------------------------- %
 
 STEP_SIZE_POLICY_CONST              = 1;

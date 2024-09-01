@@ -77,7 +77,7 @@ vX = mFB * vF;
 
 norm(vX - vXRef)
 
-% Since the mtrices are diagonal the result could be done on the first
+% Since the matrices are diagonal the result could be done on the first
 % column / row and then the other could be just the result of shifted
 % signal (Multiplication by Complex Exponential). Yet in practice it might
 % be faster just neglecting the fact this is diagonal.

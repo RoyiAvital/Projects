@@ -3,7 +3,7 @@ function [ vX, mX ] = SolveLsL0OmpLs( mA, vB, paramLambda, numIterations, tolVal
 %[ vX, mX ] = SolveLsL0Omp( mA, vB, paramLambda, numIterations, tolVal )
 % Solve L0 Regularized Least Squares Using Least Squares Orthogonal Matching Pursuit (MP) Method.
 % Input:
-%   - mA                -   Input Matirx.
+%   - mA                -   Input Matrix.
 %                           The model matrix.
 %                           Structure: Matrix (m X n).
 %                           Type: 'Single' / 'Double'.
@@ -32,22 +32,22 @@ function [ vX, mX ] = SolveLsL0OmpLs( mA, vB, paramLambda, numIterations, tolVal
 %   1.  Wikipedia MP - https://en.wikipedia.org/wiki/Matching_pursuit.
 %   2.  Michael Elad - Sparse and Redundant Representations (Pages 36-40)
 % Remarks:
-%   1.  The algorithms implements Michel Elad's method as Wikipedia's
-%       method seems to be oritend towards normalized dictionary.
+%   1.  The algorithms implements Micheal Elad's method as Wikipedia's
+%       method seems to be oriented towards normalized dictionary.
 % Known Issues:
 %   1.  A
 % TODO:
 %   1.  Pre Process 'mA' by normalizing its columns.
 % Release Notes:
 %   -   1.0.000     29/03/2018
-%       *   First realease version.
+%       *   First release version.
 % ----------------------------------------------------------------------------------------------- %
 
 numRows = size(mA, 1);
 numCols = size(mA, 2);
 
 % Since all atoms are used and the solutions is optimal, number of
-% iterations can not exceed number of atoms as the resdiaul is at its
+% iterations can not exceed number of atoms as the residual is at its
 % minimum.
 numIterations = min(numIterations, numCols);
 

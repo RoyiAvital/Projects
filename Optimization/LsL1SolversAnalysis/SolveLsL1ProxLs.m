@@ -3,7 +3,7 @@ function [ vX, mX ] = SolveLsL1ProxLs( mA, vB, lambdaFctr, numIterations )
 %[ vX, mX ] = SolveLsL1ProxLs( mA, vB, paramLambda, numIterations )
 % Solve L1 Regularized Least Squares Using Proximal Gradient (PGM) Method with Line Search.
 % Input:
-%   - mA                -   Input Matirx.
+%   - mA                -   Input Matrix.
 %                           The model matrix.
 %                           Structure: Matrix (m X n).
 %                           Type: 'Single' / 'Double'.
@@ -39,7 +39,7 @@ function [ vX, mX ] = SolveLsL1ProxLs( mA, vB, lambdaFctr, numIterations )
 %   1.  B
 % Release Notes:
 %   -   1.0.000     23/08/2017
-%       *   First realease version.
+%       *   First release version.
 % ----------------------------------------------------------------------------------------------- %
 
 hObjFun = @(vX) (0.5 * sum(((mA * vX) - vB) .^ 2)) + (lambdaFctr * sum(abs(vX)));
