@@ -3,7 +3,7 @@ function [ vX, mX ] = SolveLsL1Irls( mA, vB, paramLambda, numIterations )
 %[ vX, mX ] = SolveLsL1Irls( mA, vB, paramLambda, numIterations )
 % Solve L1 Regularized Least Squares Using Iteratively Reweighted Least Squares (IRLS) Method.
 % Input:
-%   - mA                -   Input Matirx.
+%   - mA                -   Input Matrix.
 %                           The model matrix.
 %                           Structure: Matrix (m X n).
 %                           Type: 'Single' / 'Double'.
@@ -42,7 +42,7 @@ function [ vX, mX ] = SolveLsL1Irls( mA, vB, paramLambda, numIterations )
 %       *   Fixed the 2 factor bug.
 %       *   Updating only the Diagonal of mAD for more efficiency.
 %   -   1.0.000     23/08/2017
-%       *   First realease version.
+%       *   First release version.
 % ----------------------------------------------------------------------------------------------- %
 
 mAA = mA.' * mA;

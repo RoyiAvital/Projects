@@ -28,7 +28,7 @@ function [ vX ] = LevinsonRecursion( mT, vY )
 %   1.  A
 % Release Notes:
 %   -   1.0.000     15/02/2017  Royi Avital
-%       *   First realease version.
+%       *   First release version.
 % ----------------------------------------------------------------------------------------------------- %
 
 numRows = size(mT, 1); %<! Square Matrix

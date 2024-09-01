@@ -3,7 +3,7 @@ function [ vX, mX ] = SolveLsL1Huber( mA, vB, paramLambda, numIterations )
 %[ vX, mX ] = SolveLsL1Huber( mA, vB, paramLambda, numIterations )
 % Solve L1 Regularized Least Squares Using Smoothing (Huber Loss) Method.
 % Input:
-%   - mA                -   Input Matirx.
+%   - mA                -   Input Matrix.
 %                           The model matrix.
 %                           Structure: Matrix (m X n).
 %                           Type: 'Single' / 'Double'.
@@ -40,7 +40,7 @@ function [ vX, mX ] = SolveLsL1Huber( mA, vB, paramLambda, numIterations )
 %   1.  Add line search (Backtracking).
 % Release Notes:
 %   -   1.0.000     25/08/2017
-%       *   First realease version.
+%       *   First release version.
 % ----------------------------------------------------------------------------------------------- %
 
 mAA = mA.' * mA;
