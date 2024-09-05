@@ -25,7 +25,7 @@ using Random;
 # using Convex;
 # using Dierckx;
 using Interpolations;
-using PlotlyJS;
+# using PlotlyJS;
 # using SCS;
 using StableRNGs;
 
@@ -93,46 +93,9 @@ function CalcImgGrad( mI :: Matrix{T} ) where {T <: AbstractFloat}
 
 end
 
-function GenGaussKernel( σᵤ :: T, σᵥ :: T, tuRadius :: Tuple{N, N} ) where {T <: AbstractFloat, N <: Integer}
-
-    numRows = 2 * tuRadius[1] + 1;
-    numCols = 2 * tuRadius[2] + 1;
-    mK = zeros(T, numRows, numCols);
-
-    jj = 0;
-    for vv ∈ -tuRadius[2]:tuRadius[2]
-        ii = 0;
-        jj += 1;
-        valV = exp(-(vv * vv) / (2 * σᵥ * σᵥ));
-        for uu ∈ -tuRadius[1]:tuRadius[1]
-            ii += 1;
-            valU = exp(-(uu * uu) / (2 * σᵤ * σᵤ));
-            mK[ii, jj] = valU * valV;
-        end
-    end
-
-    mK ./= sum(mK);
-
-    return mK;
-
-end
-
-function GenGaussKernel( σ :: T, tuRadius :: Tuple{N, N} ) where {T <: AbstractFloat, N <: Integer}
-
-    return GenGaussKernel(σ, σ, tuRadius);
-
-end
-
-function GenGaussKernel( σ :: T, kernelRadius :: N ) where {T <: AbstractFloat, N <: Integer}
-
-    return GenGaussKernel(σ, σ, (kernelRadius, kernelRadius));
-
-end
-
 function GenPyrPatch( mPts :: Matrix{T}, mP :: Matrix{T}, vG, vU :: Vector{T}, vV :: Vector{T} ) where {T <: AbstractFloat}
 
-    numRows = size(mP, 1);
-    numCols = size(mP, 2);
+    numRows, numCols = size(mP);
 
     numGridPts  = length(vG);
     numPts      = size(mPts, 1);
@@ -148,15 +111,15 @@ function GenPyrPatch( mPts :: Matrix{T}, mP :: Matrix{T}, vG, vU :: Vector{T}, v
             for vv ∈ 1:numGridPts
                 ii += 1;
                 # Clamp can be avoided by setting nearest extrapolation mode
-                vXi[ii] = clamp(vG[uu] + shiftX, 1, N);
-                vYi[ii] = clamp(vG[vv] + shiftY, 1, M);
+                vXi[ii] = clamp(vG[uu] + shiftX, 1, numCols);
+                vYi[ii] = clamp(vG[vv] + shiftY, 1, numRows);
             end
         end
     end
 
     oIntrp = cubic_spline_interpolation((1:numRows, 1:numCols), mP, extrapolation_bc = Flat());
 
-    return oIntrp.(vXi, vYi);
+    return reshape(oIntrp.(vXi, vYi), (numGridPts, numGridPts, numPts));
 
 end
 
@@ -318,23 +281,32 @@ end
 
 function OpticalFlow( mI1 :: Matrix{T}, mI2 :: Matrix{T}, mPts1 :: Matrix{T}, mPts2 :: Matrix{T}, localPatchRadius :: N, numPyr :: N ) where {T <: AbstractFloat, N <: Integer}
 
+    numRows, numCols = size(mI1);
+    
     numPts        = size(mPts1, 1);
     localPatchLen = T(2) * localPatchRadius + one(T);    
+
+    # TODO: Make parameters
+    σ = T(1.0);
+    radFctr = T(3.0);
 
     vU  = zeros(T, numPts);
     vV  = zeros(T, numPts);
     vU₀ = zeros(T, numPts);
     vV₀ = zeros(T, numPts);
+
+    mOnes = ones(T, numRows, numCols);
     
     for pp ∈ numPyr:-1:0
+        # Per scale
 
         decFactor = 2 ^ pp;
 
         if (pp > 0)
             # Build the Gaussian Kernel
-            σₚ          = σ * pyrFctr;
-            kerRadius   = ceil(radFctr * σₚ);
-            mK          = GenGaussKernel(σₚ, kerRadius);
+            σₚ          = σ * decFactor;
+            kerRadius   = ceil(N, radFctr * σₚ);
+            mK          = GenGaussianKernel(σₚ, (kerRadius, kerRadius));
 
             mO  = Conv2D(mOnes, mK; convMode = CONV_MODE_SAME);
             mP1 = Conv2D(mI1, mK; convMode = CONV_MODE_SAME) ./ mO;
@@ -351,14 +323,16 @@ function OpticalFlow( mI1 :: Matrix{T}, mI2 :: Matrix{T}, mPts1 :: Matrix{T}, mP
         # The idea is each scale has maximum shift of 1 pixel in each direction.  
         # Hence, if the largest scale has 1, the next scale is first shifted by it.
         tP1 = GenPyrPatch(mPts1, mP1, vG, vU, vV); #<! Size: (length(vG) x length(vG) x numPts)
-        tP2 = GenPyrPatch(mPts2, mP1, vG, vU₀, vV₀); #<! Size: (length(vG) x length(vG) x numPts)
+        tP2 = GenPyrPatch(mPts1, mP2, vG, vU₀, vV₀); #<! Size: (length(vG) x length(vG) x numPts)
 
         tPxx, tPyy, tPxy, tPxt, tPyt = CalcOptFlDerivative(tP1, tP2);
         vPxx, vPyy, vPxy, vPxt, vPyt = LocalDerivativeSum(tPxx, tPyy, tPxy, tPxt, tPyt);
 
-        for rr ∈ 1:numRef #<! Refinements
-            vUi, vVi = EstUV(vPxx, vPyy, vPxy, vPxt, vPyt); #<! TODO Estimate du, dv per point
-        end
+        # Disabled refinements for now
+        # for rr ∈ 1:numRef #<! Refinements
+        #     vUi, vVi = EstUV(vPxx, vPyy, vPxy, vPxt, vPyt); #<! TODO Estimate du, dv per point
+        # end
+        vUi, vVi = EstUV(vPxx, vPyy, vPxy, vPxt, vPyt); #<! TODO Estimate du, dv per point
 
         vU .+= decFactor .* vUi; #<! Shift factored by the scale
         vV .+= decFactor .* vVi;
@@ -367,9 +341,12 @@ function OpticalFlow( mI1 :: Matrix{T}, mI2 :: Matrix{T}, mPts1 :: Matrix{T}, mP
 
     # Set the estimated coordinates in next image
     for pp ∈ 1:numPts
-        mP2[pp, 1] = mP1[pp, 1] + vU[pp]
-        mP2[pp, 2] = mP1[pp, 2] + vV[pp]
+        # Per point
+        mPts2[pp, 1] = mPts1[pp, 1] + vU[pp]
+        mPts2[pp, 2] = mPts1[pp, 2] + vV[pp]
     end
+
+    return mPts2;
 
 end
 
@@ -386,14 +363,16 @@ imgUrl = raw"https://i.imgur.com/WLROWkE.png"; #<! Lena Image 256x256 Gray
 vRefPt = [43.3, 33.7];
 
 # Shift
-dU = 0.6;
-dV = 0.3;
+dU = 0.75;
+dV = 0.85;
 
-# Solver
+# Optical Flow
+localPatchRadius = 2;
+numPyr = 2;
+
 
 
 ## Generate / Load Data
-
 
 # Read Image
 mI = ConvertJuliaImgArray(load(download(imgUrl)));
@@ -402,44 +381,66 @@ mI = copy(mI) ./ 255.0;
 numRows = size(mI, 1);
 numCols = size(mI, 2);
 
+# Data Index
 vX = 1:numCols;
 vY = 1:numRows;
 
+# Image Interpolation
 imgItrp = interpolate(mI, BSpline(Cubic()));
 imgItrp = extrapolate(imgItrp, 0);
 
-## Analysis
 numPts  = numRows * numCols;
 
-mII = imgItrp.(vX .+ dU, vY .+ dV); #<! Interpolations works rows / cols
-mII = reshape(mII, (length(vY), length(vX))); #<! Image for template
+mII = imgItrp.(vY .+ dV, vX' .+ dU); #<! Interpolations works rows / cols
+# mII = reshape(mII, (length(vY), length(vX))); #<! Image for template
 
-DisplayImage(mI)
-DisplayImage(mII)
+# hP = DisplayImage(mI);
+# display(hP);
+# hP = DisplayImage(mII);
+# display(hP);
+
+# Extract 2 Patches
+mP1 = mI[100:150, 100:150];
+# hP = DisplayImage(mP1);
+# display(hP);
+
+mP2 = mII[100:150, 100:150];
+# hP = DisplayImage(mP2);
+# display(hP);
+
+## Analysis
+
+mPts1 = [126.0 126.0; 127.0 126.0; 125.0 126.0; 126.0 125.0; 126.0 127.0]; #<! (x, y) Integer
+mPts2 = similar(mPts1);
+
+OpticalFlow(mI, mII, mPts1, mPts2, localPatchRadius, numPyr)
+
+
+
 
 ## 
 
-hP = DisplayImage(mII);
-# rect: x0, x1, y0, y1
-shapeRect = rect(vTc[1] - 1, vTc[end] - 1, vTr[1] - 1, vTr[end] - 1, line_color = "green", name = "Template Patch");
-add_shape!(hP, shapeRect);
-display(hP);
+# hP = DisplayImage(mII);
+# # rect: x0, x1, y0, y1
+# shapeRect = rect(vTc[1] - 1, vTc[end] - 1, vTr[1] - 1, vTr[end] - 1, line_color = "green", name = "Template Patch");
+# add_shape!(hP, shapeRect);
+# display(hP);
 
 
-vT = mII[vTr, vTc][:];
+# vT = mII[vTr, vTc][:];
 
-vX = copy(vTc);
-vY = copy(vTr);
+# vX = copy(vTc);
+# vY = copy(vTr);
 
-numPtsX = vX[end] - vX[1] + 1;
-numPtsY = vY[end] - vY[1] + 1;
+# numPtsX = vX[end] - vX[1] + 1;
+# numPtsY = vY[end] - vY[1] + 1;
 
-for ii ∈ 1:numIter
-    vI, ∇I = GetPatch(imgItrp, vX, vY);
+# for ii ∈ 1:numIter
+#     vI, ∇I = GetPatch(imgItrp, vX, vY);
 
     
-    Δp = 1;
-end
+#     Δp = 1;
+# end
 
 
 ## Display Results
