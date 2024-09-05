@@ -10,6 +10,10 @@
 #       It should also be optimized for `rfft()`.
 #   2.  
 # Release Notes
+# - 1.5.000     03/09/2024  Royi Avital RoyiAvital@yahoo.com
+#   *   Added `GenGaussianKernel()`.
+#   *   Changed `N` in `PadArray()` and `PadArray()!` into `Integer`.
+#   *   Made `padMode` a positional parameter in `PadArray()` and `PadArray!()`.
 # - 1.4.000     05/07/2023  Royi Avital RoyiAvital@yahoo.com
 #   *   Added a convolution function with support for `CONV_MODE_SAME`.
 # - 1.3.000     29/06/2023  Royi Avital RoyiAvital@yahoo.com
@@ -76,7 +80,7 @@ function ConvertJuliaImgArray(mI :: Matrix{<: Color{T, 1}}) where {T}
 
 end
 
-function PadArray!( mB :: Matrix{T}, mA :: Matrix{T}, tuPadRadius :: Tuple{N, N}; padMode :: PadMode, padValue :: T = zero(T) ) where {T <: Real, N <: Signed}
+function PadArray!( mB :: Matrix{T}, mA :: Matrix{T}, tuPadRadius :: Tuple{N, N}, padMode :: PadMode; padValue :: T = zero(T) ) where {T <: Real, N <: Integer}
 
     numRowsA, numColsA = size(mA);
     numRowsB, numColsB = (numRowsA, numColsA) .+ (N(2) .* tuPadRadius);
@@ -136,21 +140,24 @@ function PadArray!( mB :: Matrix{T}, mA :: Matrix{T}, tuPadRadius :: Tuple{N, N}
 
 end
 
-function PadArray( mA :: Matrix{T}, tuPadRadius :: Tuple{N, N}; padMode :: PadMode, padValue :: T = zero(T) ) where {T <: Real, N <: Signed}
+function PadArray( mA :: Matrix{T}, tuPadRadius :: Tuple{N, N}, padMode :: PadMode; padValue :: T = zero(T) ) where {T <: Real, N <: Integer}
     # Works on Matrix
     # TODO: Support padding larger then the input.
     # TODO: Extend ot Array{T, 3}.
-    # TODO: Create non allocating variant.
 
     numRowsA, numColsA = size(mA);
     numRowsB, numColsB = (numRowsA, numColsA) .+ (N(2) .* tuPadRadius);
     mB = Matrix{T}(undef, numRowsB, numColsB);
 
-    mB = PadArray!(mB, mA, tuPadRadius; padMode = padMode, padValue = padValue);
+    mB = PadArray!(mB, mA, tuPadRadius, padMode; padValue = padValue);
 
     return mB;
+
+end
+
+function PadArray( mA :: Matrix{T}, padRadius :: N; padMode :: PadMode, padValue :: T = zero(T) ) where {T <: Real, N <: Integer}
     
-    
+    return PadArray(mA, (padRadius, padRadius); padMode = padMode, padValue = padValue);
 
 end
 
@@ -678,5 +685,77 @@ function GenColorConversionMat( colorConvMat :: ColorConvMat )
         return mYiqToRgb;
     end
 
+end
+
+function CalcImgGrad!( mIx :: Matrix{T}, mIy :: Matrix{T},  mI :: Matrix{T} ) where {T <: AbstractFloat}
+
+    # Matches MATLAB's `gradient()` for 2D array
+    # The returned gradient has the same dimensions as the input image.
+    numRows = size(mI, 1);
+    numCols = size(mI, 2);
+
+    for jj ∈ 1:numCols
+        for ii ∈ 1:numRows
+            if (ii == 1)
+                mIy[ii, jj] = mI[2, jj] - mI[1, jj];
+            elseif (ii == numRows)
+                mIy[ii, jj] = mI[numRows, jj] - mI[numRows - 1, jj];
+            else
+                mIy[ii, jj] = T(0.5) * (mI[ii + 1, jj] - mI[ii - 1, jj]);
+            end
+            if (jj == 1)
+                mIx[ii, jj] = mI[ii, 2] - mI[ii, 1];
+            elseif (jj == numCols)
+                mIx[ii, jj] = mI[ii, numCols] - mI[ii, numCols - 1];
+            else
+                mIx[ii, jj] = T(0.5) * (mI[ii, jj + 1] - mI[ii, jj - 1]);
+            end
+        end
+    end
+
+    return mIx, mDy;
 
 end
+
+
+function CalcImgGrad( mI :: Matrix{T} ) where {T <: AbstractFloat}
+    
+    # Matches MATLAB's `gradient()` for 2D array
+    # The returned gradient has the same dimensions as the input image.
+    numRows = size(mI, 1);
+    numCols = size(mI, 2);
+    
+    mIx = similar(mI);
+    mIy = similar(mI);
+
+    mIx, mIy = CalcImgGrad!(mIx, mIy,  mI);
+
+    return mIx, mIy;
+
+end
+
+function GenGaussianKernel( σ :: Tuple{T, T}, kernelRadius :: Tuple{N, N} ) where {T <: AbstractFloat, N <: Integer}
+
+    numRows = N(2) * kernelRadius[1] + 1;
+    numCols = N(2) * kernelRadius[2] + 1;
+
+    mK = zeros(T, numRows, numCols);
+
+    for (jj, nn) ∈ enumerate(-kernelRadius[2]:kernelRadius[2]), (ii, mm) ∈ enumerate(-kernelRadius[1]:kernelRadius[1])
+        mK[ii, jj] = exp(- (mm * mm) / (T(2.0) * σ[1] * σ[1])) * exp(- (nn * nn) / (T(2.0) * σ[2] * σ[2]));
+    end
+
+    mK .+= mK'; #<! Force symmetry
+
+    mK ./= sum(mK);
+
+    return mK;
+
+end
+
+function GenGaussianKernel( σ :: T, kernelRadius :: Tuple{N, N} ) where {T <: AbstractFloat, N <: Integer}
+
+    return GenGaussianKernel((σ, σ), kernelRadius);
+
+end
+
