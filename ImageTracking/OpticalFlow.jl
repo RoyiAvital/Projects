@@ -119,6 +119,8 @@ function GenPyrPatch( mPts :: Matrix{T}, mP :: Matrix{T}, vG, vU :: Vector{T}, v
 
     oIntrp = cubic_spline_interpolation((1:numRows, 1:numCols), mP, extrapolation_bc = Flat());
 
+    # @infiltrate
+
     return reshape(oIntrp.(vXi, vYi), (numGridPts, numGridPts, numPts));
 
 end
@@ -140,10 +142,10 @@ function CalcOptFlSpatialDerivative( tP :: Array{T, 3} ) where {T <: AbstractFlo
     
     # TODO: Use views
     tPx = tP[:, 2:end, :] .- tP[:, 1:(end - 1), :]; #<! Horizontal derivative
-    tPx = T(0.5) .* (tP1[2:end, :, :] .+ tP[1:(end - 1), :, :]); #<! Averaging with half pixel shift
+    tPx = T(0.5) .* (tPx[2:end, :, :] .+ tPx[1:(end - 1), :, :]); #<! Averaging with half pixel shift
 
     tPy = tP[2:end, :, :] .- tP[1:(end - 1), :, :]; #<! Vertical derivative
-    tPy = T(0.5) .* (tP1[:, 2:end, :] .+ tP[:, 1:(end - 1), :]); #<! Averaging with half pixel shift
+    tPy = T(0.5) .* (tPy[:, 2:end, :] .+ tPy[:, 1:(end - 1), :]); #<! Averaging with half pixel shift
 
     return tPx, tPy;
 
@@ -189,6 +191,7 @@ function CalcLocalDerivativeSum( tPxx :: Array{T, 3}, tPyy :: Array{T, 3}, tPxy 
     vPxt = dropdims(sum(tPxt, dims = (1, 2)), dims = (1, 2));
     vPyt = dropdims(sum(tPyt, dims = (1, 2)), dims = (1, 2));
 
+    # Output size matches the number of input points
     return vPxx, vPyy, vPxy, vPxt, vPyt;
 
 end
@@ -214,6 +217,7 @@ function SolveLSBnd( vX :: Vector{T}, mAA :: Matrix{T}, vAY :: Vector{T}, K :: N
     
     for ii ∈ 1:K
         copy!(vT, vX); #<! Buffer
+        # TODO: Make the calculation of `vG` non allocating
         vG = mAA * vX - vAY; #<! Gradient
         objVal = dot(vX, mAA, vX) - T(2.0) * dot(vAY, vX);
         vZ .= vX .- α .* vG; #<! Gradient Descent Step
@@ -226,7 +230,7 @@ function SolveLSBnd( vX :: Vector{T}, mAA :: Matrix{T}, vAY :: Vector{T}, K :: N
             jj += 1;
         end
 
-        vX = clamp.(vZ, -one(T), one(T)); #<! Projection
+        vX .= clamp.(vZ, -one(T), one(T)); #<! Projection
         α = T(2.0) * α;
 
         vT .-= vX;
@@ -238,17 +242,25 @@ function SolveLSBnd( vX :: Vector{T}, mAA :: Matrix{T}, vAY :: Vector{T}, K :: N
 
     end
 
+    return vX;
+
 end
 
 function EstUV( vPxx :: Vector{T}, vPyy :: Vector{T}, vPxy :: Vector{T}, vPxt :: Vector{T}, vPyt :: Vector{T} ) where {T <: AbstractFloat}
 
+    detThr = 1e-8;
+    applyCons = false;
+    λ = T(0.0);
     K = 100;
-    α = 1e-2;
-    ε = 1e-6;
-    αₘ = 1e-6;
+    α = T(1e-2);
+    ε = T(1e-6);
+    αₘ = T(1e-6);
     M = 10;
 
-    numPts = length(vU);
+    numPts = length(vPxx);
+
+    vU = zeros(T, numPts);
+    vV = zeros(T, numPts);
 
     for ii ∈ 1:numPts
         # Solving a 2x2 linear system of a PD matrix
@@ -257,6 +269,10 @@ function EstUV( vPxx :: Vector{T}, vPyy :: Vector{T}, vPxy :: Vector{T}, vPxt ::
         vV[ii] = (vPxy[ii] * vPxt[ii] - vPxx[ii] * vPyt[ii]) / detVal;
 
         if (applyCons) #<! Apply constraint of |vU[ii], vV[ii]| ≤ 1
+            mA = zeros(T, 2, 2);
+            vY = zeros(T, 2);
+            vX = zeros(T, 2);
+
             mA[1, 1] = vPxx[ii] + λ;
             mA[1, 2] = vPxy[ii];
             mA[2, 1] = vPxy[ii]; #<! Symmetric
@@ -275,6 +291,8 @@ function EstUV( vPxx :: Vector{T}, vPyy :: Vector{T}, vPxy :: Vector{T}, vPxt ::
             vV[ii] = vX[2];
         end
     end
+
+    return vU, vV;
 
 
 end
@@ -326,7 +344,7 @@ function OpticalFlow( mI1 :: Matrix{T}, mI2 :: Matrix{T}, mPts1 :: Matrix{T}, mP
         tP2 = GenPyrPatch(mPts1, mP2, vG, vU₀, vV₀); #<! Size: (length(vG) x length(vG) x numPts)
 
         tPxx, tPyy, tPxy, tPxt, tPyt = CalcOptFlDerivative(tP1, tP2);
-        vPxx, vPyy, vPxy, vPxt, vPyt = LocalDerivativeSum(tPxx, tPyy, tPxy, tPxt, tPyt);
+        vPxx, vPyy, vPxy, vPxt, vPyt = CalcLocalDerivativeSum(tPxx, tPyy, tPxy, tPxt, tPyt);
 
         # Disabled refinements for now
         # for rr ∈ 1:numRef #<! Refinements
@@ -413,10 +431,56 @@ mP2 = mII[100:150, 100:150];
 mPts1 = [126.0 126.0; 127.0 126.0; 125.0 126.0; 126.0 125.0; 126.0 127.0]; #<! (x, y) Integer
 mPts2 = similar(mPts1);
 
-OpticalFlow(mI, mII, mPts1, mPts2, localPatchRadius, numPyr)
+# OpticalFlow(mI, mII, mPts1, mPts2, localPatchRadius, numPyr)
 
 
+## Debug
 
+mI1 = copy(mI);
+mI2 = copy(mII);
+
+T = eltype(mI1);
+N = typeof(numPyr);
+
+numRowsP, numColsP = size(mI1);
+    
+numPts        = size(mPts1, 1);
+localPatchLen = T(2) * localPatchRadius + one(T);
+
+σ = T(1.0);
+radFctr = T(3.0);
+
+vU  = zeros(T, numPts);
+vV  = zeros(T, numPts);
+vU₀ = zeros(T, numPts);
+vV₀ = zeros(T, numPts);
+
+mOnes = ones(T, numRows, numCols);
+
+pp = 0;
+
+decFactor = 2 ^ pp;
+
+σₚ          = σ * decFactor;
+kerRadius   = ceil(N, radFctr * σₚ);
+mK          = GenGaussianKernel(σₚ, (kerRadius, kerRadius));
+
+mO  = Conv2D(mOnes, mK; convMode = CONV_MODE_SAME);
+mP1 = Conv2D(mI1, mK; convMode = CONV_MODE_SAME) ./ mO;
+mP2 = Conv2D(mI2, mK; convMode = CONV_MODE_SAME) ./ mO;
+
+patchGridRad = decFactor * localPatchRadius;
+vG = -patchGridRad:decFactor:patchGridRad;
+
+tP1 = GenPyrPatch(mPts1, mP1, vG, vU, vV); #<! Size: (length(vG) x length(vG) x numPts)
+tP2 = GenPyrPatch(mPts1, mP2, vG, vU₀, vV₀); #<! Size: (length(vG) x length(vG) x numPts)
+
+# tPx, tPy = CalcOptFlSpatialDerivative(tP2);
+
+tPxx, tPyy, tPxy, tPxt, tPyt = CalcOptFlDerivative(tP1, tP2);
+vPxx, vPyy, vPxy, vPxt, vPyt = CalcLocalDerivativeSum(tPxx, tPyy, tPxy, tPxt, tPyt);
+
+vUi, vVi = EstUV(vPxx, vPyy, vPxy, vPxt, vPyt); #<! TODO Estimate du, dv per point
 
 ## 
 
