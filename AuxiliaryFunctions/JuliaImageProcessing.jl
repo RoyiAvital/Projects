@@ -8,8 +8,15 @@
 # 	1.  Add convolution in frequency domain as in DSP `Q90036`.
 #       It should include an auxiliary function: `GenWorkSpace()` for teh buffers.  
 #       It should also be optimized for `rfft()`.
-#   2.  
+#   2.  Optimize `BoxBlur()` with a running sum method.
 # Release Notes
+# - 1.7.000     14/09/2024  Royi Avital RoyiAvital@yahoo.com
+#   *   Added `ScaleImage()`.
+#   *   Added `BoxBlur()`.
+# - 1.6.000     07/09/2024  Royi Avital RoyiAvital@yahoo.com
+#   *   Made `PadArray()` support any type of `Number`.
+#   *   Verifying the initialization happens only once.
+#   *   Added support for `SubArray{T, 2}` (Views) for convolution.
 # - 1.5.000     03/09/2024  Royi Avital RoyiAvital@yahoo.com
 #   *   Added `GenGaussianKernel()`.
 #   *   Changed `N` in `PadArray()` and `PadArray()!` into `Integer`.
@@ -40,18 +47,21 @@ using StaticKernels;
 
 ## Constants & Configuration
 
-include("./JuliaInit.jl");
+if (!(@isdefined(isJuliaInit)) || (isJuliaInit == false))
+    # Ensure the initialization happens only once
+    include("./JuliaInit.jl");
+end
 
 ## Functions
 
-function ConvertJuliaImgArray(mI :: Matrix{<: Color{T, N}}) where {T, N}
+function ConvertJuliaImgArray( mI :: Matrix{<: Color{T, N}} ) where {T, N}
     # According to ColorTypes data always in order RGBA
 
     # println("RGB");
     
-    numRows, numCols = size(mI);
-    numChannels = N;
-    dataType = T.types[1];
+    numRows, numCols    = size(mI);
+    numChannels         = N;
+    dataType            = T.types[1];
 
     mO = permutedims(reinterpret(reshape, dataType, mI), (2, 3, 1));
 
@@ -65,16 +75,27 @@ function ConvertJuliaImgArray(mI :: Matrix{<: Color{T, N}}) where {T, N}
 
 end
 
-function ConvertJuliaImgArray(mI :: Matrix{<: Color{T, 1}}) where {T}
+function ConvertJuliaImgArray( mI :: Matrix{<: Color{T, 1}} ) where {T}
     # According to ColorTypes data always in order RGBA
     # Single Channel Image (numChannels = 1)
     
     # println("Gray");
     
-    numRows, numCols = size(mI);
-    dataType = T.types[1];
+    numRows, numCols    = size(mI);
+    dataType            = T.types[1];
 
     mO = reinterpret(reshape, dataType, mI);
+
+    return mO;
+
+end
+
+function ScaleImg( mI :: ImgMat{T}; outType :: DataType = Float64 ) where { T <: Union{<: Unsigned, <: Signed} }
+    # Scales UInt / Int images into [0, 1] / [-1, 1) range.
+    # Similar ot MATLAB's `im2double()` and `im2single()`.
+
+    mO = outType.(mI);
+    mO ./= outType(typemax(T));
 
     return mO;
 
@@ -140,7 +161,7 @@ function PadArray!( mB :: Matrix{T}, mA :: Matrix{T}, tuPadRadius :: Tuple{N, N}
 
 end
 
-function PadArray( mA :: Matrix{T}, tuPadRadius :: Tuple{N, N}, padMode :: PadMode; padValue :: T = zero(T) ) where {T <: Real, N <: Integer}
+function PadArray( mA :: Matrix{T}, tuPadRadius :: Tuple{N, N}, padMode :: PadMode; padValue :: T = zero(T) ) where {T <: Number, N <: Integer}
     # Works on Matrix
     # TODO: Support padding larger then the input.
     # TODO: Extend ot Array{T, 3}.
@@ -155,13 +176,13 @@ function PadArray( mA :: Matrix{T}, tuPadRadius :: Tuple{N, N}, padMode :: PadMo
 
 end
 
-function PadArray( mA :: Matrix{T}, padRadius :: N; padMode :: PadMode, padValue :: T = zero(T) ) where {T <: Real, N <: Integer}
+function PadArray( mA :: Matrix{T}, padRadius :: N, padMode :: PadMode; padValue :: T = zero(T) ) where {T <: Number, N <: Integer}
     
-    return PadArray(mA, (padRadius, padRadius); padMode = padMode, padValue = padValue);
+    return PadArray(mA, (padRadius, padRadius), padMode; padValue = padValue);
 
 end
 
-function Conv2D( mI :: Matrix{T}, mK :: Matrix{T}; convMode :: ConvMode = CONV_MODE_FULL ) where {T <: AbstractFloat}
+function Conv2D( mI :: MatOrView{T}, mK :: MatOrView{T}; convMode :: ConvMode = CONV_MODE_FULL ) where {T <: AbstractFloat}
     
     if (convMode == CONV_MODE_FULL)
         mO = Matrix{T}(undef, size(mI) .+ size(mK) .- (1, 1));
@@ -177,7 +198,7 @@ function Conv2D( mI :: Matrix{T}, mK :: Matrix{T}; convMode :: ConvMode = CONV_M
 
 end
 
-function Conv2D!( mO :: Matrix{T}, mI :: Matrix{T}, mK :: Matrix{T}; convMode :: ConvMode = CONV_MODE_FULL ) where {T <: AbstractFloat}
+function Conv2D!( mO :: MatOrView{T}, mI :: MatOrView{T}, mK :: MatOrView{T}; convMode :: ConvMode = CONV_MODE_FULL ) where {T <: AbstractFloat}
 
     if (convMode == CONV_MODE_FULL)
         _Conv2D!(mO, mI, mK);
@@ -191,7 +212,7 @@ function Conv2D!( mO :: Matrix{T}, mI :: Matrix{T}, mK :: Matrix{T}; convMode ::
     
 end
 
-function _Conv2D!( mO :: Matrix{T}, mI :: Matrix{T}, mK :: Matrix{T} ) where {T <: AbstractFloat}
+function _Conv2D!( mO :: MatOrView{T}, mI :: MatOrView{T}, mK :: MatOrView{T} ) where {T <: AbstractFloat}
     # Full Convolution
 
     numRowsI, numColsI = size(mI);
@@ -289,7 +310,7 @@ function _Conv2D!( mO :: Matrix{T}, mI :: Matrix{T}, mK :: Matrix{T} ) where {T 
 
 end
 
-function _Conv2DSame!( mO :: Matrix{T}, mI :: Matrix{T}, mK :: Matrix{T} ) where {T <: AbstractFloat}
+function _Conv2DSame!( mO :: MatOrView{T}, mI :: MatOrView{T}, mK :: MatOrView{T} ) where {T <: AbstractFloat}
     # Matches MATLAB
     # Assumes size(mK) <= size(mI)
 
@@ -317,65 +338,22 @@ function _Conv2DSame!( mO :: Matrix{T}, mI :: Matrix{T}, mK :: Matrix{T} ) where
 
 end
 
-function _Conv2DValid!( mO :: Matrix{T}, mI :: Matrix{T}, mK :: Matrix{T} ) where {T <: AbstractFloat}
+function _Conv2DValid!( mO :: MatOrView{T}, mI :: MatOrView{T}, mK :: MatOrView{T} ) where {T <: AbstractFloat}
 
     numRowsI, numColsI = size(mI);
     numRowsK, numColsK = size(mK);
 
     for jj ∈ 1:(numColsI - numColsK + 1)
-        @turbo for ii in 1:(numRowsI - numRowsK + 1)
+        for ii in 1:(numRowsI - numRowsK + 1)
             sumVal = zero(T);
             for nn ∈ 1:numColsK, mm ∈ 1:numRowsK
-                @inbounds sumVal += mK[mm, nn] * mI[ii - mm + numRowsK, jj - nn + numColsK];
+                sumVal += mK[mm, nn] * mI[ii - mm + numRowsK, jj - nn + numColsK];
             end
             mO[ii, jj] = sumVal;
         end
     end
 
 end
-
-
-function GenConvMtx( vK :: AbstractVector{T}, numElements :: N; convMode :: ConvMode = CONV_MODE_FULL ) where {T <: AbstractFloat, N <: Integer}
-    
-    kernelLength = length(vK);
-
-    if (convMode == CONV_MODE_FULL)
-        rowIdxFirst = 1;
-        rowIdxLast  = numElements + kernelLength - 1;
-        outputSize  = numElements + kernelLength - 1;
-    elseif (convMode == CONV_MODE_SAME)
-        rowIdxFirst = 1 + floor(kernelLength / 2);
-        rowIdxLast  = rowIdxFirst + numElements - 1;
-        outputSize  = numElements;
-    elseif (convMode == CONV_MODE_VALID)
-        rowIdxFirst = kernelLength;
-        rowIdxLast  = (numElements + kernelLength - 1) - kernelLength + 1;
-        outputSize  = numElements - kernelLength + 1;
-    end
-
-    mtxIdx = 0;
-    vI = ones(N, numElements * kernelLength);
-    vJ = ones(N, numElements * kernelLength);
-    vV = zeros(T, numElements * kernelLength);
-
-    for jj ∈ 1:numElements
-        for ii ∈ 1:kernelLength
-            if((ii + jj - 1 >= rowIdxFirst) && (ii + jj - 1 <= rowIdxLast))
-                # Valid output matrix row index
-                mtxIdx += 1;
-                vI[mtxIdx] = ii + jj - rowIdxFirst;
-                vJ[mtxIdx] = jj;
-                vV[mtxIdx] = vK[ii];
-            end
-        end
-    end
-
-    mK = sparse(vI, vJ, vV, outputSize, numElements);
-
-    return mK;
-
-end
-
 
 function GenConvMtx( mH :: AbstractMatrix{T}, numRows :: N, numCols :: N; convMode :: ConvMode = CONV_MODE_FULL ) where {T <: AbstractFloat, N <: Integer}
     
@@ -573,7 +551,6 @@ function _CalcPxShiftZeros( ii :: N, jj :: N, ll :: N, kk :: N, numRows :: N, nu
 
 end
 
-
 function CalcImageLaplacian!( mO :: Matrix{T}, mI :: Matrix{T}, mB :: Matrix{T}, mV1 :: Matrix{T}, mV2 :: Matrix{T}, mKₕ :: Matrix{T}, mKᵥ :: Matrix{T} ) where {T <: AbstractFloat}
 
     _Conv2DValid!(mV1, mI, mKₕ);
@@ -610,6 +587,23 @@ function CalcImageLaplacian( mI :: Matrix{T}; mKₕ :: Matrix{T} = [one(T) -one(
 
 end
 
+function BoxBlur( mI :: Matrix{T}, tuBoxRadius :: Tuple{N, N}; padMode :: PadMode = PAD_MODE_REPLICATE, normFctr :: T = prod(T(2) .* tuBoxRadius .+ one(T)) ) where {T <: AbstractFloat, N <: Integer}
+    # Inefficient: No separability, No Constant N calculation
+
+    mK = (one(T) / normFctr) * ones(T, 2 * tuBoxRadius[1] + 1, 2 * tuBoxRadius[2] + 1);
+    mP = PadArray(mI, tuBoxRadius, padMode);
+
+    mO = Conv2D(mP, mK; convMode = CONV_MODE_VALID);
+
+    return mO;
+
+end
+
+function BoxBlur( mI :: Matrix{T}, boxRadius :: N; padMode :: PadMode = PAD_MODE_REPLICATE, normFctr :: T = ((T(2) * T(boxRadius) .+ one(T)) ^ 2) ) where {T <: AbstractFloat, N <: Integer}
+
+    return BoxBlur(mI, (boxRadius, boxRadius); padMode = padMode, normFctr = normFctr);
+
+end
 
 function ConvertColorSpace!( mO :: Array{T, 3}, mI :: Array{T, 3}, mC :: Matrix{T} ) where{T <: AbstractFloat}
 
@@ -716,7 +710,6 @@ function CalcImgGrad!( mIx :: Matrix{T}, mIy :: Matrix{T},  mI :: Matrix{T} ) wh
     return mIx, mDy;
 
 end
-
 
 function CalcImgGrad( mI :: Matrix{T} ) where {T <: AbstractFloat}
     
