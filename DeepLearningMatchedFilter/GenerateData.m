@@ -83,7 +83,7 @@ vDataLabelsValid = mod(1:numSignalsValidTotal, 2);
 
 %% Save Data
 
-save('Data\DeepLearningMatchedFilterData.m', 'mDataTrain', 'mDataValid', 'vDataLabelsTrain', 'vDataLabelsValid', 'kernelRadius', 'kernelStd', 'kernelMeanEnergy', 'numSamples', 'numSignalsTrain', 'numSignalsValid', 'vSnrLevel');
+save('Data\DeepLearningMatchedFilterData.mat', 'mDataTrain', 'mDataValid', 'vDataLabelsTrain', 'vDataLabelsValid', 'kernelRadius', 'kernelStd', 'kernelMeanEnergy', 'numSamples', 'numSignalsTrain', 'numSignalsValid', 'vSnrLevel');
 
 
 %% Display Results
