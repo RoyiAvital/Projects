@@ -1,0 +1,295 @@
+\documentclass{article}
+
+\usepackage{arxiv}
+
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{cleveref}       % smart cross-referencing
+\usepackage{lipsum}         % Can be removed after putting your text content
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{doi}
+\usepackage{xcolor}
+
+% Math Commands
+\newcommand{\MyParen}[1]{\left( #1 \right)}
+\newcommand{\MyBrack}[1]{\left\lbrack #1 \right\rbrack}
+\newcommand{\MyBrace}[1]{\left\lbrace #1 \right\rbrace}
+\newcommand{\MyNorm}[2]{{\left\| #1 \right\|}_{#2}}
+\newcommand{\MyNormSqr}[2]{{\left\| #1 \right\|}_{#2}^{2}}
+\newcommand{\MyNormTwo}[1]{\MyNorm{#1}{2}}
+\newcommand{\MyNormTwoSqr}[1]{\MyNormSqr{#1}{2}}
+\newcommand{\MyAbs}[1]{\left| #1 \right|}
+\newcommand{\MyCeil}[1]{\left \lceil #1 \right \rceil}
+\newcommand{\MyFloor}[1]{\left \lfloor #1 \right \rfloor}
+\newcommand{\MyInProd}[2]{\langle #1, #2 \rangle}
+\newcommand{\MyUndBrace}[2]{\underset{#2}{\underbrace{#1}}}
+% \newcommand{\RR}[1]{\mathds{R}^{#1}} % Asaf's Style
+\newcommand{\RR}[1]{\mathbb{R}^{#1}}
+\newcommand{\EE}[1]{\mathbb{E} \MyBrack{#1}}
+
+% Text Commands
+\newcommand{\inlinecode}[1]{\colorbox{lightgray}{\texttt{#1}}}
+\newcommand{\marker}[1]{\colorbox{yellow}{#1}}
+
+\title{Review of a Single Component Harmonic Signal Parameter Estimation Methods with a New One}
+
+% Here you can change the date presented in the paper title
+%\date{September 9, 1985}
+% Or remove it
+%\date{}
+
+\newif\ifuniqueAffiliation
+% Uncomment to use multiple affiliations variant of author block 
+\uniqueAffiliationtrue
+
+\ifuniqueAffiliation % Standard variant of author block
+\author{ \href{https://orcid.org/0000-0001-9316-0369}{\includegraphics[scale=0.06]{ORCIDIcon.pdf}\hspace{1mm}Royi Avital }\thanks{Use footnote for providing further
+		information about author (webpage, alternative
+		address)---\emph{not} for acknowledging funding agencies.} \\
+	\texttt{RoyiAvital@yahoo.com} \\
+	%% examples of more authors
+	\And
+	\href{https://orcid.org/0000-0000-0000-0000}{\includegraphics[scale=0.06]{ORCIDIcon.pdf}\hspace{1mm}Cedron Swag} \\
+	Department of Electrical Engineering\\
+	Mount-Sheikh University\\
+	Santa Narimana, Levand \\
+	\texttt{cedron@protonmail.com} \\
+	%% \AND
+	%% Coauthor \\
+	%% Affiliation \\
+	%% Address \\
+	%% \texttt{email} \\
+	%% \And
+	%% Coauthor \\
+	%% Affiliation \\
+	%% Address \\
+	%% \texttt{email} \\
+	%% \And
+	%% Coauthor \\
+	%% Affiliation \\
+	%% Address \\
+	%% \texttt{email} \\
+}
+\else
+% Multiple affiliations variant of author block
+\usepackage{authblk}
+\renewcommand\Authfont{\bfseries}
+\setlength{\affilsep}{0em}
+% box is needed for correct spacing with authblk
+\newbox{\orcid}\sbox{\orcid}{\includegraphics[scale=0.06]{orcid.pdf}} 
+\author[1]{%
+	\href{https://orcid.org/0000-0001-9316-0369}{\usebox{\orcid}\hspace{1mm}Royi Avital\thanks{\texttt{hippo@cs.cranberry-lemon.edu}}}%
+}
+\author[1,2]{%
+	\href{https://orcid.org/0000-0000-0000-0000}{\usebox{\orcid}\hspace{1mm}Cedron Swag\thanks{\texttt{cedron@protonmail.com}}}%
+}
+\affil[1]{}
+\affil[2]{}
+\fi
+
+% Uncomment to override  the `A preprint' in the header
+%\renewcommand{\headeright}{Technical Report}
+%\renewcommand{\undertitle}{Technical Report}
+\renewcommand{\shorttitle}{Single Component Harmonic Signal Parameter Estimation Methods}
+
+%%% Add PDF metadata to help others organize their library
+%%% Once the PDF is generated, you can check the metadata with
+%%% $ pdfinfo template.pdf
+\hypersetup{
+pdftitle={Review of a Single Component Harmonic Signal Parameter Estimation Methods with a New One},
+pdfsubject={q-bio.NC, q-bio.QM},
+pdfauthor={Royi Avital, Cedron Swag},
+pdfkeywords={Signal Processing, Parameter Estimation, Harmonic Signal, Least Squares, Cramer Rao Lower Bound, CRLB},
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+	Estimating the parameters of an harmonic signal is an atomic operation in many algorithms in modern scientific approach. It is useful in the domain of Communication, RADAR, SIGINT, EEG, \marker{Add more...}. In this paper we review several methods and present a new one which is based on exact solution to the signal model in the DFT. We compare the performance of different methods both in accuracy and run time and compare them to the Cramer Rao Lower Bound. This is paper is focused on the case of a single harmonic component in the signal. A future paper will expand the method for several components.
+\end{abstract}
+
+
+% keywords can be removed
+\keywords{Signal Processing \and Parameter Estimation \and Harmonic Signal \and Least Squares \and Cramer Rao Lower Bound \and CRLB}
+
+
+\section{Introduction}
+\label{sec:Intro}
+
+A discrete single component harmonic signal is given by:
+
+\begin{equation}
+	 s \MyBrack{n} = a \exp \MyBrack{-2 \pi j {f}_{n} n + \phi} \tag{Complex Harmonic Signal} \label{eq:ComplexSignalModel}
+\end{equation}
+
+With the model parameters given by $ \MyParen{a, {f}_{s}, \phi} $.
+
+The \ref{eq:ComplexSignalModel} is the analytic signal of the real model given by\footnote{While the actual real part is defined by $ \cos \MyBrace{\cdot} $ given the phase is one of the model parameters both are equivalent}:
+
+\begin{equation}
+	r \MyBrack{n} = a \sin \MyBrack{-2 \pi {f}_{n} n + \phi} \tag{Real Harmonic Signal} \label{eq:RealSignalModel}
+\end{equation}
+
+
+\section{The Cramer Rao Lower Bound (CRLB) for the Parameter Estimation}
+\label{sec:CRLB}
+
+\lipsum[4] See Section \ref{sec:Intro}.
+
+Hello  fds
+
+\section{Known Methods}
+\label{sec:Methods}
+
+\subsection{Maximum Likelihood Estimator}
+
+\marker{TODO}:
+\begin{itemize}
+	\item Derive the MLE.
+	\item Discuss no closed form solution.
+\end{itemize}
+
+\subsubsection{Non Linear Least Squares}
+
+\marker{TODO}:
+\begin{itemize}
+	\item Discuss the issues.
+	\item Derive the trick to make it a single parameter problem.
+\end{itemize}
+
+\subsection{DFT Based Methods}
+
+\subsubsection{DFT Max Arg with Dirichlet Kernel Interpolation}
+
+\subsubsection{DFT Max Arg with Parabolic Model Interpolation}
+
+\subsection{Equation Based Methods}
+
+\marker{Where to put Kay's method?}
+
+\paragraph{Paragraph}
+\lipsum[7]
+
+\section{New Method}
+\label{sec:Cedron3Bins}
+
+\section{Comparison}
+\label{sec:Compariosn}
+
+\subsection{Methodology and Implementation}
+
+\subsection{Estimation Performance}
+
+\marker{TODO}:
+\begin{itemize}
+	\item Show performance per SNR: Random / Sweep frequency and 0.05, 0.1, 0.25, 0.4, 0.45.
+	\item Show performance per frequency at SNR: -10 dB, -5 dB, 0 dB, 5 dB, 10 dB, 20 dB, 30 dB.
+\end{itemize}
+
+\subsection{Run Time Performance}
+\marker{TODO}:
+\begin{itemize}
+	\item Compare complexity.
+	\item Show runtime per method.
+\end{itemize}
+
+\section{Conclusion}
+\label{sec:Cedron3Bins}
+
+
+
+\section{Examples of citations, figures, tables, references}
+\label{sec:others}
+
+\subsection{Citations}
+Citations use \verb+natbib+. The documentation may be found at
+\begin{center}
+	\url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
+\end{center}
+
+Here is an example usage of the two main commands (\verb+citet+ and \verb+citep+): Some people thought a thing \citep{kour2014real, keshet2016prediction} but other people thought something else \citep{kour2014fast}. Many people have speculated that if we knew exactly why \citet{kour2014fast} thought this\dots
+
+\subsection{Figures}
+\lipsum[10]
+See Figure \ref{fig:fig1}. Here is how you add footnotes. \footnote{Sample of the first footnote.}
+\lipsum[11]
+
+\begin{figure}
+	\centering
+	\fbox{\rule[-.5cm]{4cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
+	\caption{Sample figure caption.}
+	\label{fig:fig1}
+\end{figure}
+
+\subsection{Tables}
+See awesome Table~\ref{tab:table}.
+
+The documentation for \verb+booktabs+ (`Publication quality tables in LaTeX') is available from:
+\begin{center}
+	\url{https://www.ctan.org/pkg/booktabs}
+\end{center}
+
+
+\begin{table}
+	\caption{Sample table title}
+	\centering
+	\begin{tabular}{lll}
+		\toprule
+		\multicolumn{2}{c}{Part}                   \\
+		\cmidrule(r){1-2}
+		Name     & Description     & Size ($\mu$m) \\
+		\midrule
+		Dendrite & Input terminal  & $\sim$100     \\
+		Axon     & Output terminal & $\sim$10      \\
+		Soma     & Cell body       & up to $10^6$  \\
+		\bottomrule
+	\end{tabular}
+	\label{tab:table}
+\end{table}
+
+\subsection{Lists}
+\begin{itemize}
+	\item Lorem ipsum dolor sit amet
+	\item consectetur adipiscing elit.
+	\item Aliquam dignissim blandit est, in dictum tortor gravida eget. In ac rutrum magna.
+\end{itemize}
+
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}  %%% Uncomment this line and comment out the ``thebibliography'' section below to use the external .bib file (using bibtex) .
+
+
+%%% Uncomment this section and comment out the \bibliography{references} line above to use inline references.
+% \begin{thebibliography}{1}
+
+% 	\bibitem{kour2014real}
+% 	George Kour and Raid Saabne.
+% 	\newblock Real-time segmentation of on-line handwritten arabic script.
+% 	\newblock In {\em Frontiers in Handwriting Recognition (ICFHR), 2014 14th
+% 			International Conference on}, pages 417--422. IEEE, 2014.
+
+% 	\bibitem{kour2014fast}
+% 	George Kour and Raid Saabne.
+% 	\newblock Fast classification of handwritten on-line arabic characters.
+% 	\newblock In {\em Soft Computing and Pattern Recognition (SoCPaR), 2014 6th
+% 			International Conference of}, pages 312--318. IEEE, 2014.
+
+% 	\bibitem{keshet2016prediction}
+% 	Keshet, Renato, Alina Maor, and George Kour.
+% 	\newblock Prediction-Based, Prioritized Market-Share Insight Extraction.
+% 	\newblock In {\em Advanced Data Mining and Applications (ADMA), 2016 12th International 
+%                       Conference of}, pages 81--94,2016.
+
+% \end{thebibliography}
+
+
+\end{document}
