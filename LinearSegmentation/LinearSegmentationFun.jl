@@ -76,7 +76,6 @@ function SolveMinCostPartitionIntervals( mD :: Matrix{T}, maxPartitions :: S; λ
             for kk ∈ 1:(ii - 1)
                 # The term `abs(jj - ii)` is a regularization to avoid short segments
                 currCost = mS[kk, ii - 1] + mD[ii, jj] - λ * T(abs(jj - ii));
-                currCost = mS[kk, ii - 1] + mD[ii, jj];
                 if (currCost < minCost)
                     kkMin   = kk;
                     minCost = currCost;
