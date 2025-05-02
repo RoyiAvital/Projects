@@ -50,7 +50,7 @@ include("LinearSegmentationFun.jl");
 # Loss Fun -> Minimize (Like Distance)
 hLossFunMse(vY, vYY) = mean(abs2, vY - vYY); #<! vY Ground Truth, vYY - Estimation
 # AffinityFun -> Maximize (Like Affinity)
-hAffFunR2(vY, vYY) = 1 - (sum(abs2, vY .- vYY) / sum(abs2, mean(vY) .- vYY)); #<! vY Ground Truth, vYY - Estimation
+hAffFunR2(vY, vYY) = 1.0 - (sum(abs2, vY .- vYY) / sum(abs2, mean(vY) .- vY)); #<! vY Ground Truth, vYY - Estimation
 hLossFunR2(vY, vYY) = -hAffFunR2(vY, vYY);
 
 # Parameters
@@ -60,10 +60,12 @@ fileUrl   = raw"https://raw.githubusercontent.com/FixelAlgorithmsTeam/FixelCours
 decFactor = 1; #<! Decimation Factor
 
 # Model
+segRadius = 0;
 minSegLen = 10.0;
 maxSegLen = 1000.0;
 maxRmse   = 1.75;
 maxDist   = 1e6;
+λ         = 1.0;
 
 # ## Load / Generate Data
 
@@ -87,14 +89,14 @@ display(hF);
 mD = CalcDistMatReg(vX, vY, hLossFunR2);
 
 
-for dd ∈ -2:2
+for dd ∈ -segRadius:segRadius
     mD[diagind(mD, dd)] .= 1e6;
 end
 
-mS, mP = SolveMinCostPartitionIntervals(mD, 200);
+mS, mP = SolveMinCostPartitionIntervals(mD, 200; λ = λ);
 vP = ExtractPath(mS, mP); #<! Doesn't support NaN
 
-for dd ∈ -2:2
+for dd ∈ -segRadius:segRadius
     mD[diagind(mD, dd)] .= NaN;
 end
 

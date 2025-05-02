@@ -49,7 +49,7 @@ include("LinearSegmentationFun.jl");
 # Loss Fun -> Minimize (Like Distance)
 hLossFunMse(vY, vYY) = mean(abs2, vY - vYY); #<! vY Ground Truth, vYY - Estimation
 # AffinityFun -> Maximize (Like Affinity)
-hAffFunR2(vY, vYY) = 1 - (sum(abs2, vY .- vYY) / sum(abs2, mean(vY) .- vYY)); #<! vY Ground Truth, vYY - Estimation
+hAffFunR2(vY, vYY) = 1.0 - (sum(abs2, vY .- vYY) / sum(abs2, vY .- mean(vY))); #<! vY Ground Truth, vYY - Estimation
 hLossFunR2(vY, vYY) = -hAffFunR2(vY, vYY);
 
 ## Introduction

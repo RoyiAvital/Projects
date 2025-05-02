@@ -60,7 +60,7 @@ function Conv1D( vA :: Vector{T}, vB :: Vector{T}; convMode :: String = "full" )
     return vO[startIdx:endIdx];
 end
 
-function SolveMinCostPartitionIntervals( mD :: Matrix{T}, maxPartitions :: S  ) where {T, S <: Integer}
+function SolveMinCostPartitionIntervals( mD :: Matrix{T}, maxPartitions :: S; λ :: T = T(0)  ) where {T, S <: Integer}
 
     numSamples = size(mD, 1);
     maxPartitions = min(maxPartitions, numSamples);
@@ -74,6 +74,8 @@ function SolveMinCostPartitionIntervals( mD :: Matrix{T}, maxPartitions :: S  ) 
             minCost = 1e6;
             kkMin = 1;
             for kk ∈ 1:(ii - 1)
+                # The term `abs(jj - ii)` is a regularization to avoid short segments
+                currCost = mS[kk, ii - 1] + mD[ii, jj] - λ * T(abs(jj - ii));
                 currCost = mS[kk, ii - 1] + mD[ii, jj];
                 if (currCost < minCost)
                     kkMin   = kk;
@@ -91,17 +93,18 @@ end
 
 function ExtractPath( mS :: Matrix{T}, mP :: Matrix{S} ) where {T, S <: Integer}
 
-    numRows, numCols    = size(mS);
-    vS                  = Vector{Vector{Int}}(undef, 0);
+    numRows, numCols = size(mS);
+    vS               = Vector{Tuple{Int, Int}}(undef, 0);
 
     startIdx = argmin(mS[:, numCols]);
     endIdx   = numCols;
 
     while ((startIdx > 0) && (endIdx > 0))
-        prepend!(vS, [[startIdx, endIdx]]);
-        colIdx      = mP[startIdx, endIdx];
-        endIdx      = startIdx - 1;
-        startIdx    = colIdx;
+        prepend!(vS, [(startIdx, endIdx)]);
+        
+        colIdx   = mP[startIdx, endIdx];
+        endIdx   = startIdx - 1;
+        startIdx = colIdx;
     end
 
     return vS;
