@@ -64,7 +64,7 @@ vS = mData[:, 3];
 figureIdx += 1;
 figureFileName = @sprintf("%04d.png", figureIdx);
 
-hF = Figure(resolution = (700, 700));
+hF = Figure(size = (700, 700));
 hA = Axis(hF, bbox = Rect2i((60, 60), (600, 600)), title = "Piece Wise Linear Model", xlabel = "x", ylabel = "y");
 scatter!(hA, vX, vY; color = vS);
 display(hF);
@@ -81,7 +81,17 @@ mD = CalcDistMat(vX);
 figureIdx += 1;
 figureFileName = @sprintf("%04d.png", figureIdx);
 
-hF = Figure(resolution = (700, 700));
+hF = Figure(size = (700, 700));
+hA = Axis(hF, bbox = Rect2i((60, 60), (600, 600)), title = "Input Data", xlabel = "x", ylabel = "y");
+scatter!(hA, 1:length(vX), vX; markersize = 20);
+display(hF);
+save(figureFileName, hF);
+
+# Display Distance Matrix
+figureIdx += 1;
+figureFileName = @sprintf("%04d.png", figureIdx);
+
+hF = Figure(size = (700, 700));
 # heatmap(collect(0.5:(length(vX) + 0.5)), collect(0.5:(length(vX) + 0.5)), mD);
 hA = Axis(hF, bbox = Rect2i((60, 60), (600, 600)), xticks = 1:length(vX), yticks = 1:length(vX), yreversed = true, title = "Cost Matrix", xlabel = "j", ylabel = "i");
 oHm = heatmap!(hA, rotr90(reverse(mD, dims = 1)));
@@ -97,11 +107,11 @@ for ii = 1:length(vX), jj = 1:ii
     mS[ii, jj] = NaN;
 end
 
-# Display Data
+# Display Segmentation Matrix
 figureIdx += 1;
 figureFileName = @sprintf("%04d.png", figureIdx);
 
-hF = Figure(resolution = (700, 700));
+hF = Figure(size = (700, 700));
 hA = Axis(hF, bbox = Rect2i((60, 60), (600, 600)), xticks = 1:length(vX), yticks = 1:length(vX), yreversed = true, title = "Segments Matrix", xlabel = "j", ylabel = "i");
 oHm = heatmap!(hA, rotr90(reverse(mS, dims = 1)));
 for ii = 1:length(vX), jj = 1:length(vX)
@@ -115,7 +125,7 @@ save(figureFileName, hF);
 figureIdx += 1;
 figureFileName = @sprintf("%04d.png", figureIdx);
 
-hF = Figure(resolution = (700, 700));
+hF = Figure(size = (700, 700));
 hA = Axis(hF, bbox = Rect2i((60, 60), (600, 600)), xticks = 1:length(vX), yticks = 1:length(vX), yreversed = true, title = "Path Matrix", xlabel = "j", ylabel = "i");
 oHm = heatmap!(hA, rotr90(reverse(mP, dims = 1)));
 for ii = 1:length(vX), jj = 1:length(vX)
@@ -134,11 +144,11 @@ for ii in 1:length(vP)
     vS[vP[ii][1]:vP[ii][2]] .= ii;
 end
 
-# Display Data
+# Display Segmented Data
 figureIdx += 1;
 figureFileName = @sprintf("%04d.png", figureIdx);
 
-hF = Figure(resolution = (700, 700));
+hF = Figure(size = (700, 700));
 hA = Axis(hF, bbox = Rect2i((60, 60), (600, 600)), title = "Estimated Segments", xlabel = "x", ylabel = "y");
 scatter!(hA, 1:length(vX), vX; markersize = 20, color = vS);
 display(hF);
@@ -166,7 +176,7 @@ vS = mData[:, 3];
 figureIdx += 1;
 figureFileName = @sprintf("%04d.png", figureIdx);
 
-hF = Figure(resolution = (700, 700));
+hF = Figure(size = (700, 700));
 hA = Axis(hF, bbox = Rect2i((60, 60), (600, 600)), title = "Piece Wise Linear Model", xlabel = "x", ylabel = "y");
 lines!(hA, vX, vY; color = vS);
 scatter!(hA, vX, vY; color = vS);
@@ -189,7 +199,7 @@ end
 figureIdx += 1;
 figureFileName = @sprintf("%04d.png", figureIdx);
 
-hF = Figure(resolution = (700, 700));
+hF = Figure(size = (700, 700));
 hA = Axis(hF, bbox = Rect2i((60, 60), (600, 600)), title = "Estimated Segments", xlabel = "x", ylabel = "y");
 scatter!(hA, vX, vY; markersize = 20, color = vS);
 display(hF);
