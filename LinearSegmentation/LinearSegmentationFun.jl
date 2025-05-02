@@ -144,7 +144,7 @@ function PolyVal( vX :: AbstractVector{T}, vP :: Vector{S}, polyDeg :: Int ) whe
 end
 
 
-function CalcDistMatReg(vX :: Vector{T}, vY :: Vector{T}, hLossFun :: Function; minLen :: S = 0.0, maxLen :: S = 1.0, maxLoss :: S = 0.9, maxDist :: S = Inf) where {T, S}
+function CalcDistMatReg(vX :: Vector{T}, vY :: Vector{T}, hLossFun :: Function; minLen :: S = 0.0, maxLen :: S = Inf, maxLoss :: S = Inf, maxDist :: S = Inf) where {T, S}
     # TODO: Use symmetric matrix
 
     numSamples = length(vX);

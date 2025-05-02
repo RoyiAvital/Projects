@@ -26,6 +26,7 @@
 
 # Internal
 using DelimitedFiles;
+using LinearAlgebra;
 using Printf;
 using Statistics;           
 
@@ -56,7 +57,7 @@ hLossFunR2(vY, vYY) = -hAffFunR2(vY, vYY);
 
 # Data
 fileUrl   = raw"https://raw.githubusercontent.com/FixelAlgorithmsTeam/FixelCourses/refs/heads/master/DataSets/PieceWiseLinearData.csv";
-decFactor = 3; #<! Decimation Factor
+decFactor = 1; #<! Decimation Factor
 
 # Model
 minSegLen = 10.0;
@@ -83,9 +84,57 @@ display(hF);
 
 # Build Cost Matrix / Distance Matrix
 # mD = CalcDistMatReg(vX, vY, hLossFunMse; minLen = minSegLen, maxLen = maxSegLen, maxLoss = maxRmse * maxRmse, maxDist = maxDist);
-mD = CalcDistMatReg(vX, vY, hLossFunMse);
-mS, mP = SolveMinCostPartitionIntervals(mD, 5);
+mD = CalcDistMatReg(vX, vY, hLossFunR2);
+
+
+for dd ∈ -2:2
+    mD[diagind(mD, dd)] .= 1e6;
+end
+
+mS, mP = SolveMinCostPartitionIntervals(mD, 200);
 vP = ExtractPath(mS, mP); #<! Doesn't support NaN
+
+for dd ∈ -2:2
+    mD[diagind(mD, dd)] .= NaN;
+end
+
+# Display Distance Matrix
+figureIdx += 1;
+figureFileName = @sprintf("%04d.png", figureIdx);
+
+hF = Figure(size = (700, 700));
+# heatmap(collect(0.5:(length(vX) + 0.5)), collect(0.5:(length(vX) + 0.5)), mD);
+hA = Axis(hF, bbox = Rect2i((60, 60), (600, 600)), xticks = 1:length(vX), yticks = 1:length(vX), yreversed = true, title = "Cost Matrix", xlabel = "j", ylabel = "i");
+oHm = heatmap!(hA, rotr90(reverse(mD, dims = 1)));
+for ii = 1:length(vX), jj = 1:length(vX)
+    labelStr = @sprintf("%0.2f", mD[ii, jj]);
+    # text!(hA, (jj, ii), text = labelStr; color = :red, align = (:center, :center));
+end
+display(hF);
+# save(figureFileName, hF);
+
+for ii = 1:length(vX), jj = 1:ii
+    mS[ii, jj] = NaN;
+end
+
+minimum(filter(!isnan, mD));
+maximum(filter(!isnan, mD));
+maximum(x->isnan(x) ? -Inf : x, mD); #<! Non allocating
+minimum(x->isnan(x) ? Inf : x, mD); #<! Non allocating
+
+# Display Segmentation Matrix
+figureIdx += 1;
+figureFileName = @sprintf("%04d.png", figureIdx);
+
+hF = Figure(size = (700, 700));
+hA = Axis(hF, bbox = Rect2i((60, 60), (600, 600)), xticks = 1:length(vX), yticks = 1:length(vX), yreversed = true, title = "Segments Matrix", xlabel = "j", ylabel = "i");
+oHm = heatmap!(hA, rotr90(reverse(mS, dims = 1)));
+for ii = 1:length(vX), jj = 1:length(vX)
+    labelStr = @sprintf("%0.2f", mS[ii, jj]);
+    # text!(hA, (jj, ii), text = labelStr; color = :red, align = (:center, :center));
+end
+display(hF);
+# save(figureFileName, hF);
 
 vS = zeros(length(vX));
 
