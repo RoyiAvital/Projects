@@ -31,6 +31,9 @@ SingularValueDecomposition/KnowledgeBase/*
 *.pptx
 *.xlsx
 
+# Python
+__pycache__
+
 ## TeX / LaTeX Files
 *.aux
 *.log
